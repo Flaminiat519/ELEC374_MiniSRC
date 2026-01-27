@@ -37,9 +37,32 @@ reg [31:0]q;
 
 //Initializing correct data to be sent out based on control signals
 always @ (*) begin
-	if(RZout) q = BusMuxInRZ;
-	if(RAout) q = BusMuxInRA;
-	if(RBout) q = BusMuxInRB;
+	if(R0out) q = BusMuxIn_R0;
+	else if(R1out) q = BusMuxIn_R1;
+	else if(R2out) q = BusMuxIn_R2;
+	else if(R3out) q = BusMuxIn_R3;
+	else if(R4out) q = BusMuxIn_R4;
+	else if(R5out) q = BusMuxIn_R5;
+	else if(R6out) q = BusMuxIn_R6;
+	else if(R7out) q = BusMuxIn_R7;
+	else if(R8out) q = BusMuxIn_R8;
+	else if(R9out) q = BusMuxIn_R9;
+	else if(R10out) q = BusMuxIn_R10;
+	else if(R11out) q = BusMuxIn_R11;
+	else if(R12out) q = BusMuxIn_R12;
+	else if(R13out) q = BusMuxIn_R13;
+	else if(R14out) q = BusMuxIn_R14;
+	else if(R15out) q = BusMuxIn_R15;
+	else if(HIout) q = BusMuxIn_HI;
+	else if(LOout) q = BusMuxIn_LO;
+	else if(ZHIout) q = BusMuxIn_ZHI;
+	else if(ZLOout) q = BusMuxIn_ZLO;
+	else if(PCout) q = BusMuxIn_PC;
+	else if(MDRout) q = BusMuxIn_MDR;
+	else if(Inportout) q = BusMuxIn_Inport;
+	else if(Cout) q = C_sign_extended;
+	
+	else	  q = 32'b0;
 end
 
 assign BusMuxOut = q;
