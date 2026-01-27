@@ -21,13 +21,13 @@ module Bus (
 	input [31:0]BusMuxIn_ZHI,
 	input [31:0]BusMuxIn_ZLO,
 	input [31:0]BusMuxIn_PC,
-	input [31:0]BusMuxIn_MDR,
+	input [31:0]BusMuxIn_MAR,
 	input [31:0]BusMux_Inport,
 	input [31:0]C_sign_extended,
 	
 	//Encoder
 	input R0out, R1out, R2out, R3out, R4out, R5out, R6out, R7out, R8out, R9out, 
-	R10out, R11out, R12out, R13out, R14out, R15out, HIout, LOout, ZHIout, ZLOout, PCout, MDRout, Inportout, Cout
+	R10out, R11out, R12out, R13out, R14out, R15out, HIout, LOout, ZHIout, ZLOout, PCout, MARout, Inportout, Cout
 
 	//Data coming out from the bus
 	output wire [31:0]BusMuxOut
@@ -58,11 +58,12 @@ always @ (*) begin
 	else if(ZHIout) q = BusMuxIn_ZHI;
 	else if(ZLOout) q = BusMuxIn_ZLO;
 	else if(PCout) q = BusMuxIn_PC;
-	else if(MDRout) q = BusMuxIn_MDR;
+	else if(MARout) q = BusMuxIn_MAR;
 	else if(Inportout) q = BusMuxIn_Inport;
 	else if(Cout) q = C_sign_extended;
 	
 	else	  q = 32'b0;
+	
 end
 
 assign BusMuxOut = q;
