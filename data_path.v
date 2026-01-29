@@ -4,11 +4,11 @@ module data_path(
 	input wire clock, clear,
 	
 	input wire R0out, R1out, R2out, R3out, R4out, R5out, R6out, R7out, R8out, R9out, 
-	R10out, R11out, R12out, R13out, R14out, R15out, HIout, LOout, ZHIout, ZLOout, PCout, MDRout, MARout, Inportout, Cout, Outportout, PCout, IRout, Yout,
+	R10out, R11out, R12out, R13out, R14out, R15out, HIout, LOout, ZHIout, ZLOout, MDRout, MARout, Inportout, Cout, Outportout, PCout, IRout, Yout,
 	
 	input wire R0in, R1in, R2in, R3in, R4in, R5in, R6in, R7in, R8in, R9in, 
-	R10in, R11in, R12in, R13in, R14in, R15in, HIin, LOin, ZHIin, ZLOin, MDRin, Inportin, Outportin, Cin, PCin, IRin, Yin,
-);
+	R10in, R11in, R12in, R13in, R14in, R15in, HIin, LOin, ZHIin, ZLOin, MDRin, Inportin, Outportin, Cin, PCin, IRin, Yin
+	);
 
 wire [31:0] BusMuxOut, BusMuxInRZ,
            BusMuxIn_R0, BusMuxIn_R1, BusMuxIn_R2, BusMuxIn_R3, BusMuxIn_R4,

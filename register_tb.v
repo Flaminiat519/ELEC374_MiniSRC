@@ -1,3 +1,4 @@
+//TUTORIAL CODE GIVEN TB
 /*
 `timescale 1ns/10ps
 module tutorial_tb();
@@ -50,6 +51,9 @@ end
 endmodule
 */
 
+
+//TB TO CHECK A COUPLE OF REGISTERS AND Bus
+/*
 `timescale 1ns/1ps
 
 module bus_register_tb;
@@ -147,3 +151,160 @@ initial begin
 end
 
 endmodule
+*/
+
+//TESTBENCH FOR DATAPATH, BUS, MEMORY, EVERYTHING BEFORE ALU
+`timescale 1ns / 1ps
+module tb_data_path;
+
+//----------------------------
+// Signals
+//----------------------------
+reg clock, clear;
+
+// Control signals
+reg R0in, R0out, R1in, R1out, R2in, R2out, R3in, R3out;
+reg PCin, PCout;
+reg IRin;
+reg Yin, Zin;  // placeholders
+reg MARin;
+reg MDRin, MDRout;
+
+// Data input to MDR
+reg [31:0] Mdatain;
+
+// Bus output
+wire [31:0] BusMuxOut;
+
+// Outputs of registers (for monitoring)
+wire [31:0] BusMuxIn_R0, BusMuxIn_R1, BusMuxIn_R2, BusMuxIn_R3;
+wire [31:0] BusMuxIn_PC, BusMuxIn_IR, BusMuxIn_Y, BusMuxIn_Z, BusMuxIn_MAR, BusMuxIn_MDR;
+
+//----------------------------
+// Instantiate the datapath
+//----------------------------
+data_path DP (
+    .clock(clock),
+    .clear(clear),
+
+    // Control signals
+    .R0in(R0in), .R0out(R0out),
+    .R1in(R1in), .R1out(R1out),
+    .R2in(R2in), .R2out(R2out),
+    .R3in(R3in), .R3out(R3out),
+    .PCin(PCin), .PCout(PCout),
+    .IRin(IRin),
+    .Yin(Yin),
+    .Zin(Zin),
+    .MARin(MARin),
+    .MDRin(MDRin), .MDRout(MDRout),
+
+    // Data input
+    .Mdatain(Mdatain),
+
+    // Bus output
+    .BusMuxOut(BusMuxOut),
+
+    // Register outputs
+    .BusMuxIn_R0(BusMuxIn_R0),
+    .BusMuxIn_R1(BusMuxIn_R1),
+    .BusMuxIn_R2(BusMuxIn_R2),
+    .BusMuxIn_R3(BusMuxIn_R3),
+    .BusMuxIn_PC(BusMuxIn_PC),
+    .BusMuxIn_IR(BusMuxIn_IR),
+    .BusMuxIn_Y(BusMuxIn_Y),
+    .BusMuxIn_Z(BusMuxIn_Z),
+    .BusMuxIn_MAR(BusMuxIn_MAR),
+    .BusMuxIn_MDR(BusMuxIn_MDR)
+);
+
+//----------------------------
+// Clock generation
+//----------------------------
+initial clock = 0;
+always #5 clock = ~clock;  // 10ns period
+
+//----------------------------
+// Test sequence
+//----------------------------
+initial begin
+    // Initialize signals
+    clear = 1;
+    R0in = 0; R0out = 0; R1in = 0; R1out = 0;
+    R2in = 0; R2out = 0; R3in = 0; R3out = 0;
+    PCin = 0; PCout = 0; IRin = 0; Yin = 0; Zin = 0;
+    MARin = 0; MDRin = 0; MDRout = 0;
+    Mdatain = 32'h0;
+
+    #10;
+    clear = 0; // release reset
+
+    //----------------------
+    // Test 1: Write R0 via MDR and read on bus
+    //----------------------
+    $display("=== Test 1: Write R0 via MDR ===");
+    Mdatain = 32'h11111111;
+    MDRin = 1; #10; MDRin = 0;        // Load MDR with data
+    MDRout = 1; R0in = 1; #10;        // Transfer MDR → R0
+    MDRout = 0; R0in = 0;
+    R0out = 1; #10;                    // Output R0 to bus
+    $display("Bus = %h (expect 11111111)", BusMuxOut);
+    R0out = 0;
+
+    //----------------------
+    // Test 2: Move R0 → R1
+    //----------------------
+    $display("=== Test 2: Move R0 → R1 ===");
+    R0out = 1; R1in = 1; #10;
+    R0out = 0; R1in = 0;
+    R1out = 1; #10;
+    $display("Bus = %h (expect 11111111)", BusMuxOut);
+    R1out = 0;
+
+    //----------------------
+    // Test 3: Write R2 via MDR
+    //----------------------
+    $display("=== Test 3: Write R2 ===");
+    Mdatain = 32'h22222222;
+    MDRin = 1; #10; MDRin = 0;
+    MDRout = 1; R2in = 1; #10; MDRout = 0; R2in = 0;
+    R2out = 1; #10;
+    $display("Bus = %h (expect 22222222)", BusMuxOut);
+    R2out = 0;
+
+    //----------------------
+    // Test 4: Load PC
+    //----------------------
+    $display("=== Test 4: Load PC ===");
+    Mdatain = 32'hAAAA5555;
+    MDRin = 1; #10; MDRin = 0;
+    MDRout = 1; PCin = 1; #10; MDRout = 0; PCin = 0;
+    PCout = 1; #10;
+    $display("Bus = %h (expect AAAA5555)", BusMuxOut);
+    PCout = 0;
+
+    //----------------------
+    // Test 5: Load IR
+    //----------------------
+    $display("=== Test 5: Load IR ===");
+    Mdatain = 32'hDEADBEEF;
+    MDRin = 1; #10; MDRin = 0;
+    MDRout = 1; IRin = 1; #10; MDRout = 0; IRin = 0;
+    $display("IR = %h (expect DEADBEEF)", BusMuxIn_IR);
+
+    //----------------------
+    // Test 6: MDR readout to bus
+    //----------------------
+    $display("=== Test 6: MDR readout ===");
+    Mdatain = 32'hCAFEBABE;
+    MDRin = 1; #10; MDRin = 0;
+    MDRout = 1; #10;
+    $display("Bus = %h (expect CAFEBABE)", BusMuxOut);
+    MDRout = 0;
+
+    $display("=== Phase 1 testing complete ===");
+    $finish;
+end
+
+endmodule
+
