@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
 
-module mdr_register (
+module mdr_reg (
 	input wire [31:0] BusMuxOut,
 	input wire clk,
 	input wire clr,

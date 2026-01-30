@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
 
-module pc_register #(parameter INIT = 32'h0)(
+module pc_reg #(parameter INIT = 32'h0)(
 	input wire [31:0] D,
 	input wire clk,
 	input	wire clr,
