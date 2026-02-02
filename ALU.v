@@ -2,14 +2,14 @@
 `define AND 0
 `define OR 1
 `define NOT 2
-`define SLL 3
-`define SRL 4
-`define SRA 5
-`define ADD 6
-`define SUB 7
-`define MUL 8
-`define DIV 9
-`define NEG 10
+`define SLL 8
+`define SRL 9
+`define SRA 10
+`define ADD 4
+`define SUB 5
+`define MUL 6
+`define DIV 7
+`define NEG 3
 `define ROR 11
 `define ROL 12
 
@@ -24,16 +24,20 @@ module ALU (
 	wire [31:0] or_result;
 	wire [31:0] not_result;
 	wire [31:0] neg_result;
-	wire carry;
-	wire [31:0] add_result;
-	wire [31:0] sub_result;
+	wire c_out;
+	wire c_in;
+	wire [31:0] add_sub_result;
 	wire [63:0] mul_result;
 	wire [63:0] div_result;
+	wire [31:0] RB_sub;
+	
+	assign RB_sub = ALU_op[`SUB] ? ~RB : RB;
+	assign cin = ALU_op[`SUB];
 	
 	and_gate and_instance (RA, RB, and_result);
 	or_gate or_instance (RA, RB, or_result);
 	negate neg (RA, neg_result);
-	full_adder add (RA, RB, 1'd0, carry, add_result);
+	CLA_32 add_sub (RA, RB_sub, c_in, add_sub_result, carry);
 	not_gate not_instance (RA, not_result);
 	div div (RA, RB, div_result[63:32], div_result[31:0]);
 	mult_32b mul (RA, RB, mul_result);
@@ -54,11 +58,9 @@ module ALU (
 		else if (ALU_op[`NEG]) begin
 			RZ[31:0] = neg_result;
 		end
-		else if (ALU_op[`ADD]) begin
+		else if (ALU_op[`ADD] || ALU_op[`SUB]) begin
 			RZ[31:0] = add_result;
-		end
-		else if (ALU_op[`SUB]) begin
-			RZ[31:0] = sub_result;
+			RZ[63:32] = 32'b0;
 		end
 		else if (ALU_op[`MUL]) begin
 			RZ = mul_result;
