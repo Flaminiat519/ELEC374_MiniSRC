@@ -18,6 +18,36 @@ module data_path(
     input wire IRin, IRout,
     input wire Yin, Yout,
 
+	wire [31:0] BusMux_R0;
+	wire [31:0] BusMux_R1;
+	wire [31:0] BusMux_R2;
+	wire [31:0] BusMux_R3;
+	wire [31:0] BusMux_R4;
+	wire [31:0] BusMux_R5;
+	wire [31:0] BusMux_R6;
+	wire [31:0] BusMux_R7;
+	wire [31:0] BusMux_R8;
+	wire [31:0] BusMux_R9;
+	wire [31:0] BusMux_R10;
+	wire [31:0] BusMux_R11;
+	wire [31:0] BusMux_R12;
+	wire [31:0] BusMux_R13;
+	wire [31:0] BusMux_R14;
+	wire [31:0] BusMux_R15;
+	wire [31:0] BusMux_HI;
+	wire [31:0] BusMux_LO;
+	wire [31:0] BusMux_ZHI;
+	wire [31:0] BusMux_ZLO;
+	wire [31:0] BusMux_PC;
+	wire [31:0] BusMux_MDR;
+	wire [31:0] BusMux_MAR;
+	wire [31:0] BusMux_InPort;
+	wire [31:0] BusMux_C;
+	wire [31:0] BusMux_Y;
+	wire [31:0] BusMux_IR;
+	wire [4:0] Mux_Select;
+	wire [31:0] Mux_Out;
+
     output wire [31:0] BusMuxOut
 
     //Registers
@@ -28,23 +58,23 @@ module data_path(
     
     wire [63:0] ALU_Data;
 
-    register RA (Mux_Out, Clock, Clear, R2in, BusMux_R2);
-	register RB (Mux_Out, Clock, Clear, R2in, BusMux_R2);
-	register R2 (Mux_Out, Clock, Clear, R2in, BusMux_R2);
-	register R4 (Mux_Out, Clock, Clear, R4in, BusMux_R4);
-	register R5 (Mux_Out, Clock, Clear, R5in, BusMux_R5);
-	register R6 (Mux_Out, Clock, Clear, R6in, BusMux_R6);
-	register R7 (Mux_Out, Clock, Clear, R7in, BusMux_R7);
+	register RA (BusMuxOut, Clock, Clear, R2in, BusMux_RA);
+	register RB (BusMuxOut, Clock, Clear, R2in, BusMux_RB);
+	register R2 (BusMuxOut, Clock, Clear, R2in, BusMux_R2);
+	register R4 (BusMuxOut, Clock, Clear, R4in, BusMux_R4);
+	register R5 (BusMuxOut, Clock, Clear, R5in, BusMux_R5);
+	register R6 (BusMuxOut, Clock, Clear, R6in, BusMux_R6);
+	register R7 (BusMuxOut, Clock, Clear, R7in, BusMux_R7);
 
-	register Y (Mux_Out, Clock, Clear, Yin, BusMux_Y);
-    register HI (Mux_Out, Clock, Clear, HIin, BusMux_HI);
-	register LO (Mux_Out, Clock, Clear, LOin, BusMux_LO);
+	register Y (BusMuxOut, Clock, Clear, Yin, BusMux_Y);
+    register HI (BusMuxOut, Clock, Clear, HIin, BusMux_HI);
+	register LO (BusMuxOut, Clock, Clear, LOin, BusMux_LO);
 	register ZHI (ALU_Data[63:32], Clock, Clear, ZHIin, BusMux_ZHI);
 	register ZLO (ALU_Data[31:0], Clock, Clear, ZLOin, BusMux_ZLO);
-	register MAR (Mux_Out, Clock, Clear, MARin, BusMux_MAR);
-	pc_reg PC (Mux_Out, Clock, Clear, IncPC, PCin, BusMux_PC);
-	register IR (Mux_Out, Clock, Clear, IRin, BusMux_IR);
-	mdr_reg MDR (Mux_Out, Clock, Clear, Read, MDRin, MDatain, BusMux_MDR);	
+	register MAR (BusMuxOut, Clock, Clear, MARin, BusMux_MAR);
+	pc_reg PC (BusMuxOut, Clock, Clear, IncPC, PCin, BusMux_PC);
+	register IR (BusMuxOut, Clock, Clear, IRin, BusMux_IR);
+	mdr_reg MDR (BusMuxOut, Clock, Clear, Read, MDRin, MDatain, BusMux_MDR);	
    
     always @(posedge clock or posedge clear) begin
         if (clear) begin
