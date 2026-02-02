@@ -27,15 +27,15 @@ always @ (*) begin
     for (i=0; i<n; i=i+1) begin
         if (!qp[i]) begin
             if (!qp[i+1])
-                pp[i] = 64'b0;
+                pp[i>>1] = 64'b0;
             else
-                pp [i] = {{32{-m[31]}}, -m};
+                pp[i>>1] = {{32{-m[31]}}, -m};
         end
         else begin
             if (qp[i+1])
-                pp[i] = 64'b0;
+                pp[i>>1] = 64'b0;
             else
-                pp [i] = {{32{m[31]}}, m};
+                pp[i>>1] = {{32{m[31]}}, m};
         end
     end
 end
