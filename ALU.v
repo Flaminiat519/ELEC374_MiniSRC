@@ -16,7 +16,7 @@
 
 module ALU (
 	input wire [31:0] RA, RB,
-	input wire [12:0] ALU_op;
+	input wire [12:0] ALU_op,
 	output reg [63:0] RZ
 );
 
