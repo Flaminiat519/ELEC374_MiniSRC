@@ -32,12 +32,12 @@ module ALU (
 	wire [31:0] RB_sub;
 	
 	assign RB_sub = ALU_op[`SUB] ? ~RB : RB;
-	assign cin = ALU_op[`SUB];
+	assign c_in = ALU_op[`SUB];
 	
 	and_gate and_instance (RA, RB, and_result);
 	or_gate or_instance (RA, RB, or_result);
 	negate neg (RA, neg_result);
-	CLA_32 add_sub (RA, RB_sub, c_in, add_sub_result, carry);
+	CLA_32 add_sub (RA, RB_sub, c_in, add_sub_result, c_out);
 	not_gate not_instance (RA, not_result);
 	div div (RA, RB, div_result[63:32], div_result[31:0]);
 	mult_32b mul (RA, RB, mul_result);
@@ -59,7 +59,7 @@ module ALU (
 			RZ[31:0] = neg_result;
 		end
 		else if (ALU_op[`ADD] || ALU_op[`SUB]) begin
-			RZ[31:0] = add_result;
+			RZ[31:0] = add_sub_result;
 			RZ[63:32] = 32'b0;
 		end
 		else if (ALU_op[`MUL]) begin
