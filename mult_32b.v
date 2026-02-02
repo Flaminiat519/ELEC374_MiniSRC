@@ -1,6 +1,6 @@
 module mult_32b #(parameter n = 32)(
     input [n-1:0] m,q,
-    output [2*n-1:0] result
+    output reg [2*n-1:0] result
 );
 //create q prime as a valid wire to be used
 //concatinate q and 0 to make q prime
@@ -10,10 +10,11 @@ wire [n:0] qp = {q,1'b0};
 //this is to store the partial products
 //first parameter is bits of q + m
 //second is bits of q
-reg [2*n-1:0] pp [n-1:0]
+reg [2*n-1:0] pp [n-1:0];
 
 //declare integer variable for for-loop
 integer i;
+integer j;
 //create for loop to itereate through qp
 //and assign booth's!
 
@@ -42,8 +43,9 @@ end
 //adding all of the partial products together to
 //get the final sum
 always @(*) begin
+	result = {2*n{1'b0}};
     for (j = 0; j<n; j=j+1) begin
-        result = result += pp[j>>1];
+        result = result + pp[j];
     end
 end
 

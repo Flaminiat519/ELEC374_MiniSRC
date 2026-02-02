@@ -11,11 +11,11 @@ reg [n-1:0] M;
 integer i;
 
 always @(*) begin
-	A = '0; //Set A to 0
+	A = 0; //Set A to 0
 	Q = dividend;
 	M = divisor;
 	
-	for(i = 0; i < n; i++) 
+	for(i = 0; i < n; i = i + 1) 
 	begin
 		//Shift A and Q by 1 bit
 		{A, Q} = {A, Q} << 1;
