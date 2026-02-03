@@ -1,6 +1,10 @@
+//32-bit and gate
 module and_gate (
+    //define 32-bit inputs and output
     input [31:0] x,y,
     output [31:0] z
 );
-assign z = x & y; //AND operation
+//AND operation
+assign z = x & y; 
+    
 endmodule 
