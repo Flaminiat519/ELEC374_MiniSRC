@@ -1,26 +1,36 @@
 // Non-Restoring Division Algorithm
 module div #(parameter n = 32)(
+    //define 32-bit input and output
     input  [n - 1:0] dividend, divisor,
     output reg [n - 1:0] remainder, quotient
 );
 
-    reg signed [n:0] A;      // remainder
-    reg [n-1:0] Q;           // quotient
-    reg [n-1:0] M;           // divisor
+    //define intermediate register for the remainder
+    reg signed [n:0] A;
+    //define intermediate register for the quotient
+    reg [n-1:0] Q;  
+    //define intermediate register for the divisor
+    reg [n-1:0] M;    
     integer i;
 
+    //use always statement to compute the algorithm
     always @(*) begin
-        A = 0;               // Set A to 0
+        //set A register to 0
+        A = 0;               
+        //set Q to the dividend input
         Q = dividend;
+        //set M to the divisor input
         M = divisor;
-        
+
         for (i = 0; i < n; i = i + 1) begin
             // Shift A and Q left by 1 bit
             {A, Q} = {A, Q} << 1;
 
-            if (A >= 0) begin        // if A is positive, subtract M
+            // if A is positive, subtract M
+            if (A >= 0) begin        
                 A = A - M;
-            end else begin           // if A is negative, add M
+            // if A is negative, add M
+            end else begin           
                 A = A + M;
             end
             
