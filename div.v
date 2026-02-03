@@ -8,12 +8,23 @@ module div #(parameter n = 32)(
 reg signed [n:0] A; //remainder
 reg [n-1:0] Q; //quotient
 reg [n-1:0] M;
+reg [n-1:0] Q_mag; //Magnitude of M
+
+//Sign of Q and A
+reg sign_Q:
+reg sign_A;
+
 integer i;
 
 always @(*) begin
+	sign_Q = dividend[n-1] ^ divsor[n-1];
+	sign_r = dividend[n-1];
+	
+	Q_mag = dividend[n-1] ? -dividend : dividend;
+	M = divisor[n-1] ? divisor : divisor;
+	
 	A = 0; //Set A to 0
-	Q = dividend;
-	M = divisor;
+	Q = Q_mag;
 	
 	for(i = 0; i < n; i = i + 1) 
 	begin
@@ -36,7 +47,7 @@ always @(*) begin
 		A = A + M;
 	end
 	
-	quotient = Q;
-	remainder = A[n-1:0];
+	quotient = sign_Q ? -Q : Q; //Set remainder based off sign
+	remainder = sign_A ? -A[n-1:0] : A[n-1:0];
 end
 endmodule
