@@ -26,6 +26,6 @@ module CLA_4(
 	full_adder fa0 (a[0], b[0], carry[0], s[0], carry_outs[0]);
 	full_adder fa1 (a[1], b[1], carry[1], s[1], carry_outs[1]);
 	full_adder fa2 (a[2], b[2], carry[2], s[2], carry_outs[2]);
-	full_adder fa3 (a[3], b[3], carry[3], s[3], carry_outs[3]);\
+	full_adder fa3 (a[3], b[3], carry[3], s[3], carry_outs[3]);
 	
 endmodule
