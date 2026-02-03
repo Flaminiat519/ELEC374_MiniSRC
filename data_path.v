@@ -29,22 +29,16 @@ module data_path (
 
     output wire [31:0] BusMuxOut
 );
-
-    // =======================
     // Internal wires for registers
-    // =======================
     wire [31:0] R0, RA, RB, R1, R2, R3, R4, R5, R6, R7;
     wire [31:0] R8, R9, R10, R11, R12, R13, R14, R15;
     wire [31:0] HI, LO, Z, PC, MAR, MDR, IR, Y;
 
-    wire [31:0] Bus; // Shared bus
+    wire [31:0] Bus;
 
-    // =======================
     // ALU
-    // =======================
     wire [63:0] ALU_Data;
     wire [12:0] alu_op;
-
     ALU alu (
         .RA(Y),
         .RB(Bus),
@@ -52,20 +46,10 @@ module data_path (
         .RZ(ALU_Data)
     );
 
-    // =======================
-    // Z REGISTER
-    // =======================
-    register Z_reg (
-        .clear(clear),
-        .clock(clock),
-        .enable(Zin),
-        .BusMuxIn(ALU_Data[31:0]),
-        .BusMuxOut(Z)
-    );
+    //Z EGISTER
+    register Z_reg (.clear(clear),.clock(clock),.enable(Zin),.BusMuxIn(ALU_Data[31:0]),.BusMuxOut(Z));
 
-    // =======================
-    // General registers
-    // =======================
+    //Gen registers
     register R0_reg  (.clear(clear), .clock(clock), .enable(R0in),  .BusMuxIn(Bus), .BusMuxOut(R0));
     register RA_reg  (.clear(clear), .clock(clock), .enable(RAin),  .BusMuxIn(Bus), .BusMuxOut(RA));
     register RB_reg  (.clear(clear), .clock(clock), .enable(RBin),  .BusMuxIn(Bus), .BusMuxOut(RB));
@@ -85,37 +69,18 @@ module data_path (
     register R14_reg (.clear(clear), .clock(clock), .enable(R14in), .BusMuxIn(Bus), .BusMuxOut(R14));
     register R15_reg (.clear(clear), .clock(clock), .enable(R15in), .BusMuxIn(Bus), .BusMuxOut(R15));
 
-    // =======================
-    // Special registers
-    // =======================
+    //Special registers
     register HI_reg  (.clear(clear), .clock(clock), .enable(HIin),  .BusMuxIn(ALU_Data[63:32]), .BusMuxOut(HI));
     register LO_reg  (.clear(clear), .clock(clock), .enable(LOin),  .BusMuxIn(ALU_Data[31:0]),  .BusMuxOut(LO));
     register Y_reg   (.clear(clear), .clock(clock), .enable(Yin),   .BusMuxIn(Bus),             .BusMuxOut(Y));
     register IR_reg  (.clear(clear), .clock(clock), .enable(IRin),  .BusMuxIn(Bus),             .BusMuxOut(IR));
     register MAR_reg (.clear(clear), .clock(clock), .enable(MARin), .BusMuxIn(Bus),             .BusMuxOut(MAR));
 
-    pc_reg PC_reg (
-        .D(Bus),
-        .clk(clock),
-        .clr(clear),
-        .increment(IncPC),
-        .enable(PCin),
-        .Q(PC)
-    );
+    pc_reg PC_reg (.D(Bus),.clk(clock),.clr(clear),.increment(IncPC),.enable(PCin),.Q(PC));
 
-    mdr_reg MDR_reg (
-        .BusMuxIn(Bus),
-        .clk(clock),
-        .clr(clear),
-        .Read(Read),
-        .MDRin(MDRin),
-        .MDAtain(MDatain),
-        .Q(MDR)
-    );
+    mdr_reg MDR_reg (.BusMuxIn(Bus),.clk(clock),.clr(clear),.Read(Read),.MDRin(MDRin),.MDAtain(MDatain),.Q(MDR));
 
-    // =======================
-    // BUS MULTIPLEXER
-    // =======================
+    //BusMux
     Bus BUS (
         .R0(R0), .RA(RA), .RB(RB), .R1(R1), .R2(R2), .R3(R3), .R4(R4), .R5(R5), .R6(R6), .R7(R7),
         .R8(R8), .R9(R9), .R10(R10), .R11(R11), .R12(R12), .R13(R13), .R14(R14), .R15(R15),
@@ -131,6 +96,6 @@ module data_path (
         .BusMuxOut(Bus)
     );
 
-    assign BusMuxOut = Bus; // external output
+    assign BusMuxOut = Bus;
 
 endmodule
