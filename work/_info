@@ -8,27 +8,112 @@ z2
 !i10f 100
 cModel Technology
 dC:/intelFPGA_lite/18.1
-vBus
-Z0 !s110 1769728534
+vALU
+Z0 !s110 1770081510
 !i10b 1
-!s100 ?KZBGKX2`IG6@YC1kZ^hG3
-Iig53Wf17F3kbick7EB^?n2
+!s100 O9Jd1[fEEOfLOkT=KTo=D0
+IQQCRB0DT7a?W[Qzddo0iQ3
 Z1 VDg1SIo80bB@j0V0VzS_@n1
 Z2 dC:/Users/flami/Documents/ELEC374_MiniSRC
-w1769728325
-Z3 8C:/Users/flami/Documents/ELEC374_MiniSRC/bus.v
-Z4 FC:/Users/flami/Documents/ELEC374_MiniSRC/bus.v
-L0 1
-Z5 OV;L;10.5b;63
+Z3 w1770078320
+8C:/Users/flami/Documents/ELEC374_MiniSRC/ALU.v
+FC:/Users/flami/Documents/ELEC374_MiniSRC/ALU.v
+L0 17
+Z4 OV;L;10.5b;63
 r1
 !s85 0
 31
-Z6 !s108 1769728534.000000
-Z7 !s107 C:/Users/flami/Documents/ELEC374_MiniSRC/bus.v|
-Z8 !s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/bus.v|
+Z5 !s108 1770081510.000000
+!s107 C:/Users/flami/Documents/ELEC374_MiniSRC/ALU.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/ALU.v|
 !i113 1
-Z9 o-work work
-Z10 tCvgOpt 0
+Z6 o-work work
+Z7 tCvgOpt 0
+n@a@l@u
+valu_tb
+R0
+!i10b 1
+!s100 E[MWNIl2Q>I9DK<cooN6M0
+IPeeQP6RKJ]>14Dd[7`5VI3
+R1
+R2
+Z8 w1769994479
+8C:/Users/flami/Documents/ELEC374_MiniSRC/alu_tb.v
+FC:/Users/flami/Documents/ELEC374_MiniSRC/alu_tb.v
+L0 3
+R4
+r1
+!s85 0
+31
+R5
+!s107 C:/Users/flami/Documents/ELEC374_MiniSRC/alu_tb.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/alu_tb.v|
+!i113 1
+R6
+R7
+vand_gate
+R0
+!i10b 1
+!s100 hL>=P1l0S6SzSffPTdAeA2
+IM`9WE5d]V<`o8jVmO1Q<U3
+R1
+R2
+R3
+8C:/Users/flami/Documents/ELEC374_MiniSRC/and_gate.v
+FC:/Users/flami/Documents/ELEC374_MiniSRC/and_gate.v
+L0 1
+R4
+r1
+!s85 0
+31
+R5
+!s107 C:/Users/flami/Documents/ELEC374_MiniSRC/and_gate.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/and_gate.v|
+!i113 1
+R6
+R7
+vand_tb
+Z9 !s110 1770081511
+!i10b 1
+!s100 z=6XcL::A?ZPlPJ0BIBMV0
+IB;`I4h6l@?PNQLY184o8k3
+R1
+R2
+w1770081505
+Z10 8C:/Users/flami/Documents/ELEC374_MiniSRC/and_tb.v
+Z11 FC:/Users/flami/Documents/ELEC374_MiniSRC/and_tb.v
+L0 2
+R4
+r1
+!s85 0
+31
+R5
+Z12 !s107 C:/Users/flami/Documents/ELEC374_MiniSRC/and_tb.v|
+Z13 !s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/and_tb.v|
+!i113 1
+R6
+R7
+vBus
+R9
+!i10b 1
+!s100 Lo4W1k9OfoD]ak_Q1<Fb03
+I61`LJM?TU4U8f91LOe:Qk0
+R1
+R2
+R8
+Z14 8C:/Users/flami/Documents/ELEC374_MiniSRC/bus.v
+Z15 FC:/Users/flami/Documents/ELEC374_MiniSRC/bus.v
+L0 1
+R4
+r1
+!s85 0
+31
+Z16 !s108 1770081511.000000
+Z17 !s107 C:/Users/flami/Documents/ELEC374_MiniSRC/bus.v|
+Z18 !s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/bus.v|
+!i113 1
+R6
+R7
 n@bus
 vbus
 !s110 1769727626
@@ -38,147 +123,381 @@ IfXjEJX:k_H9SDQn[TcR5A1
 R1
 R2
 w1769727619
-R3
-R4
+R14
+R15
 L0 1
-R5
+R4
 r1
 !s85 0
 31
 !s108 1769727626.000000
-R7
-R8
+R17
+R18
 !i113 1
+R6
+R7
+vCLA_16
 R9
-R10
-vdata_path
-R0
 !i10b 1
-!s100 6>:U9OB6LVfOJ5n[3zWfc2
-I:NDQBW5aJQXMgkJ[zh>gX0
+!s100 @?`lM=MPcVbP^Alz[J^N?1
+INam9dojYUmaGkbWeOSH810
 R1
 R2
-w1769728333
-8C:/Users/flami/Documents/ELEC374_MiniSRC/data_path.v
-FC:/Users/flami/Documents/ELEC374_MiniSRC/data_path.v
+R3
+8C:/Users/flami/Documents/ELEC374_MiniSRC/CLA_16.v
+FC:/Users/flami/Documents/ELEC374_MiniSRC/CLA_16.v
 L0 1
-R5
+R4
 r1
 !s85 0
 31
+R16
+!s107 C:/Users/flami/Documents/ELEC374_MiniSRC/CLA_16.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/CLA_16.v|
+!i113 1
 R6
+R7
+n@c@l@a_16
+vCLA_32
+R9
+!i10b 1
+!s100 Pgk1EH>]0bbm4WIjI=Yo]1
+IdBJSnhkN4REKSQeQ:E<191
+R1
+R2
+R3
+8C:/Users/flami/Documents/ELEC374_MiniSRC/CLA_32.v
+FC:/Users/flami/Documents/ELEC374_MiniSRC/CLA_32.v
+L0 1
+R4
+r1
+!s85 0
+31
+R16
+!s107 C:/Users/flami/Documents/ELEC374_MiniSRC/CLA_32.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/CLA_32.v|
+!i113 1
+R6
+R7
+n@c@l@a_32
+vCLA_4
+R9
+!i10b 1
+!s100 4ecjC4B:k287;D<c]EDg70
+Ii^hgDhUoH4`_AJW>Aif?O0
+R1
+R2
+R3
+8C:/Users/flami/Documents/ELEC374_MiniSRC/CLA_4.v
+FC:/Users/flami/Documents/ELEC374_MiniSRC/CLA_4.v
+L0 1
+R4
+r1
+!s85 0
+31
+R16
+!s107 C:/Users/flami/Documents/ELEC374_MiniSRC/CLA_4.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/CLA_4.v|
+!i113 1
+R6
+R7
+n@c@l@a_4
+vdata_path
+R9
+!i10b 1
+!s100 ;Sa0W<?=9[bhAAJn^CS<71
+I=n1HXWiQjaBCD?KM9^b]83
+R1
+R2
+w1770081226
+8C:/Users/flami/Documents/ELEC374_MiniSRC/data_path.v
+FC:/Users/flami/Documents/ELEC374_MiniSRC/data_path.v
+L0 3
+R4
+r1
+!s85 0
+31
+R16
 !s107 C:/Users/flami/Documents/ELEC374_MiniSRC/data_path.v|
 !s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/data_path.v|
 !i113 1
-R9
-R10
-vmdr_mux
-R0
+R6
+R7
+vdatapath_and_tb
+!s110 1770080626
 !i10b 1
-!s100 WU>PXPGaH@<WgfRO0addA2
-Inzb8_1;N^D?@P]do^oTSO3
+!s100 1n]_CJ<Bj7be?JM;3o2hg2
+IC^a1?eMbJT0<JI9O50lO12
 R1
 R2
-w1769724328
+w1770080621
+R10
+R11
+L0 2
+R4
+r1
+!s85 0
+31
+!s108 1770080626.000000
+R12
+R13
+!i113 1
+R6
+R7
+vdatapath_tb
+!s110 1770078883
+!i10b 1
+!s100 YonPXT9^SI7Ri`E?o1Dc^1
+I1?YFikMg99BE`7ag^jn_11
+R1
+R2
+w1770078784
+R10
+R11
+L0 3
+R4
+r1
+!s85 0
+31
+!s108 1770078883.000000
+R12
+R13
+!i113 1
+R6
+R7
+vdiv
+R9
+!i10b 1
+!s100 :;F>IbK?6Y@:be<B[DN5m0
+IUo:JN;?8lNo_2BenhBHko3
+R1
+R2
+R3
+8C:/Users/flami/Documents/ELEC374_MiniSRC/div.v
+FC:/Users/flami/Documents/ELEC374_MiniSRC/div.v
+L0 3
+R4
+r1
+!s85 0
+31
+R16
+!s107 C:/Users/flami/Documents/ELEC374_MiniSRC/div.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/div.v|
+!i113 1
+R6
+R7
+vfull_adder
+R9
+!i10b 1
+!s100 fBUmZUezFJ`zSb`?Ef4ab3
+IOgOfM_hmBY1E]:O@32?bD3
+R1
+R2
+R3
+8C:/Users/flami/Documents/ELEC374_MiniSRC/full_adder.v
+FC:/Users/flami/Documents/ELEC374_MiniSRC/full_adder.v
+L0 1
+R4
+r1
+!s85 0
+31
+R16
+!s107 C:/Users/flami/Documents/ELEC374_MiniSRC/full_adder.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/full_adder.v|
+!i113 1
+R6
+R7
+vmdr_mux
+R9
+!i10b 1
+!s100 1kXDb>P]M3h<P69G>Q]Y=1
+ITAlizdDjiFRoGgCEm=8Zn0
+R1
+R2
+R3
 8C:/Users/flami/Documents/ELEC374_MiniSRC/mdr_mux.v
 FC:/Users/flami/Documents/ELEC374_MiniSRC/mdr_mux.v
 L0 3
-R5
+R4
 r1
 !s85 0
 31
-R6
+R16
 !s107 C:/Users/flami/Documents/ELEC374_MiniSRC/mdr_mux.v|
 !s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/mdr_mux.v|
 !i113 1
-R9
-R10
+R6
+R7
 vmdr_reg
-R0
+R9
 !i10b 1
-!s100 C7<WgS8hb8CPE_V<QB@d`1
-IFcDAgIzKkk@K8C_Og>WdJ0
+!s100 LJoRXCN3f`a=V=>D[Wlm72
+IWLnoSbizBB1BenR>n8Q191
 R1
 R2
-w1769727590
-Z11 8C:/Users/flami/Documents/ELEC374_MiniSRC/mdr_reg.v
-Z12 FC:/Users/flami/Documents/ELEC374_MiniSRC/mdr_reg.v
+w1770079738
+Z19 8C:/Users/flami/Documents/ELEC374_MiniSRC/mdr_reg.v
+Z20 FC:/Users/flami/Documents/ELEC374_MiniSRC/mdr_reg.v
 L0 3
-R5
+R4
 r1
 !s85 0
 31
-R6
-Z13 !s107 C:/Users/flami/Documents/ELEC374_MiniSRC/mdr_reg.v|
-Z14 !s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/mdr_reg.v|
+R16
+Z21 !s107 C:/Users/flami/Documents/ELEC374_MiniSRC/mdr_reg.v|
+Z22 !s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/mdr_reg.v|
 !i113 1
-R9
-R10
+R6
+R7
 vmdr_register
-Z15 !s110 1769727553
+Z23 !s110 1769727553
 !i10b 1
 !s100 fARkZ`b=kL?@5zPm?[ela3
 Ik0<1Ll_NEIb1Rof^QdHzc0
 R1
 R2
 w1769724397
-R11
-R12
+R19
+R20
 L0 3
-R5
+R4
 r1
 !s85 0
 31
-Z16 !s108 1769727553.000000
-R13
-R14
+Z24 !s108 1769727553.000000
+R21
+R22
 !i113 1
+R6
+R7
+vmult_32b
 R9
-R10
+!i10b 1
+!s100 ncKCnOSTg[K5X@afG0O2=1
+IPN2WdUIZWkc0AEK[j>F[32
+R1
+R2
+R3
+8C:/Users/flami/Documents/ELEC374_MiniSRC/mult_32b.v
+FC:/Users/flami/Documents/ELEC374_MiniSRC/mult_32b.v
+L0 1
+R4
+r1
+!s85 0
+31
+R16
+!s107 C:/Users/flami/Documents/ELEC374_MiniSRC/mult_32b.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/mult_32b.v|
+!i113 1
+R6
+R7
+vnegate
+R9
+!i10b 1
+!s100 RL315bDBXUH_zVWi5EY=B2
+I2?QUXoh97_B`NCBR^bznD1
+R1
+R2
+R3
+8C:/Users/flami/Documents/ELEC374_MiniSRC/negate.v
+FC:/Users/flami/Documents/ELEC374_MiniSRC/negate.v
+L0 1
+R4
+r1
+!s85 0
+31
+R16
+!s107 C:/Users/flami/Documents/ELEC374_MiniSRC/negate.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/negate.v|
+!i113 1
+R6
+R7
+vnot_gate
+R9
+!i10b 1
+!s100 S<05FEAO7?oc:PmecXU0A1
+I_8bb2U^;_hnTSG3NPEF4j1
+R1
+R2
+R3
+8C:/Users/flami/Documents/ELEC374_MiniSRC/not_gate.v
+FC:/Users/flami/Documents/ELEC374_MiniSRC/not_gate.v
+L0 1
+R4
+r1
+!s85 0
+31
+R16
+!s107 C:/Users/flami/Documents/ELEC374_MiniSRC/not_gate.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/not_gate.v|
+!i113 1
+R6
+R7
+vor_gate
+R9
+!i10b 1
+!s100 2oQlg>k6LCAD5YUOm9jG<1
+IVDzg@FE0i`Z<MOHMLzHXV2
+R1
+R2
+R3
+8C:/Users/flami/Documents/ELEC374_MiniSRC/or_gate.v
+FC:/Users/flami/Documents/ELEC374_MiniSRC/or_gate.v
+L0 1
+R4
+r1
+!s85 0
+31
+R16
+!s107 C:/Users/flami/Documents/ELEC374_MiniSRC/or_gate.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/or_gate.v|
+!i113 1
+R6
+R7
 vpc_reg
-R0
+Z25 !s110 1770081512
 !i10b 1
 !s100 gJH4a;BGL;dH@YSCm>3Wl0
 I_2NCZVGIWeEY2gIm[dfUz3
 R1
 R2
 w1769727587
-Z17 8C:/Users/flami/Documents/ELEC374_MiniSRC/pc_reg.v
-Z18 FC:/Users/flami/Documents/ELEC374_MiniSRC/pc_reg.v
+Z26 8C:/Users/flami/Documents/ELEC374_MiniSRC/pc_reg.v
+Z27 FC:/Users/flami/Documents/ELEC374_MiniSRC/pc_reg.v
 L0 3
-R5
+R4
 r1
 !s85 0
 31
-R6
-Z19 !s107 C:/Users/flami/Documents/ELEC374_MiniSRC/pc_reg.v|
-Z20 !s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/pc_reg.v|
+R16
+Z28 !s107 C:/Users/flami/Documents/ELEC374_MiniSRC/pc_reg.v|
+Z29 !s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/pc_reg.v|
 !i113 1
-R9
-R10
+R6
+R7
 vpc_register
-R15
+R23
 !i10b 1
 !s100 EZPo^ZYkB_h5oh2JGco;B2
 IfPQialJi7b5HBheQz1FE32
 R1
 R2
 w1769724529
-R17
-R18
+R26
+R27
 L0 3
-R5
+R4
 r1
 !s85 0
 31
-R16
-R19
-R20
+R24
+R28
+R29
 !i113 1
-R9
-R10
+R6
+R7
 vregister
-R0
+R25
 !i10b 1
 !s100 e:d@8E16F1L^W=SYaS9j83
 I0WWGNO73iFeKfC`4S^cgk2
@@ -188,37 +507,37 @@ w1769629897
 8C:/Users/flami/Documents/ELEC374_MiniSRC/register.v
 FC:/Users/flami/Documents/ELEC374_MiniSRC/register.v
 L0 3
-R5
+R4
 r1
 !s85 0
 31
-R6
+Z30 !s108 1770081512.000000
 !s107 C:/Users/flami/Documents/ELEC374_MiniSRC/register.v|
 !s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/register.v|
 !i113 1
-R9
-R10
+R6
+R7
 vregister_tb
-R0
+R25
 !i10b 1
 !s100 bGQBdSc^kZ;4d:kc5QoRH0
-InG^4RY@4R_Z>PDH;CLMjH1
+I=]:FdBLKbIh>ni3QOQ31]2
 R1
 R2
 w1769728350
-8C:\Users\flami\Documents\ELEC374_MiniSRC\register_tb.v
-FC:\Users\flami\Documents\ELEC374_MiniSRC\register_tb.v
+Z31 8C:/Users/flami/Documents/ELEC374_MiniSRC/register_tb.v
+Z32 FC:/Users/flami/Documents/ELEC374_MiniSRC/register_tb.v
 L0 2
-R5
+R4
 r1
 !s85 0
 31
-R6
-!s107 C:\Users\flami\Documents\ELEC374_MiniSRC\register_tb.v|
-!s90 -reportprogress|300|-work|work|-stats=none|C:\Users\flami\Documents\ELEC374_MiniSRC\register_tb.v|
+R30
+!s107 C:/Users/flami/Documents/ELEC374_MiniSRC/register_tb.v|
+Z33 !s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/register_tb.v|
 !i113 1
-R9
-R10
+R6
+R7
 vtb_data_path
 !s110 1769727369
 !i10b 1
@@ -227,16 +546,16 @@ IFZ5aKD<2eXS:P7lJU1hBK3
 R1
 R2
 w1769726086
-8C:/Users/flami/Documents/ELEC374_MiniSRC/register_tb.v
-FC:/Users/flami/Documents/ELEC374_MiniSRC/register_tb.v
+R31
+R32
 L0 158
-R5
+R4
 r1
 !s85 0
 31
 !s108 1769727369.000000
 !s107 C:/Users/flami/Documents/ELEC374_MiniSRC/register_tb.v|
-!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/flami/Documents/ELEC374_MiniSRC/register_tb.v|
+R33
 !i113 1
-R9
-R10
+R6
+R7

@@ -1,100 +1,104 @@
-// and datapath_tb.v file: <This is the filename>
 `timescale 1ns/10ps
-module datapath_tb;
- reg PCout, Zlowout, MDRout, R5out, R6out; // add any other signals to see in your simulation
- reg MARin, Zin, PCin, MDRin, IRin, Yin;
- reg IncPC, Read, AND, R2in, R5in, R6in;
- reg Clock;
- reg [31:0] Mdatain;
- parameter Default = 4’b0000, Reg_load1a = 4’b0001, Reg_load1b = 4’b0010, Reg_load2a = 4’b0011,
- Reg_load2b = 4’b0100, Reg_load3a = 4’b0101, Reg_load3b = 4’b0110, T0 = 4’b0111,
- T1 = 4’b1000, T2 = 4’b1001, T3 = 4’b1010, T4 = 4’b1011, T5 = 4’b1100;
- reg [3:0] Present_state = Default;
-Datapath DUT(PCout, Zlowout, MDRout, R5out, R6out, MARin, Zin, PCin, MDRin, IRin, Yin, IncPC, Read, AND, R2in,
-R5in, R6in, Clock, Mdatain);
-// add test logic here
-initial
- begin
- Clock = 0;
- forever #10 Clock = ~ Clock;
-end
-always @(posedge Clock) // finite state machine; if clock rising-edge
- begin
- case (Present_state)
-Default : Present_state = Reg_load1a;
-Reg_load1a : Present_state = Reg_load1b;
-Reg_load1b : Present_state = Reg_load2a;
-Reg_load2a : Present_state = Reg_load2b;
-Reg_load2b : Present_state = Reg_load3a;
-Reg_load3a : Present_state = Reg_load3b;
-Reg_load3b : Present_state = T0;
-T0 : Present_state = T1;
-T1 : Present_state = T2;
-T2 : Present_state = T3;
-T3 : Present_state = T4;
-T4 : Present_state = T5;
- endcase
- end
+module and_tb;
 
-9
-always @(Present_state) // do the required job in each state
- begin
- case (Present_state) // assert the required signals in each clock cycle
-Default: begin
-PCout <= 0; Zlowout <= 0; MDRout <= 0; // initialize the signals
- R3out <= 0; R7out <= 0; MARin <= 0; Zin <= 0;
- PCin <=0; MDRin <= 0; IRin <= 0; Yin <= 0;
- IncPC <= 0; Read <= 0; AND <= 0;
- R2in <= 0; R5in <= 0; R6in <= 0; Mdatain <= 32’h00000000;
-end
-Reg_load1a: begin
-Mdatain <= 32’h00000034;
-Read = 0; MDRin = 0; // the first zero is there for completeness
-Read <= 1; MDRin <= 1; // Took out #15 for '1', as it may not be needed
-#15 Read <= 0; MDRin <= 0; // for your current implementation
-end
- Reg_load1b: begin
- MDRout <= 1; R5in <= 1;
- #15 MDRout <= 0; R5in <= 0; // initialize R5 with the value 0x34
-end
-Reg_load2a: begin
-Mdatain <= 32’h00000045;
-Read <= 1; MDRin <= 1;
-#15 Read <= 0; MDRin <= 0;
-end
- Reg_load2b: begin
- MDRout <= 1; R6in <= 1;
- #15 MDRout <= 0; R6in <= 0; // initialize R6 with the value 0x45
-end
-Reg_load3a: begin
-Mdatain <= 32’h00000067;
-Read <= 1; MDRin <= 1;
-#15 Read <= 0; MDRin <= 0;
-end
- Reg_load3b: begin
- MDRout <= 1; R2in <= 1;
- #15 MDRout <= 0; R2in <= 0; // initialize R2 with the value 0x67
-end
-T0: begin // see if you need to de-assert these signals
-PCout <= 1; MARin <= 1; IncPC <= 1; Zin <= 1;
-end
-T1: begin
-Zlowout <= 1; PCin <= 1; Read <= 1; MDRin <= 1;
-Mdatain <= 32’h112B0000; // opcode for “and R2, R5, R6”
-end
-T2: begin
-MDRout <= 1; IRin <= 1;
-10
-end
-T3: begin
-R5out <= 1; Yin <= 1;
-end
-T4: begin
-R6out <= 1; AND <= 1; Zin <= 1;
-end
-T5: begin
-Zlowout <= 1; R2in <= 1;
-end
- endcase
- end
+    // Clock
+    reg clock;
+
+    // Register write enables
+    reg R2in, R5in, R6in;
+    // Register outputs
+    reg R2out, R5out, R6out;
+    // Special signals
+    reg Yin, Zin;
+    reg Zout;
+
+    // ALU control
+    reg [12:0] ALU_op;
+
+    // Bus
+    wire [31:0] Bus;
+
+    // Register values
+    wire [31:0] R2, R5, R6;
+    wire [63:0] Z; // ALU output
+
+    // Data to load
+    reg [31:0] load_val;
+
+    // -----------------------
+    // Clock generation
+    // -----------------------
+    initial begin
+        clock = 0;
+        forever #10 clock = ~clock;
+    end
+
+    // -----------------------
+    // Registers
+    // -----------------------
+    register R5_reg(.clear(0), .clock(clock), .enable(R5in), .BusMuxIn(load_val), .BusMuxOut(R5));
+    register R6_reg(.clear(0), .clock(clock), .enable(R6in), .BusMuxIn(load_val), .BusMuxOut(R6));
+    register R2_reg(.clear(0), .clock(clock), .enable(R2in), .BusMuxIn(Bus), .BusMuxOut(R2));
+
+    // -----------------------
+    // ALU
+    // -----------------------
+    ALU alu_inst(
+        .RA(R5),
+        .RB(R6),
+        .ALU_op(ALU_op),
+        .RZ(Z)
+    );
+
+    // -----------------------
+    // Z register (stores ALU result)
+    // -----------------------
+    register Z_reg(.clear(0), .clock(clock), .enable(Zin), .BusMuxIn(Z[31:0]), .BusMuxOut());
+
+    // -----------------------
+    // Simple Bus module
+    // -----------------------
+    Bus bus_inst(
+        .R0(32'b0), .R1(32'b0), .R2(R2), .R3(32'b0), .R4(32'b0), .R5(R5), .R6(R6), .R7(32'b0),
+        .R8(32'b0), .R9(32'b0), .R10(32'b0), .R11(32'b0), .R12(32'b0), .R13(32'b0), .R14(32'b0), .R15(32'b0),
+        .HI(32'b0), .LO(32'b0), .Z(Z[31:0]), .PC(32'b0), .MAR(32'b0), .MDR(32'b0), .IR(32'b0), .Y(R5),
+        .R0out(0), .R1out(0), .R2out(R2out), .R3out(0), .R4out(0), .R5out(R5out), .R6out(R6out), .R7out(0),
+        .R8out(0), .R9out(0), .R10out(0), .R11out(0), .R12out(0), .R13out(0), .R14out(0), .R15out(0),
+        .HIout(0), .LOout(0), .Zout(Zout), .PCout(0), .MARout(0), .MDRout(0), .IRout(0), .Yout(0),
+        .BusMuxOut(Bus)
+    );
+
+    // -----------------------
+    // Test sequence
+    // -----------------------
+    initial begin
+        // Initialize
+        R2in = 0; R5in = 0; R6in = 0;
+        R2out = 0; R5out = 0; R6out = 0;
+        Yin = 0; Zin = 0; Zout = 0;
+        ALU_op = 0;
+        load_val = 0;
+
+        // Load R5 with 0xF0F0F0F0
+        #20 load_val = 32'hF0F0F0F0; R5in = 1;
+        #20 R5in = 0;
+
+        // Load R6 with 0x0FF00FF0
+        #20 load_val = 32'h0FF00FF0; R6in = 1;
+        #20 R6in = 0;
+
+        // Perform AND: R5 AND R6 -> Z
+        #20 ALU_op = 13'b1 << 0; // `AND` operation
+        R5out = 1; Yin = 1; // Put R5 on bus to ALU
+        R6out = 1; // Put R6 as second ALU input
+        Zin = 1;
+        #20 R5out = 0; R6out = 0; Yin = 0; Zin = 0;
+
+        // Move Z -> R2
+        Zout = 1; R2in = 1;
+        #20 Zout = 0; R2in = 0;
+
+        #50 $finish;
+    end
+
 endmodule
