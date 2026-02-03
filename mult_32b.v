@@ -17,11 +17,8 @@ module mult_32b #(parameter n = 32)(
 	//create for loop to itereate through qp
 	//and assign booth's!
 
-	//ASSIGNMENT TO COMPLETE
-
-	//shift each a bit over using i (like i always would)
-	//instead of pp[i], to pp[i>>1], shift operator
-	//if and e
+	//Loop to compute booth's and the
+	//relevant partial products
 	always @(*) begin
 		 for (i=0; i<n; i=i+1) begin
 			  if (!qp[i]) begin
