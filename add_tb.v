@@ -1,5 +1,7 @@
 `timescale 1ns/10ps
-module and_tb;
+
+
+module add_tb;
 
     // -----------------------
     // Clock
@@ -112,15 +114,15 @@ module and_tb;
         load_val = 0;
 
         // Load R5 = F0F0F0F0
-        #20 load_val = 32'hF0F0F0F0; R5in = 1;
+        #20 load_val = 32'd5; R5in = 1;
         #20 R5in = 0;
 
         // Load R6 = 0FF00FF0
-        #20 load_val = 32'h0FF00FF0; R6in = 1;
+        #20 load_val = 32'd4; R6in = 1;
         #20 R6in = 0;
 
         // AND operation
-        #20 ALU_op[0] = 13'b1;   // <-- AND opcode
+        #20 ALU_op[4] = 13'b1;   // <-- AND opcode
         Zin = 1;
         #20 Zin = 0;
 

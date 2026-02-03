@@ -1,5 +1,5 @@
 `timescale 1ns/10ps
-module and_tb;
+module or_tb;
 
     // -----------------------
     // Clock
@@ -120,7 +120,7 @@ module and_tb;
         #20 R6in = 0;
 
         // AND operation
-        #20 ALU_op[0] = 13'b1;   // <-- AND opcode
+        #20 ALU_op[1] = 13'b1;   // <-- AND opcode
         Zin = 1;
         #20 Zin = 0;
 
