@@ -1,12 +1,56 @@
 `timescale 1ns/10ps
 module and_tb;
 
+<<<<<<< Updated upstream
     reg clock;
+=======
+    // ---------------- Control signals ----------------
+    reg Zlowout, MDRout, R5out, R6out;
+    reg Zin, MDRin;
+    reg AND;
+    reg R2in, R5in, R6in;
+    reg Clock;
+
+    reg [31:0] Mdatain;
+
+    // ---------------- FSM states ----------------
+    parameter Default     = 4'b0000,
+              Reg_load1a  = 4'b0001,
+              Reg_load1b  = 4'b0010,
+              Reg_load2a  = 4'b0011,
+              Reg_load2b  = 4'b0100,
+              T0          = 4'b0101,
+              T1          = 4'b0110,
+              T2          = 4'b0111,
+              T3          = 4'b1000,
+              T4          = 4'b1001;
+
+    reg [3:0] Present_state = Default;
+
+    // ---------------- DUT ----------------
+    Datapath DUT (
+        .Zlowout(Zlowout),
+        .MDRout(MDRout),
+        .R5out(R5out),
+        .R6out(R6out),
+        .Zin(Zin),
+        .MDRin(MDRin),
+        .AND(AND),
+        .R2in(R2in),
+        .R5in(R5in),
+        .R6in(R6in),
+        .Clock(Clock),
+        .Mdatain(Mdatain)
+    );
+
+    // ---------------- Clock ----------------
+>>>>>>> Stashed changes
     initial begin
-        clock = 0;
-        forever #10 clock = ~clock;
+        Clock = 0;
+        forever #10 Clock = ~Clock;
     end
 
+<<<<<<< Updated upstream
     reg R2in, R5in, R6in;
     reg R2out, R5out, R6out;
     reg Zin, Zout;
@@ -52,12 +96,33 @@ module and_tb;
 
     initial begin
         //Init
-        R2in = 0; R5in = 0; R6in = 0;
-        R2out = 0; R5out = 0; R6out = 0;
-        Zin = 0; Zout = 0;
-        ALU_op = 0;
-        load_val = 0;
+=======
+    // ---------------- FSM sequencing ----------------
+    always @(posedge Clock) begin
+        case (Present_state)
+            Default    : Present_state <= Reg_load1a;
+            Reg_load1a : Present_state <= Reg_load1b;
+            Reg_load1b : Present_state <= Reg_load2a;
+            Reg_load2a : Present_state <= Reg_load2b;
+            Reg_load2b : Present_state <= T0;
+            T0         : Present_state <= T1;
+            T1         : Present_state <= T2;
+            T2         : Present_state <= T3;
+            T3         : Present_state <= T4;
+        endcase
+    end
 
+    // ---------------- Control logic ----------------
+    always @(Present_state) begin
+        // -------- default deassert --------
+        Zlowout = 0; MDRout = 0; R5out = 0; R6out = 0;
+        Zin = 0; MDRin = 0;
+        AND = 0;
+>>>>>>> Stashed changes
+        R2in = 0; R5in = 0; R6in = 0;
+        Mdatain = 32'h00000000;
+
+<<<<<<< Updated upstream
         //Load R5
         #20 load_val = 32'hF0F0F0F0; R5in = 1;
         #20 R5in = 0;
@@ -76,6 +141,50 @@ module and_tb;
         #20 Zout = 0; R2in = 0;
 
         #50 $finish;
+=======
+        case (Present_state)
+
+        // -------- Load R5 = 0x34 --------
+        Reg_load1a: begin
+            Mdatain = 32'h00000034;
+            MDRin   = 1;
+        end
+
+        Reg_load1b: begin
+            MDRout = 1;
+            R5in   = 1;
+        end
+
+        // -------- Load R6 = 0x45 --------
+        Reg_load2a: begin
+            Mdatain = 32'h00000045;
+            MDRin   = 1;
+        end
+
+        Reg_load2b: begin
+            MDRout = 1;
+            R6in   = 1;
+        end
+
+        // -------- T0–T2: symbolic fetch (no-op) --------
+        T0: begin end
+        T1: begin end
+        T2: begin end
+
+        // -------- T3: AND execute --------
+        T3: begin
+            AND = 1;
+            Zin = 1;
+        end
+
+        // -------- T4: writeback --------
+        T4: begin
+            Zlowout = 1;
+            R2in    = 1;
+        end
+
+        endcase
+>>>>>>> Stashed changes
     end
 
 endmodule
