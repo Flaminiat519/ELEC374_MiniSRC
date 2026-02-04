@@ -8,4 +8,4 @@ module rol (
 			temp = ((a << b) | (a >> (32 - b)));
 		end
 	assign z = temp;
-	
+endmodule
