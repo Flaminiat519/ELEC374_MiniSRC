@@ -31,6 +31,11 @@ module ALU (
 	wire [31:0] add_sub_result;
 	wire [63:0] mul_result;
 	wire [63:0] div_result;
+	wire [31:0] sll_result;
+	wire [31:0] srl_result;
+	wire [31:0] sra_result;
+	wire [31:0] ror_result;
+	wire [31:0] rol_result;
 	wire [31:0] RB_sub;
 
 	//check if sub is active, if so, make RB negative
@@ -46,6 +51,11 @@ module ALU (
 	not_gate not_instance (RA, not_result);
 	div div (RA, RB, div_result[63:32], div_result[31:0]);
 	mult_32b mul (RA, RB, mul_result);
+	rol rol_instance(RA, RB, rol_result);
+	ror ror_instance(RA, RB, ror_result);
+	sll sll_instance(RA, RB, sll_result);
+	sra sra_instance(RA, RB, sra_instance);
+	srl srl_instance(RA, RB, srl_result);
 	
 	//always statement to check which input component
 	//was selected, then sets RZ to the result
@@ -76,19 +86,24 @@ module ALU (
 			RZ = div_result;
 		end
 		else if (ALU_op[`SLL]) begin
-			RZ[31:0] = {RA[30:0], 1'b0};
+			RZ[31:0] = sll_result;
+			RZ[63:32] = 32'b0;
 		end
 		else if (ALU_op[`SRL]) begin
-			RZ[31:0] = {1'b0, RA[31:1]};
+			RZ[31:0] = srl_result;
+			RZ[63:32] = 32'b0;
 		end
 		else if (ALU_op[`SRA]) begin
-			RZ[31:0] = {RA[31], RA[31:1]};
+			RZ[31:0] = sra_result;
+			RZ[63:32] = 32'b0;
 		end
 		else if (ALU_op[`ROR]) begin
-			RZ[31:0] = {RA[0], RA[31:1]};
+			RZ[31:0] = ror_result;
+			RZ[63:32] = 32'b0;
 		end
 		else if (ALU_op[`ROL]) begin
-			RZ[31:0] = {RA[30:0], RA[31]};
+			RZ[31:0] = rol_result;
+			RZ[63:32] = 32'b0;
 		end
 	end
 	
