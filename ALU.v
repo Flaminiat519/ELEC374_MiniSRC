@@ -54,7 +54,7 @@ module ALU (
 	rol rol_instance(RA, RB, rol_result);
 	ror ror_instance(RA, RB, ror_result);
 	sll sll_instance(RA, RB, sll_result);
-	sra sra_instance(RA, RB, sra_instance);
+	sra sra_instance(RA, RB, sra_result);
 	srl srl_instance(RA, RB, srl_result);
 	
 	//always statement to check which input component
