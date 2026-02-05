@@ -4,15 +4,15 @@ module data_path (
     input wire clock,
     input wire clear,
 
-    // Register write enables
+    //Register write enables
     input wire R0in, RAin, RBin, R1in, R2in, R3in, R4in, R5in, R6in, R7in,
     input wire R8in, R9in, R10in, R11in, R12in, R13in, R14in, R15in,
 
-    // Register output enables
+    //Register output enables
     input wire R0out, RAout, RBout, R1out, R2out, R3out, R4out, R5out, R6out, R7out,
     input wire R8out, R9out, R10out, R11out, R12out, R13out, R14out, R15out,
 
-    // Special registers
+    //Special registers
     input wire HIin, HIout,
     input wire LOin, LOout,
     input wire Zin, Zout,
@@ -22,21 +22,21 @@ module data_path (
     input wire IRin, IRout,
     input wire Yin, Yout,
 
-    // External control
+    //External control
     input wire IncPC,
     input wire Read,
     input wire [31:0] MDatain,
 
     output wire [31:0] BusMuxOut
 );
-    // Internal wires for registers
+    //Internal wires for registers
     wire [31:0] R0, RA, RB, R1, R2, R3, R4, R5, R6, R7;
     wire [31:0] R8, R9, R10, R11, R12, R13, R14, R15;
     wire [31:0] HI, LO, Z, PC, MAR, MDR, IR, Y;
 
     wire [31:0] Bus;
 
-    // ALU
+    //ALU
     wire [63:0] ALU_Data;
     wire [12:0] alu_op;
     ALU alu (
