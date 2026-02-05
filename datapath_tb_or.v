@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
 
-module datapath_tb_and;
+module datapath_tb_or;
 
   //Signal declarations
   reg clock, clear;
@@ -149,7 +149,7 @@ module datapath_tb_and;
         deassert_all();
         //Read instruction, MDRin
         Read <= 1; MDRin <= 1;
-        MDatain <= 32'h112B0000;  //Opcode for "and R2, R5, R6"
+        MDatain <= 32'h132B0000;  //Opcode for "or R2, R5, R6"
       end
 
       T2: begin
@@ -160,15 +160,15 @@ module datapath_tb_and;
 
       T3: begin
         deassert_all();
-        //EXECUTE AND: R5out, Yin
+        //EXECUTE OR: R5out, Yin
         R5out <= 1; Yin <= 1;
       end
 
       T4: begin
         deassert_all();
-        //R6out, AND operation, Zin
+        //R6out, OR operation, Zin
         R6out <= 1; Zin <= 1;
-        force DUT.alu_op = (13'b1 << 0);  //AND index 0
+        force DUT.alu_op = (13'b1 << 1);  //OR index 1
       end
 
       T5: begin
