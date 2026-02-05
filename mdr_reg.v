@@ -27,8 +27,8 @@ module mdr_reg (
     .clear(clr),
     .clock(clk),
     .enable(MDRin),
-    .BusMuxOut(D),
-    .BusMuxIn(Q)
+    .BusMuxOut(Q),
+    .BusMuxIn(D)
 );
 
 endmodule
