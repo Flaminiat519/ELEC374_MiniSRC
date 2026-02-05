@@ -1,4 +1,4 @@
-`timescale 1ns/10ps
+/*`timescale 1ns/10ps
 module and_tb;
 
 <<<<<<< Updated upstream
@@ -187,4 +187,4 @@ module and_tb;
 >>>>>>> Stashed changes
     end
 
-endmodule
+endmodule*/
