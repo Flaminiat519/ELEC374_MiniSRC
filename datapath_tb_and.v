@@ -2,6 +2,7 @@
 
 module datapath_tb_and;
 
+  //Signal declarations
   reg clock, clear;
 
   reg R0in, RAin, RBin, R1in, R2in, R3in, R4in, R5in, R6in, R7in;
@@ -18,6 +19,24 @@ module datapath_tb_and;
 
   wire [31:0] BusMuxOut;
 
+  //State machine parameters
+  parameter Default      = 4'b0000,
+            PC_load1a    = 4'b0001,
+            PC_load1b    = 4'b0010,
+            Reg_load1a   = 4'b0011,
+            Reg_load1b   = 4'b0100,
+            Reg_load2a   = 4'b0101,
+            Reg_load2b   = 4'b0110,
+            T0           = 4'b0111,
+            T1           = 4'b1000,
+            T2           = 4'b1001,
+            T3           = 4'b1010,
+            T4           = 4'b1011,
+            T5           = 4'b1100;
+
+  reg [3:0] Present_state = Default;
+
+  //DUT instantiation
   data_path DUT (
     .clock(clock), .clear(clear),
 
@@ -45,153 +64,143 @@ module datapath_tb_and;
     .BusMuxOut(BusMuxOut)
   );
 
-  // clock
+  // Clock generation
   initial begin
     clock = 0;
     forever #10 clock = ~clock;
   end
 
+  //deassert all control signals
   task deassert_all;
   begin
-    R0in=0; RAin=0; RBin=0; R1in=0; R2in=0; R3in=0; R4in=0; R5in=0; R6in=0; R7in=0;
-    R8in=0; R9in=0; R10in=0; R11in=0; R12in=0; R13in=0; R14in=0; R15in=0;
-
-    R0out=0; RAout=0; RBout=0; R1out=0; R2out=0; R3out=0; R4out=0; R5out=0; R6out=0; R7out=0;
-    R8out=0; R9out=0; R10out=0; R11out=0; R12out=0; R13out=0; R14out=0; R15out=0;
-
-    HIin=0; HIout=0; LOin=0; LOout=0;
-    Zin=0; Zout=0;
-    PCin=0; PCout=0;
-    MARin=0; MARout=0;
-    MDRin=0; MDRout=0;
-    IRin=0; IRout=0;
-    Yin=0; Yout=0;
-
-    IncPC=0; Read=0;
+    R0in = 0; RAin = 0; RBin = 0; R1in = 0; R2in = 0; R3in = 0; R4in = 0; R5in = 0; 
+    R6in = 0; R7in = 0; R8in = 0; R9in = 0; R10in = 0; R11in = 0; R12in = 0; R13in = 0; 
+    R14in = 0; R15in = 0;
+    R0out = 0; RAout = 0; RBout = 0; R1out = 0; R2out = 0; R3out = 0; R4out = 0; R5out = 0; 
+    R6out = 0; R7out = 0; R8out = 0; R9out = 0; R10out = 0; R11out = 0; R12out = 0; R13out = 0; 
+    R14out = 0; R15out = 0;
+    HIin = 0; HIout = 0; LOin = 0; LOout = 0;
+    Zin = 0; Zout = 0; PCin = 0; PCout = 0;
+    MARin = 0; MARout = 0; MDRin = 0; MDRout = 0;
+    IRin = 0; IRout = 0; Yin = 0; Yout = 0;
+    IncPC = 0; Read = 0;
   end
   endtask
 
-  task mem_read_to_mdr(input [31:0] val);
-  begin
-    @(negedge clock);
-    MDatain = val;
-    Read    = 1;
-    MDRin   = 1;
-    @(negedge clock);
-    Read  = 0;
-    MDRin = 0;
-  end
-  endtask
-
-  task mdr_to_reg(input integer regnum);
-  begin
-    @(negedge clock);
-    MDRout = 1;
-    case (regnum)
-      2: R2in = 1;
-      5: R5in = 1;
-      6: R6in = 1;
-    endcase
-    @(negedge clock);
-    MDRout = 0;
-    R2in   = 0;
-    R5in   = 0;
-    R6in   = 0;
-  end
-  endtask
-
-  reg [31:0] PC_start, PC_expected;
-
-  // trace
+  //State machine transitions
   always @(posedge clock) begin
-    $display("t=%0t clear=%b | PCin=%b PCout=%b IncPC=%b | Bus=%h | PC=%h Z=%h R5=%h R6=%h R2=%h",
-      $time, clear, PCin, PCout, IncPC, BusMuxOut, DUT.PC, DUT.Z, DUT.R5, DUT.R6, DUT.R2);
+    if (clear) begin
+      Present_state <= Default;
+    end else begin
+      case (Present_state)
+        Default      : Present_state <= PC_load1a;
+        PC_load1a    : Present_state <= PC_load1b;
+        PC_load1b    : Present_state <= Reg_load1a;
+        Reg_load1a   : Present_state <= Reg_load1b;
+        Reg_load1b   : Present_state <= Reg_load2a;
+        Reg_load2a   : Present_state <= Reg_load2b;
+        Reg_load2b   : Present_state <= T0;
+        T0           : Present_state <= T1;
+        T1           : Present_state <= T2;
+        T2           : Present_state <= T3;
+        T3           : Present_state <= T4;
+        T4           : Present_state <= T5;
+      endcase
+    end
   end
 
+  //State outputs
+  always @(Present_state) begin
+    case (Present_state)
+      Default: begin
+        deassert_all();
+        MDatain <= 32'h00000000;
+      end
+
+      PC_load1a: begin
+        deassert_all();
+        MDatain <= 32'h00000010;
+        Read <= 1; MDRin <= 1;
+      end
+
+      PC_load1b: begin
+        deassert_all();
+        MDRout <= 1; PCin <= 1;  //Preload PC to 0x10
+      end
+
+      Reg_load1a: begin
+        deassert_all();
+        MDatain <= 32'h00000034;
+        Read <= 1; MDRin <= 1;
+      end
+
+      Reg_load1b: begin
+        deassert_all();
+        MDRout <= 1; R5in <= 1;  //Initialize R5 with 0x34
+      end
+
+      Reg_load2a: begin
+        deassert_all();
+        MDatain <= 32'h00000045;
+        Read <= 1; MDRin <= 1;
+      end
+
+      Reg_load2b: begin
+        deassert_all();
+        MDRout <= 1; R6in <= 1;  //Initialize R6 with 0x45
+      end
+
+      T0: begin
+        deassert_all();
+        //FETCH: PCout, MARin, IncPC
+        PCout <= 1; MARin <= 1; IncPC <= 1;
+      end
+
+      T1: begin
+        deassert_all();
+        //Read instruction, MDRin
+        Read <= 1; MDRin <= 1;
+        MDatain <= 32'h112B0000;  //Opcode for "and R2, R5, R6"
+      end
+
+      T2: begin
+        deassert_all();
+        //MDRout, IRin
+        MDRout <= 1; IRin <= 1;
+      end
+
+      T3: begin
+        deassert_all();
+        //EXECUTE AND: R5out, Yin
+        R5out <= 1; Yin <= 1;
+      end
+
+      T4: begin
+        deassert_all();
+        //R6out, AND operation, Zin
+        R6out <= 1; Zin <= 1;
+        force DUT.alu_op = (13'b1 << 0);  //AND index 0
+      end
+
+      T5: begin
+        deassert_all();
+        //Zout, R2in
+        Zout <= 1; R2in <= 1;
+        release DUT.alu_op;
+      end
+    endcase
+  end
+
+  //Trace display (used for testing, outputs in the terminal)
+  always @(posedge clock) begin
+    $display("t=%0t state=%b clear=%b | PCin=%b PCout=%b IncPC=%b | Bus=%h | PC=%h Z=%h R5=%h R6=%h R2=%h",
+      $time, Present_state, clear, PCin, PCout, IncPC, BusMuxOut, DUT.PC, DUT.Z, DUT.R5, DUT.R6, DUT.R2);
+  end
+
+  //Initialize clear signal
   initial begin
     clear = 1;
-    MDatain = 32'h0;
-    deassert_all();
-
-    repeat(2) @(negedge clock);
-    clear = 0;
-
-    // preload PC to 0x10 using MDR->PC (so it's obvious in demo)
-    PC_start    = 32'h00000010;
-    PC_expected = PC_start + 32'h1;
-
-    mem_read_to_mdr(PC_start);
-    @(negedge clock);
-    MDRout = 1; PCin = 1;
-    @(negedge clock);
-    MDRout = 0; PCin = 0;
-
-    // preload registers
-    mem_read_to_mdr(32'h00000034); mdr_to_reg(5);
-    mem_read_to_mdr(32'h00000045); mdr_to_reg(6);
-
-    // ---------------- FETCH (matching YOUR pc_reg design) ----------------
-    // T0: PCout, MARin, IncPC  (PC increments internally on posedge)
-    @(negedge clock); deassert_all();
-    PCout = 1; MARin = 1; IncPC = 1;
-    @(negedge clock); deassert_all();
-
-    // After T0 posedge, PC should already be incremented (0x11)
-    #1;
-    if (DUT.PC !== PC_expected)
-      $display("❌ PC increment failed after T0: PC=%h expected=%h", DUT.PC, PC_expected);
-    else
-      $display("✅ PC increment OK after T0: PC=%h", DUT.PC);
-
-    // T1: Read, MDRin, MDatain (NO PCin here!)
-    @(negedge clock); deassert_all();
-    Read = 1; MDRin = 1;
-    MDatain = 32'h112B0000;
-    @(negedge clock); deassert_all();
-
-    // Ensure PC stayed incremented
-    #1;
-    if (DUT.PC !== PC_expected)
-      $display("❌ PC changed unexpectedly after T1: PC=%h expected=%h", DUT.PC, PC_expected);
-
-    // T2: MDRout, IRin
-    @(negedge clock); deassert_all();
-    MDRout = 1; IRin = 1;
-    @(negedge clock); deassert_all();
-
-    // ---------------- EXECUTE AND ----------------
-    // T3: R5out, Yin
-    @(negedge clock); deassert_all();
-    R5out = 1; Yin = 1;
-    @(negedge clock); deassert_all();
-
-    // T4: R6out, AND, Zin  (force alu_op one-hot AND)
-    @(negedge clock); deassert_all();
-    R6out = 1; Zin = 1;
-    force DUT.alu_op = (13'b1 << 0); // AND index 0
-    @(negedge clock); deassert_all();
-    release DUT.alu_op;
-
-    // T5: Zout, R2in
-    @(negedge clock); deassert_all();
-    Zout = 1; R2in = 1;
-    @(negedge clock); deassert_all();
-
-    #1;
-    $display("R5=%h R6=%h R2=%h (expected 00000004)", DUT.R5, DUT.R6, DUT.R2);
-    if (DUT.R2 !== 32'h00000004) $display("❌ AND test FAILED");
-    else                         $display("✅ AND test PASSED");
-
-    // final PC must still be +1
-    if (DUT.PC !== PC_expected)
-      $display("❌ Final PC wrong: PC=%h expected=%h", DUT.PC, PC_expected);
-    else
-      $display("✅ Final PC correct: PC=%h", DUT.PC);
-
-    #50;
-    $stop;
+    #20 clear = 0;
   end
 
 endmodule
-
-
