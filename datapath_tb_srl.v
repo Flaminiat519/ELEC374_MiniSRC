@@ -168,7 +168,7 @@ module datapath_tb_srl;
         deassert_all();
         //R4out, AND operation, Zin
         R4out <= 1; Zin <= 1;
-        force DUT.alu_op = (13'b1 << );  //SRL index 9
+        force DUT.alu_op = (13'b1 << 9);  //SRL index 9
       end
 
       T5: begin
