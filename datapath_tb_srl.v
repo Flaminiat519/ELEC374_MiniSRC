@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
 
-module datapath_tb_sll;
+module datapath_tb_srl;
 
   //Signal declarations
   reg clock, clear;
@@ -168,7 +168,7 @@ module datapath_tb_sll;
         deassert_all();
         //R4out, AND operation, Zin
         R4out <= 1; Zin <= 1;
-        force DUT.alu_op = (13'b1 << 10);  //SLL index 8
+        force DUT.alu_op = (13'b1 << );  //SRL index 9
       end
 
       T5: begin
