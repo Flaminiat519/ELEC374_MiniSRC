@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
 
-module datapath_tb_add;
+module datapath_tb_sub;
 
   //Signal declarations
   reg clock, clear;
@@ -119,24 +119,24 @@ module datapath_tb_add;
 
       Reg_load1a: begin
         deassert_all();
-        MDatain <= 32'd32;
+        MDatain <= 32'd52;
         Read <= 1; MDRin <= 1;
       end
 
       Reg_load1b: begin
         deassert_all();
-        MDRout <= 1; R5in <= 1;  //Initialize R5 with 32
+        MDRout <= 1; R5in <= 1;  //Initialize R5 with 52
       end
 
       Reg_load2a: begin
         deassert_all();
-        MDatain <= 32'd52;
+        MDatain <= 32'd32;
         Read <= 1; MDRin <= 1;
       end
 
       Reg_load2b: begin
         deassert_all();
-        MDRout <= 1; R6in <= 1;  //Initialize R6 with 52
+        MDRout <= 1; R6in <= 1;  //Initialize R6 with 32
       end
 
       T0: begin
@@ -149,7 +149,7 @@ module datapath_tb_add;
         deassert_all();
         //Read instruction, MDRin
         Read <= 1; MDRin <= 1;
-        MDatain <= 32'h102B0000;  // add R2, R5, R6
+        MDatain <= 32'h142B0000;   // sub R2, R5, R6
       end
 
       T2: begin
@@ -160,15 +160,15 @@ module datapath_tb_add;
 
       T3: begin
         deassert_all();
-        //EXECUTE ADD: R5out, Yin
+        //EXECUTE SUB: R5out, Yin
         R5out <= 1; Yin <= 1;
       end
 
       T4: begin
         deassert_all();
-        //R6out, OR operation, Zin
+        //R6out, SUB operation, Zin
         R6out <= 1; Zin <= 1;
-        force DUT.alu_op = (13'b1 << 4);  //ADD index 4
+        force DUT.alu_op = (13'b1 << 5);  //SUB index 5
       end
 
       T5: begin
