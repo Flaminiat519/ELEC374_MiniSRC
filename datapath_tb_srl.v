@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
 
-module datapath_tb_sra;
+module datapath_tb_srl;
 
   //Signal declarations
   reg clock, clear;
@@ -114,7 +114,7 @@ module datapath_tb_sra;
     case (Present_state)
       Default: begin
         deassert_all();
-        MDatain <= 32'h00803807;
+        MDatain <= 32'h00803806;
       end
 
       Reg_load1a: begin
@@ -130,13 +130,13 @@ module datapath_tb_sra;
 
       Reg_load2a: begin
         deassert_all();
-        MDatain <= 32'h00000401;
+        MDatain <= 32'h00000AB3;
         Read <= 1; MDRin <= 1;
       end
 
       Reg_load2b: begin
         deassert_all();
-        MDRout <= 1; R4in <= 1;  //Initialize R4 with 0x401
+        MDRout <= 1; R4in <= 1;  //Initialize R4 with 0xAB3
       end
 
       T0: begin
@@ -149,7 +149,7 @@ module datapath_tb_sra;
         deassert_all();
         //Read instruction, MDRin
         Read <= 1; MDRin <= 1;
-        MDatain <= 32'h00803807;  //Opcode for "sra R7, R0, R4"
+        MDatain <= 32'h00803806;  //Opcode for "sra R7, R0, R4"
       end
 
       T2: begin
@@ -168,7 +168,7 @@ module datapath_tb_sra;
         deassert_all();
         //R4out, AND operation, Zin
         R4out <= 1; Zin <= 1;
-        force DUT.alu_op = (13'b1 << 10);  //SRA index 10
+        force DUT.alu_op = (13'b1 << );  //SRL index 9
       end
 
       T5: begin
