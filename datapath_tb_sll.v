@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
 
-module datapath_tb_and;
+module datapath_tb_sll;
 
   //Signal declarations
   reg clock, clear;
@@ -114,29 +114,29 @@ module datapath_tb_and;
     case (Present_state)
       Default: begin
         deassert_all();
-        MDatain <= 32'h00000000;
+        MDatain <= 32'h00803804;
       end
 
       Reg_load1a: begin
         deassert_all();
-        MDatain <= 32'h00000034;
+        MDatain <= 32'h00000000;
         Read <= 1; MDRin <= 1;
       end
 
       Reg_load1b: begin
         deassert_all();
-        MDRout <= 1; R5in <= 1;  //Initialize R5 with 0x34
+        MDRout <= 1; R0in <= 1;  //Initialize R0 with 0x00
       end
 
       Reg_load2a: begin
         deassert_all();
-        MDatain <= 32'h00000045;
+        MDatain <= 32'h00000021;
         Read <= 1; MDRin <= 1;
       end
 
       Reg_load2b: begin
         deassert_all();
-        MDRout <= 1; R6in <= 1;  //Initialize R6 with 0x45
+        MDRout <= 1; R4in <= 1;  //Initialize R4 with 0x21
       end
 
       T0: begin
@@ -149,7 +149,7 @@ module datapath_tb_and;
         deassert_all();
         //Read instruction, MDRin
         Read <= 1; MDRin <= 1;
-        MDatain <= 32'h112B0000;  //Opcode for "and R2, R5, R6"
+        MDatain <= 32'h00803804;  //Opcode for "sll R7, R0, R4"
       end
 
       T2: begin
@@ -160,21 +160,21 @@ module datapath_tb_and;
 
       T3: begin
         deassert_all();
-        //EXECUTE AND: R5out, Yin
-        R5out <= 1; Yin <= 1;
+        //EXECUTE AND: R0out, Yin
+        R0out <= 1; Yin <= 1;
       end
 
       T4: begin
         deassert_all();
-        //R6out, AND operation, Zin
-        R6out <= 1; Zin <= 1;
-        force DUT.alu_op = (13'b1 << 0);  //AND index 0
+        //R4out, AND operation, Zin
+        R4out <= 1; Zin <= 1;
+        force DUT.alu_op = (13'b1 << 8);  //SLL index 8
       end
 
       T5: begin
         deassert_all();
-        //Zout, R2in
-        Zout <= 1; R2in <= 1;
+        //Zout, R7in
+        Zout <= 1; R7in <= 1;
         release DUT.alu_op;
       end
     endcase
@@ -182,7 +182,7 @@ module datapath_tb_and;
 
   //Trace display (used for testing, outputs in the terminal)
   always @(posedge clock) begin
-    $display("t=%0t state=%b clear=%b | PCin=%b PCout=%b IncPC=%b | Bus=%h | PC=%h Z=%h R5=%h R6=%h R2=%h",
+    $display("t=%0t state=%b clear=%b | PCin=%b PCout=%b IncPC=%b | Bus=%h | PC=%h Z=%h R0=%h R4=%h R7=%h",
       $time, Present_state, clear, PCin, PCout, IncPC, BusMuxOut, DUT.PC, DUT.Z, DUT.R5, DUT.R6, DUT.R2);
   end
 
