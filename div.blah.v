@@ -16,11 +16,16 @@ module div #(parameter n = 32)(
     //use always statement to compute the algorithm
     always @(*) begin
         //set A register to 0
-        A = 0;               
+        A = 32'b0;               
         //set Q to the dividend input
         Q = dividend;
+
         //set M to the divisor input
-        M = divisor;
+        //check if negative
+        if (divisor[31]) 
+            M = -divisor; 
+        else
+            M = divisor;
 
         for (i = 0; i < n; i = i + 1) begin
             // Shift A and Q left by 1 bit
@@ -45,6 +50,12 @@ module div #(parameter n = 32)(
         // Final restore if A is negative
         if (A < 0) begin
             A = A + M;
+        end
+
+        //check if divisor is negative
+        //if so, 2s comp the result
+        if (divisor[31]) begin
+            Q = -Q;
         end
         
         quotient  = Q;
