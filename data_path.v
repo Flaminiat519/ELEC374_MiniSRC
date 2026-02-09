@@ -50,7 +50,7 @@ module data_path (
     // Z register (only lower 32 bits, for general ops)
     register Z_reg (.clear(clear), .clock(clock), .enable(Zin), .BusMuxIn(ALU_Data[31:0]), .BusMuxOut(Z));
 	register ZHI_reg (.clear(clear), .clock(clock), .enable(ZHIin), .BusMuxIn(ALU_Data[63:32]), .BusMuxOut(ZHI));
-assign ZHIout = ZHI;
+	//assign ZHIout = ZHI;
     // General purpose registers
     register R0_reg  (.clear(clear), .clock(clock), .enable(R0in),  .BusMuxIn(Bus), .BusMuxOut(R0));
     register RA_reg  (.clear(clear), .clock(clock), .enable(RAin),  .BusMuxIn(Bus), .BusMuxOut(RA));
@@ -72,8 +72,8 @@ assign ZHIout = ZHI;
     register R15_reg (.clear(clear), .clock(clock), .enable(R15in), .BusMuxIn(Bus), .BusMuxOut(R15));
 
     // Special registers: HI/LO get ALU_Data directly
-    register HI_reg  (.clear(clear), .clock(clock), .enable(HIin), .BusMuxIn(ALU_Data[63:32]), .BusMuxOut(HI));
-    register LO_reg  (.clear(clear), .clock(clock), .enable(LOin), .BusMuxIn(ALU_Data[31:0]), .BusMuxOut(LO));
+    register HI_reg (.clear(clear), .clock(clock), .enable(HIin), .BusMuxIn(Bus), .BusMuxOut(HI));
+	register LO_reg (.clear(clear), .clock(clock), .enable(LOin), .BusMuxIn(Bus), .BusMuxOut(LO));
     register Y_reg   (.clear(clear), .clock(clock), .enable(Yin),  .BusMuxIn(Bus), .BusMuxOut(Y));
     register IR_reg  (.clear(clear), .clock(clock), .enable(IRin), .BusMuxIn(Bus), .BusMuxOut(IR));
     register MAR_reg (.clear(clear), .clock(clock), .enable(MARin), .BusMuxIn(Bus), .BusMuxOut(MAR));
