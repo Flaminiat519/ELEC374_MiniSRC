@@ -1,7 +1,7 @@
 module register #(
   parameter DATA_WIDTH_IN  = 32,
   parameter DATA_WIDTH_OUT = 32,
-  parameter INIT           = 32'h0
+  parameter INIT           = 32'b0
 )(
   input  wire                     clear,
   input  wire                     clock,
