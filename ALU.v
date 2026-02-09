@@ -49,7 +49,17 @@ module ALU (
 	negate neg (RA, neg_result);
 	CLA_32 add_sub (RA, RB_sub, c_in, add_sub_result, c_out);
 	not_gate not_instance (RA, not_result);
-	div div (RA, RB, div_result[63:32], div_result[31:0]);
+	
+	wire [31:0] div_quotient;
+wire [31:0] div_remainder;
+
+div div_instance(
+    .RA(RA),
+    .RB(RB),
+    .quotient(div_quotient),
+    .remainder(div_remainder)
+);
+	
 	mult_32b mul (RA, RB, mul_result);
 	rol rol_instance(RA, RB, rol_result);
 	ror ror_instance(RA, RB, ror_result);
@@ -83,8 +93,9 @@ module ALU (
 			RZ = mul_result;
 		end
 		else if (ALU_op[`DIV]) begin
-			RZ = div_result;
-		end
+		RZ[31:0]   = div_quotient;   // LO
+        RZ[63:32]  = div_remainder;  // HI
+    end
 		else if (ALU_op[`SLL]) begin
 			RZ[31:0] = sll_result;
 			RZ[63:32] = 32'b0;

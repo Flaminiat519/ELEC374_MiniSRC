@@ -4,39 +4,40 @@ module data_path (
     input wire clock,
     input wire clear,
 
-    //Register write enables
+    // Register write enables
     input wire R0in, RAin, RBin, R1in, R2in, R3in, R4in, R5in, R6in, R7in,
     input wire R8in, R9in, R10in, R11in, R12in, R13in, R14in, R15in,
 
-    //Register output enables
+    // Register output enables
     input wire R0out, RAout, RBout, R1out, R2out, R3out, R4out, R5out, R6out, R7out,
     input wire R8out, R9out, R10out, R11out, R12out, R13out, R14out, R15out,
 
-    //Special registers
+    // Special registers
     input wire HIin, HIout,
     input wire LOin, LOout,
-    input wire Zin, Zout,
+    input wire Zin, Zout, ZHIout, ZHIin,
     input wire PCin, PCout,
     input wire MARin, MARout,
     input wire MDRin, MDRout,
     input wire IRin, IRout,
     input wire Yin, Yout,
 
-    //External control
+    // External control
     input wire IncPC,
     input wire Read,
     input wire [31:0] MDatain,
 
     output wire [31:0] BusMuxOut
 );
+
     //Internal wires for registers
     wire [31:0] R0, RA, RB, R1, R2, R3, R4, R5, R6, R7;
     wire [31:0] R8, R9, R10, R11, R12, R13, R14, R15;
-    wire [31:0] HI, LO, Z, PC, MAR, MDR, IR, Y;
-
+    wire [31:0] HI, LO, PC, MAR, MDR, IR, Y, Z, ZHI;
+	
     wire [31:0] Bus;
 
-    //ALU
+    // ALU
     wire [63:0] ALU_Data;
     wire [12:0] alu_op;
     ALU alu (
@@ -46,10 +47,11 @@ module data_path (
         .RZ(ALU_Data)
     );
 
-    //Z EGISTER
-    register Z_reg (.clear(clear),.clock(clock),.enable(Zin),.BusMuxIn(ALU_Data[31:0]),.BusMuxOut(Z));
-
-    //Gen registers
+    // Z register (only lower 32 bits, for general ops)
+    register Z_reg (.clear(clear), .clock(clock), .enable(Zin), .BusMuxIn(ALU_Data[31:0]), .BusMuxOut(Z));
+	register ZHI_reg (.clear(clear), .clock(clock), .enable(ZHIin), .BusMuxIn(ALU_Data[63:32]), .BusMuxOut(ZHI));
+assign ZHIout = ZHI;
+    // General purpose registers
     register R0_reg  (.clear(clear), .clock(clock), .enable(R0in),  .BusMuxIn(Bus), .BusMuxOut(R0));
     register RA_reg  (.clear(clear), .clock(clock), .enable(RAin),  .BusMuxIn(Bus), .BusMuxOut(RA));
     register RB_reg  (.clear(clear), .clock(clock), .enable(RBin),  .BusMuxIn(Bus), .BusMuxOut(RB));
@@ -69,30 +71,27 @@ module data_path (
     register R14_reg (.clear(clear), .clock(clock), .enable(R14in), .BusMuxIn(Bus), .BusMuxOut(R14));
     register R15_reg (.clear(clear), .clock(clock), .enable(R15in), .BusMuxIn(Bus), .BusMuxOut(R15));
 
-    //Special registers
-    register HI_reg  (.clear(clear), .clock(clock), .enable(HIin),  .BusMuxIn(ALU_Data[63:32]), .BusMuxOut(HI));
-    register LO_reg  (.clear(clear), .clock(clock), .enable(LOin),  .BusMuxIn(ALU_Data[31:0]),  .BusMuxOut(LO));
-    register Y_reg   (.clear(clear), .clock(clock), .enable(Yin),   .BusMuxIn(Bus),             .BusMuxOut(Y));
-    register IR_reg  (.clear(clear), .clock(clock), .enable(IRin),  .BusMuxIn(Bus),             .BusMuxOut(IR));
-    register MAR_reg (.clear(clear), .clock(clock), .enable(MARin), .BusMuxIn(Bus),             .BusMuxOut(MAR));
+    // Special registers: HI/LO get ALU_Data directly
+    register HI_reg  (.clear(clear), .clock(clock), .enable(HIin), .BusMuxIn(ALU_Data[63:32]), .BusMuxOut(HI));
+    register LO_reg  (.clear(clear), .clock(clock), .enable(LOin), .BusMuxIn(ALU_Data[31:0]), .BusMuxOut(LO));
+    register Y_reg   (.clear(clear), .clock(clock), .enable(Yin),  .BusMuxIn(Bus), .BusMuxOut(Y));
+    register IR_reg  (.clear(clear), .clock(clock), .enable(IRin), .BusMuxIn(Bus), .BusMuxOut(IR));
+    register MAR_reg (.clear(clear), .clock(clock), .enable(MARin), .BusMuxIn(Bus), .BusMuxOut(MAR));
 
     pc_reg PC_reg (.D(Bus),.clk(clock),.clr(clear),.increment(IncPC),.enable(PCin),.Q(PC));
-
     mdr_reg MDR_reg (.BusMuxIn(Bus),.clk(clock),.clr(clear),.Read(Read),.MDRin(MDRin),.MDAtain(MDatain),.Q(MDR));
 
-    //BusMux
+    // BusMux
     Bus BUS (
         .R0(R0), .RA(RA), .RB(RB), .R1(R1), .R2(R2), .R3(R3), .R4(R4), .R5(R5), .R6(R6), .R7(R7),
         .R8(R8), .R9(R9), .R10(R10), .R11(R11), .R12(R12), .R13(R13), .R14(R14), .R15(R15),
-        .HI(HI), .LO(LO), .Z(Z), .PC(PC), .MAR(MAR), .MDR(MDR), .IR(IR), .Y(Y),
-
+        .HI(HI), .LO(LO), .Z(Z), .ZHI(ZHI), .PC(PC), .MAR(MAR), .MDR(MDR), .IR(IR), .Y(Y),
         .R0out(R0out), .RAout(RAout), .RBout(RBout), .R1out(R1out), .R2out(R2out),
         .R3out(R3out), .R4out(R4out), .R5out(R5out), .R6out(R6out), .R7out(R7out),
         .R8out(R8out), .R9out(R9out), .R10out(R10out), .R11out(R11out), .R12out(R12out),
         .R13out(R13out), .R14out(R14out), .R15out(R15out),
-        .HIout(HIout), .LOout(LOout), .Zout(Zout), .PCout(PCout), .MARout(MARout),
+        .HIout(HIout), .LOout(LOout), .Zout(Zout), .ZHIout(ZHIout), .PCout(PCout), .MARout(MARout),
         .MDRout(MDRout), .IRout(IRout), .Yout(Yout),
-
         .BusMuxOut(Bus)
     );
 
