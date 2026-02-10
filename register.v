@@ -1,13 +1,14 @@
+//General Register module
 module register #(
   parameter DATA_WIDTH_IN  = 32,
   parameter DATA_WIDTH_OUT = 32,
   parameter INIT           = 32'b0
 )(
-  input  wire                     clear,
-  input  wire                     clock,
-  input  wire                     enable,
-  input  wire [DATA_WIDTH_IN-1:0]  BusMuxIn,     // <-- input (swapped these two)
-  output wire [DATA_WIDTH_OUT-1:0] BusMuxOut     // <-- output
+  input wire clear,
+  input wire clock,
+  input wire enable,
+  input wire [DATA_WIDTH_IN-1:0]  BusMuxIn, //input?
+  output wire [DATA_WIDTH_OUT-1:0] BusMuxOut //output?
 );
 
   reg [DATA_WIDTH_IN-1:0] q;
