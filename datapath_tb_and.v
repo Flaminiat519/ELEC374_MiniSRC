@@ -85,18 +85,18 @@ module datapath_tb_and;
       Present_state <= Default;
     end else begin
       case (Present_state)
-        Default      : Present_state <= PC_load1a;
-        PC_load1a    : Present_state <= PC_load1b;
-        PC_load1b    : Present_state <= Reg_load1a;
-        Reg_load1a   : Present_state <= Reg_load1b;
-        Reg_load1b   : Present_state <= Reg_load2a;
-        Reg_load2a   : Present_state <= Reg_load2b;
-        Reg_load2b   : Present_state <= T0;
-        T0           : Present_state <= T1;
-        T1           : Present_state <= T2;
-        T2           : Present_state <= T3;
-        T3           : Present_state <= T4;
-        T4           : Present_state <= T5;
+        Default : Present_state = Reg_load1a;
+        Reg_load1a : Present_state = Reg_load1b;
+        Reg_load1b : Present_state = Reg_load2a;
+        Reg_load2a : Present_state = Reg_load2b;
+        Reg_load2b : Present_state = Reg_load3a;
+        Reg_load3a : Present_state = Reg_load3b;
+        Reg_load3b : Present_state = T0;
+        T0 : Present_state = T1;
+        T1 : Present_state = T2;
+        T2 : Present_state = T3;
+        T3 : Present_state = T4;
+        T4 : Present_state = T5;
       endcase
     end
   end
@@ -129,6 +129,17 @@ module datapath_tb_and;
       Reg_load2b: begin
         deassert_all();
         MDRout <= 1; R6in <= 1; 
+      end
+
+      Reg_load3a: begin
+        deassert_all();
+        MDatain <= 32'h00000067; //load 45
+        Read <= 1; MDRin <= 1;
+      end
+
+      Reg_load3b: begin
+        deassert_all();
+        MDRout <= 1; R2in <= 1; 
       end
 
       T0: begin
