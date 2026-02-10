@@ -139,7 +139,7 @@ module datapath_tb_neg;
         deassert_all();
         //Read instructionnn
         Read <= 1; MDRin <= 1;
-        MDatain <= 32'h142B0000; //neg R4, R7
+        MDatain <= 32'b01110000000000000000000000000000; //neg R4, R7
       end
 
       T2: begin
