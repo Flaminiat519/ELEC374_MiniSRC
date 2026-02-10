@@ -1,12 +1,13 @@
+//General register testbench
+//just loading a number and showing content
 `timescale 1ns/1ps
+//initializations
 module register_tb;
-
     reg clock, clear;
     reg R0in, R0out, R1in, R1out;
     reg PCin, PCout;
     reg IRin, IRout;
     reg Yin, Yout;
-
     wire [31:0] BusMuxOut;
 
     data_path DP(
@@ -18,7 +19,7 @@ module register_tb;
         .Yin(Yin), .Yout(Yout),
         .BusMuxOut(BusMuxOut),
 
-        // Tie unused signals low
+        //clear unused signals
         .R2in(0),.R3in(0),.R4in(0),.R5in(0),.R6in(0),.R7in(0),
         .R8in(0),.R9in(0),.R10in(0),.R11in(0),.R12in(0),.R13in(0),.R14in(0),.R15in(0),
         .R2out(0),.R3out(0),.R4out(0),.R5out(0),.R6out(0),.R7out(0),
@@ -29,8 +30,10 @@ module register_tb;
         .MDRin(0),.MDRout(0)
     );
 
+    //start clock
     always #5 clock = ~clock;
 
+    //begin control sequence
     initial begin
         clock = 0;
         clear = 1;
@@ -39,11 +42,11 @@ module register_tb;
 
         #10 clear = 0;
 
-        // Write value to R0
+        //write value to R0
         R0in = 1; #10 R0in = 0;
         R0out = 1; #10 R0out = 0;
 
-        // Move R0 → R1
+        //move R0 to R1
         R0out = 1; R1in = 1; #10;
         R0out = 0; R1in = 0;
 
