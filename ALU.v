@@ -1,3 +1,4 @@
+//ALU Module for arithmetic operations
 //Define ALU components control variables
 //for the different inputs
 `define AND 0
