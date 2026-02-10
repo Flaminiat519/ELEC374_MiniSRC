@@ -150,7 +150,7 @@ module datapath_tb_or;
         deassert_all();
         //Read instruction
         Read <= 1; MDRin <= 1;
-        MDatain <= 32'h132B0000;  //fake opcode
+        MDatain <= 32'b00011101010101010101010101010101;  //fake opcode
       end
 
       T2: begin
