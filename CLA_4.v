@@ -1,4 +1,4 @@
-//4-bit carry-lookahead adder
+//4-bit carry-lookahead adder module
 module CLA_4(
 	//definiing input and output wires, 4-bits
 	input wire [3:0] a, b,
