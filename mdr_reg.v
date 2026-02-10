@@ -1,3 +1,4 @@
+//Special MDR register module
 `timescale 1ns/10ps
 
 module mdr_reg (
@@ -9,26 +10,11 @@ module mdr_reg (
 	input wire [31:0] MDAtain,
 	output wire [31:0] Q
 );
-
-
-
 	wire [31:0] D;
-
-	// Select between Bus and Memory Data
-	mdr_mux muxmdr (
-		BusMuxIn,
-		Read,
-		MDAtain,
-		D
-	);
-
-	// MDR register
-	register mdr (
-    .clear(clr),
-    .clock(clk),
-    .enable(MDRin),
-    .BusMuxOut(Q),
-    .BusMuxIn(D)
+	//choosing bus or memory data
+	mdr_mux muxmdr (BusMuxIn, Read, MDAtain, D);
+	//reg instantiation
+	register mdr (.clear(clr), .clock(clk), .enable(MDRin), .BusMuxOut(Q), .BusMuxIn(D)
 );
 
 endmodule
