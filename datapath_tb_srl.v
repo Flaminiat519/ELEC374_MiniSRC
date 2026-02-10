@@ -150,7 +150,7 @@ module datapath_tb_srl;
         deassert_all();
         //Read instruction
         Read <= 1; MDRin <= 1;
-        MDatain <= 32'h00803806;  //random number chosen
+        MDatain <= 32'b00100000000000000000000000000000;  //opcode
       end
 
       T2: begin
