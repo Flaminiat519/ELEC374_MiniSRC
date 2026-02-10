@@ -93,9 +93,9 @@ div div_instance(
 			RZ = mul_result;
 		end
 		else if (ALU_op[`DIV]) begin
-		RZ[31:0]   = div_quotient;   // LO
-        RZ[63:32]  = div_remainder;  // HI
-    end
+			RZ[31:0] = div_quotient; //For ZLO
+			RZ[63:32] = div_remainder; //For ZHI
+    	end
 		else if (ALU_op[`SLL]) begin
 			RZ[31:0] = sll_result;
 			RZ[63:32] = 32'b0;
