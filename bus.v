@@ -1,4 +1,4 @@
-//BUS module
+//Bus module
 module Bus (
     //define 32-bit inputs for each relevant component
     //includes registers and control signals
