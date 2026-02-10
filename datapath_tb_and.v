@@ -141,7 +141,7 @@ module datapath_tb_and;
         deassert_all();
         //read instruction
         Read <= 1; MDRin <= 1;
-        MDatain <= 32'h112B0000;  //rando value cause no control unit
+        MDatain <= 32'b00010101010101010101010101010101;  //rando value cause no control unit
       end
 
       T2: begin
