@@ -29,7 +29,7 @@ module datapath_tb_and;
         T2 = 4’b1001, 
         T3 = 4’b1010, 
         T4 = 4’b1011, 
-        T5 = 4’b11
+        T5 = 4’b1100,
 
   reg [3:0] Present_state = Default;
 
