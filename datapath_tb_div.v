@@ -106,7 +106,7 @@ module datapath_tb_div;
             T1: begin
                 Zout <= 1;         
                 Read <= 1; MDRin <= 1;
-                MDatain <= 32'hfefe1212; //just placeholder value
+                MDatain <= 32'b01100000000000000000000000000000; //just placeholder value
             end
 			
             T2: begin
