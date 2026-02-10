@@ -115,7 +115,7 @@ module datapath_tb_neg;
     case (Present_state)
       Default: begin
         deassert_all();
-        MDatain <= 32'h00000000;
+        MDatain <= 32'b01110000000000000000000000000000;
       end
 
       Reg_load1a: begin
