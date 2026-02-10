@@ -1,5 +1,5 @@
+//ALU testbench (every operation)
 `timescale 1ns/1ps
-
 module alu_tb;
 	
 	reg clk;
