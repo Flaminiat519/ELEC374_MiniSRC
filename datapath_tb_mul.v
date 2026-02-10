@@ -103,9 +103,9 @@ module datapath_tb_mul;
             end
             
             T1: begin
-                Zout <= 1; PCin <= 1;
+                Zout <= 1; //PCin <= 1;
                 Read <= 1; MDRin <= 1;
-                MDatain <= 32'hfefe1212;
+                MDatain <= 32'b01101000000000000000000000000000;
             end
             
             T2: begin
