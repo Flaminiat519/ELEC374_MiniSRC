@@ -1,24 +1,16 @@
+//Division operation specific test bench
 `timescale 1ns/1ps
 
 module div_tb;
-
     parameter n = 32;
-
     reg  [n-1:0] dividend;
     reg  [n-1:0] divisor;
-
     wire [n-1:0] quotient;
     wire [n-1:0] remainder;
 
-    // Instantiate divider
-    div #(n) DUT (
-        .dividend(dividend),
-        .divisor(divisor),
-        .quotient(quotient),
-        .remainder(remainder)
-    );
-
-    // signed expected values
+    //divider
+    div #(n) DUT (.dividend(dividend), .divisor(divisor), .quotient(quotient), .remainder(remainder));
+    //signed expected values
     integer exp_q;
     integer exp_r;
 
@@ -30,7 +22,7 @@ module div_tb;
             divisor  = b;
             #10;
 
-            // avoid divide by zero
+            //avoid divide by zero
             if (b == 0) begin
                 $display("SKIP: dividend=%h divisor=%h (divide by zero)", a, b);
             end else begin
@@ -51,32 +43,26 @@ module div_tb;
 
     initial begin
         $display("==== Starting Division Tests ====");
-
-        // Basic tests
+        //Basic tests
         run_test(32'd100, 32'd3);
         run_test(32'd100, 32'd10);
         run_test(32'd25,  32'd5);
         run_test(32'd7,   32'd2);
-
-        // Edge-ish tests
+        //edge tests
         run_test(32'd0,   32'd5);
         run_test(32'd1,   32'd1);
         run_test(32'd32,  32'd7);
-
-        // Signed tests
+        //signed tests
         run_test(-32'sd100, 32'sd3);
         run_test(32'sd100, -32'sd3);
         run_test(-32'sd100, -32'sd3);
-
-        // Large hex patterns
+        //hex patterns
         run_test(32'hF0F0F0F0, 32'd7);
         run_test(32'h80000000, 32'd2);
         run_test(32'h7FFFFFFF, 32'd11);
-
-        // Random-ish
+        //random test
         run_test(32'h12345678, 32'h00001234);
         run_test(32'h89ABCDEF, 32'd9);
-
         $display("==== Tests Finished ====");
         $stop;
     end
