@@ -1,7 +1,10 @@
+//Rotate left module
 module rol (
+	//wire inputs
 	input wire [31:0] a,b,
 	output wire [31:0] z
 );
+	//rotate left operation
 	reg [31:0] temp;
 	always @ (*)
 		begin
