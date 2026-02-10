@@ -1,4 +1,4 @@
-//32-bit carry-lookahead adder
+//32-bit carry-lookahead adder module
 module CLA_32(
 	//define input and output wires, 32-bits
 	input [31:0] a, b,
