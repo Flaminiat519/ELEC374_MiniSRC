@@ -1,3 +1,4 @@
+//32 Bit multiplication operation module
 module mult_32b #(parameter n = 32)(
 		 input [n-1:0] m,q,
 		 output reg [2*n-1:0] result
