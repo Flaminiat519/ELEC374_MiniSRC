@@ -1,3 +1,4 @@
+//MDR multiplexer module
 `timescale 1ns/10ps
 
 module mdr_mux (
