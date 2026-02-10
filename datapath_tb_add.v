@@ -143,7 +143,7 @@ module datapath_tb_add;
         deassert_all();
         //read instruction
         Read <= 1; MDRin <= 1;
-        MDatain <= 32'h102B0000;  //loaded random val for rn since no control unit
+        MDatain <= 32'b00000101010101010101010101010101;  //loaded random val for rn since no control unit
       end
 
       T2: begin
