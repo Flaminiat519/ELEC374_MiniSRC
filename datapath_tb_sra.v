@@ -1,3 +1,4 @@
+//Arithmetic shift test bench
 `timescale 1ns/10ps
 
 module datapath_tb_sra;
@@ -64,7 +65,7 @@ module datapath_tb_sra;
     .BusMuxOut(BusMuxOut)
   );
 
-  // Clock generation
+  //clock generation
   initial begin
     clock = 0;
     forever #10 clock = ~clock;
@@ -141,49 +142,40 @@ module datapath_tb_sra;
 
       T0: begin
         deassert_all();
-        //FETCH: PCout, MARin, IncPC
+        //FETCh instruction
         PCout <= 1; MARin <= 1; IncPC <= 1;
       end
 
       T1: begin
         deassert_all();
-        //Read instruction, MDRin
+        //Read instruction
         Read <= 1; MDRin <= 1;
-        MDatain <= 32'h00803807;  //Opcode for "sra R7, R0, R4"
+        MDatain <= 32'h00803807;  //random variable for rn
       end
 
       T2: begin
         deassert_all();
-        //MDRout, IRin
         MDRout <= 1; IRin <= 1;
       end
 
       T3: begin
         deassert_all();
-        //EXECUTE AND: R0out, Yin
         R0out <= 1; Yin <= 1;
       end
 
       T4: begin
         deassert_all();
-        //R4out, AND operation, Zin
+        //perform operation
         R4out <= 1; Zin <= 1;
         force DUT.alu_op = (13'b1 << 10);  //SRA index 10
       end
 
       T5: begin
         deassert_all();
-        //Zout, R7in
         Zout <= 1; R7in <= 1;
         release DUT.alu_op;
       end
     endcase
-  end
-
-  //Trace display (used for testing, outputs in the terminal)
-  always @(posedge clock) begin
-    $display("t=%0t state=%b clear=%b | PCin=%b PCout=%b IncPC=%b | Bus=%h | PC=%h Z=%h R0=%h R4=%h R7=%h",
-      $time, Present_state, clear, PCin, PCout, IncPC, BusMuxOut, DUT.PC, DUT.Z, DUT.R5, DUT.R6, DUT.R2);
   end
 
   //Initialize clear signal
