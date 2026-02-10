@@ -141,7 +141,7 @@ module datapath_tb_sub;
         deassert_all();
         //Read instruction
         Read <= 1; MDRin <= 1;
-        MDatain <= 32'h142B0000; //decided random variable
+        MDatain <= 32'b00001101010101010101010101010101; //decided random variable
       end
 
       T2: begin
