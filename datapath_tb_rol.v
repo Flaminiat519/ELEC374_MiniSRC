@@ -150,7 +150,7 @@ module datapath_tb_rol;
         deassert_all();
         //Read instruction
         Read <= 1; MDRin <= 1;
-        MDatain <= 32'h02020202;  //temporary random variable
+        MDatain <= 32'b01000000000000000000000000000000;  //opcode 
       end
 
       T2: begin
