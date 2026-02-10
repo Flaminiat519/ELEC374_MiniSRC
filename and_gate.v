@@ -1,4 +1,4 @@
-//32-bit and gate
+//32-bit and gate module
 module and_gate (
     //define 32-bit inputs and output
     input [31:0] x,y,
