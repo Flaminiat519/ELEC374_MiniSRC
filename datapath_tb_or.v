@@ -1,3 +1,4 @@
+//OR operation test bench
 `timescale 1ns/10ps
 
 module datapath_tb_or;
@@ -64,7 +65,7 @@ module datapath_tb_or;
     .BusMuxOut(BusMuxOut)
   );
 
-  // Clock generation
+  //clock generation
   initial begin
     clock = 0;
     forever #10 clock = ~clock;
@@ -141,49 +142,39 @@ module datapath_tb_or;
 
       T0: begin
         deassert_all();
-        //FETCH: PCout, MARin, IncPC
+        //fetch instruction
         PCout <= 1; MARin <= 1; IncPC <= 1;
       end
 
       T1: begin
         deassert_all();
-        //Read instruction, MDRin
+        //Read instruction
         Read <= 1; MDRin <= 1;
-        MDatain <= 32'h132B0000;  //Opcode for "or R2, R5, R6"
+        MDatain <= 32'h132B0000;  //fake opcode
       end
 
       T2: begin
         deassert_all();
-        //MDRout, IRin
         MDRout <= 1; IRin <= 1;
       end
 
       T3: begin
         deassert_all();
-        //EXECUTE OR: R5out, Yin
         R5out <= 1; Yin <= 1;
       end
 
       T4: begin
         deassert_all();
-        //R6out, OR operation, Zin
         R6out <= 1; Zin <= 1;
         force DUT.alu_op = (13'b1 << 1);  //OR index 1
       end
 
       T5: begin
         deassert_all();
-        //Zout, R2in
         Zout <= 1; R2in <= 1;
         release DUT.alu_op;
       end
     endcase
-  end
-
-  //Trace display (used for testing, outputs in the terminal)
-  always @(posedge clock) begin
-    $display("t=%0t state=%b clear=%b | PCin=%b PCout=%b IncPC=%b | Bus=%h | PC=%h Z=%h R5=%h R6=%h R2=%h",
-      $time, Present_state, clear, PCin, PCout, IncPC, BusMuxOut, DUT.PC, DUT.Z, DUT.R5, DUT.R6, DUT.R2);
   end
 
   //Initialize clear signal
