@@ -82,7 +82,7 @@ module datapath_tb_div;
         case(Present_state)
             
             L1a: begin 
-				MDatain <= 32'd43; Read <= 1; MDRin <= 1; 
+				MDatain <= -32'd43; Read <= 1; MDRin <= 1; 
 			end
 			
             L1b: begin 

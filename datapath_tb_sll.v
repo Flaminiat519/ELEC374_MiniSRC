@@ -120,7 +120,7 @@ module datapath_tb_sll;
 
       Reg_load1a: begin
         deassert_all();
-        MDatain <= 32'h00000000;
+        MDatain <= 32'hf000000f;
         Read <= 1; MDRin <= 1;
       end
 
@@ -131,7 +131,7 @@ module datapath_tb_sll;
 
       Reg_load2a: begin
         deassert_all();
-        MDatain <= 32'h00000021;
+        MDatain <= 32'h0000002;
         Read <= 1; MDRin <= 1;
       end
 
