@@ -1,3 +1,4 @@
+//Special PC register module
 `timescale 1ns/10ps
 
 module pc_reg #(parameter INIT = 32'h0)(
@@ -7,10 +8,10 @@ module pc_reg #(parameter INIT = 32'h0)(
 	input wire increment,
 	input wire enable,
 	output wire [31:0] Q
-	);
+);
 	
-	reg [31:0] qTemp;
-	initial qTemp = INIT;
+reg [31:0] qTemp;
+initial qTemp = INIT;
 	always @ (posedge clk) 
 		begin
 			if (clr) begin
