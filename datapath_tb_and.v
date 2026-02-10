@@ -16,19 +16,20 @@ module datapath_tb_and;
   wire [31:0] BusMuxOut;
 
   //State machine parameters
-  parameter Default      = 4'b0000,
-            PC_load1a    = 4'b0001,
-            PC_load1b    = 4'b0010,
-            Reg_load1a   = 4'b0011,
-            Reg_load1b   = 4'b0100,
-            Reg_load2a   = 4'b0101,
-            Reg_load2b   = 4'b0110,
-            T0           = 4'b0111,
-            T1           = 4'b1000,
-            T2           = 4'b1001,
-            T3           = 4'b1010,
-            T4           = 4'b1011,
-            T5           = 4'b1100;
+  parameter 
+        Default = 4’b0000, 
+        Reg_load1a = 4’b0001, 
+        Reg_load1b = 4’b0010, 
+        Reg_load2a = 4’b0011,
+        Reg_load2b = 4’b0100, 
+        Reg_load3a = 4’b0101, 
+        Reg_load3b = 4’b0110, 
+        T0 = 4’b0111,
+        T1 = 4’b1000, 
+        T2 = 4’b1001, 
+        T3 = 4’b1010, 
+        T4 = 4’b1011, 
+        T5 = 4’b1100,
 
   reg [3:0] Present_state = Default;
 
@@ -85,18 +86,18 @@ module datapath_tb_and;
       Present_state <= Default;
     end else begin
       case (Present_state)
-        Default      : Present_state <= PC_load1a;
-        PC_load1a    : Present_state <= PC_load1b;
-        PC_load1b    : Present_state <= Reg_load1a;
-        Reg_load1a   : Present_state <= Reg_load1b;
-        Reg_load1b   : Present_state <= Reg_load2a;
-        Reg_load2a   : Present_state <= Reg_load2b;
-        Reg_load2b   : Present_state <= T0;
-        T0           : Present_state <= T1;
-        T1           : Present_state <= T2;
-        T2           : Present_state <= T3;
-        T3           : Present_state <= T4;
-        T4           : Present_state <= T5;
+        Default : Present_state = Reg_load1a;
+        Reg_load1a : Present_state = Reg_load1b;
+        Reg_load1b : Present_state = Reg_load2a;
+        Reg_load2a : Present_state = Reg_load2b;
+        Reg_load2b : Present_state = Reg_load3a;
+        Reg_load3a : Present_state = Reg_load3b;
+        Reg_load3b : Present_state = T0;
+        T0 : Present_state = T1;
+        T1 : Present_state = T2;
+        T2 : Present_state = T3;
+        T3 : Present_state = T4;
+        T4 : Present_state = T5;
       endcase
     end
   end
@@ -129,6 +130,17 @@ module datapath_tb_and;
       Reg_load2b: begin
         deassert_all();
         MDRout <= 1; R6in <= 1; 
+      end
+
+      Reg_load3a: begin
+        deassert_all();
+        MDatain <= 32'h00000067; //load 45
+        Read <= 1; MDRin <= 1;
+      end
+
+      Reg_load3b: begin
+        deassert_all();
+        MDRout <= 1; R2in <= 1; 
       end
 
       T0: begin

@@ -55,7 +55,7 @@ module ALU (
 wire [31:0] div_remainder;
 
 div div_instance(
-    .dividend(RA),
+	.dividend(RA),
     .divisor(RB),
     .quotient(div_quotient),
     .remainder(div_remainder)
