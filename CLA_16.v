@@ -1,4 +1,4 @@
-//16-bit carry-lookahead adder
+//16-bit carry-lookahead adder module
 module CLA_16(
 	//define input and output wires, 16-bits
 	input wire [15:0] a, b,
