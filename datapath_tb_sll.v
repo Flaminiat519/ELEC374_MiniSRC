@@ -150,7 +150,7 @@ module datapath_tb_sll;
         deassert_all();
         //Read instruction
         Read <= 1; MDRin <= 1;
-        MDatain <= 32'h00803804;  //push random variable
+        MDatain <= 32'b00110000000000000000000000000000;  //opcode
       end
 
       T2: begin
