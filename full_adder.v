@@ -1,3 +1,4 @@
+//Full adder module
 module full_adder (
     input xi,yi,c_in,
     output si,c_out //this output will be a wire 
