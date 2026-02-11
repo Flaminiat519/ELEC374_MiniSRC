@@ -1,4 +1,4 @@
-//Shift left? module
+//Shift right  module
 module srl (
 	//initialize wires
 	input wire [31:0] a, b,
