@@ -111,29 +111,29 @@ module datapath_tb_sub;
 
       Reg_load1a: begin
         deassert_all();
-        MDatain <= 32'h00000034;
+        MDatain <= 32'h00000045;
         Read <= 1; MDRin <= 1;
       end
 
       Reg_load1b: begin
         deassert_all();
-        MDRout <= 1; R5in <= 1;  //Initialize R5 with 52
+        MDRout <= 1; R5in <= 1;  //Initialize R5 with 0x45
       end
 
       Reg_load2a: begin
         deassert_all();
-        MDatain <= 32'h00000045;
+        MDatain <= 32'h00000034;
         Read <= 1; MDRin <= 1;
       end
 
       Reg_load2b: begin
         deassert_all();
-        MDRout <= 1; R6in <= 1;  //Initialize R6 with 32
+        MDRout <= 1; R6in <= 1;  //Initialize R6 with 0x34
       end
 	  
 	  Reg_load3a: begin
         deassert_all();
-        MDatain <= 32'h67; //load 52
+        MDatain <= 32'h67; //load 0x67
 		Read <= 1; MDRin <= 1;
         //Read <= 0; MDRin <= 0;
       end

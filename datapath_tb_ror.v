@@ -21,13 +21,13 @@ module datapath_tb_ror;
   wire [31:0] BusMuxOut;
 
   //State machine parameters
-  parameter Default      = 4'b0000,
-            PC_load1a    = 4'b0001,
-            PC_load1b    = 4'b0010,
-            Reg_load1a   = 4'b0011,
-            Reg_load1b   = 4'b0100,
-            Reg_load2a   = 4'b0101,
-            Reg_load2b   = 4'b0110,
+    parameter Default     = 4'b0000,
+            Reg_load1a   = 4'b0001,
+            Reg_load1b   = 4'b0010,
+            Reg_load2a   = 4'b0011,
+            Reg_load2b   = 4'b0100,
+			Reg_load3a   = 4'b0101,
+            Reg_load3b   = 4'b0110,
             T0           = 4'b0111,
             T1           = 4'b1000,
             T2           = 4'b1001,
@@ -94,13 +94,13 @@ module datapath_tb_ror;
       Present_state <= Default;
     end else begin
       case (Present_state)
-        Default      : Present_state <= PC_load1a;
-        PC_load1a    : Present_state <= PC_load1b;
-        PC_load1b    : Present_state <= Reg_load1a;
+       Default      : Present_state <= Reg_load1a;
         Reg_load1a   : Present_state <= Reg_load1b;
         Reg_load1b   : Present_state <= Reg_load2a;
         Reg_load2a   : Present_state <= Reg_load2b;
-        Reg_load2b   : Present_state <= T0;
+		Reg_load2b : Present_state <= Reg_load3a;
+		Reg_load3a : Present_state <= Reg_load3b;
+		Reg_load3b : Present_state <= T0;
         T0           : Present_state <= T1;
         T1           : Present_state <= T2;
         T2           : Present_state <= T3;
@@ -120,7 +120,7 @@ module datapath_tb_ror;
 
       Reg_load1a: begin
         deassert_all();
-        MDatain <= 32'b0001;
+        MDatain <= 32'b0010;
         Read <= 1; MDRin <= 1;
       end
 
@@ -137,7 +137,21 @@ module datapath_tb_ror;
 
       Reg_load2b: begin
         deassert_all();
-        MDRout <= 1; R4in <= 1;  //Initialize R4 with 0x71
+        MDRout <= 1; R4in <= 1;  //Initialize R4 with 0x1
+      end
+	  
+	  Reg_load3a: begin
+        deassert_all();
+        MDatain <= 32'h67; //load 0x67
+		Read <= 1; MDRin <= 1;
+        //Read <= 0; MDRin <= 0;
+      end
+
+      Reg_load3b: begin
+        deassert_all();
+        MDRout <= 1; R7in <= 1;  
+		//MDRout <= 0; R2in <= 0;  
+		
       end
 
       T0: begin

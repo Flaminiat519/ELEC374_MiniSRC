@@ -134,7 +134,7 @@ module datapath_tb_add;
 	  
 	  Reg_load3a: begin
         deassert_all();
-        MDatain <= 32'h67; //load 52
+        MDatain <= 32'h67; //load 67
 		Read <= 1; MDRin <= 1;
         //Read <= 0; MDRin <= 0;
       end
