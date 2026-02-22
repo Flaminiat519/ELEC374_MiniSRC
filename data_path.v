@@ -22,8 +22,14 @@ module data_path (
     //special external control enables
     input wire IncPC,
     input wire Read,
+	input wire Write,
     input wire [31:0] MDatain,
-    output wire [31:0] BusMuxOut
+    output wire [31:0] BusMuxOut,
+	
+	//Memory control enables
+	//Conditional Logic Control Enables
+	input wire CON_In,
+	input wire CON_Out
 );
     //internal wires for registers
     wire [31:0] R0, RA, RB, R1, R2, R3, R4, R5, R6, R7;
@@ -35,6 +41,10 @@ module data_path (
     wire [63:0] ALU_Data;
     wire [12:0] alu_op;
 	ALU alu (.RA(Y), .RB(Bus), .ALU_op(alu_op), .RZ(ALU_Data));
+	
+	//idk
+	wire [31:0] memory_out;
+	wire Mux_Out;
 
 	//special z registers (HI AND LO)
     register Z_reg (.clear(clear), .clock(clock), .enable(Zin), .BusMuxIn(ALU_Data[31:0]), .BusMuxOut(Z));
@@ -67,7 +77,13 @@ module data_path (
     register MAR_reg (.clear(clear), .clock(clock), .enable(MARin), .BusMuxIn(Bus), .BusMuxOut(MAR));
 	//special register modules
     pc_reg PC_reg (.D(Bus),.clk(clock),.clr(clear),.increment(IncPC),.enable(PCin),.Q(PC));
-    mdr_reg MDR_reg (.BusMuxIn(Bus),.clk(clock),.clr(clear),.Read(Read),.MDRin(MDRin),.MDAtain(MDatain),.Q(MDR));
+    //mdr_reg MDR_reg (.BusMuxIn(Bus),.clk(clock),.clr(clear),.Read(Read),.MDRin(MDRin),.MDAtain(MDatain),.Q(MDR));
+	mdr_reg MDR_reg (.BusMuxIn(Bus), .clk(clock), .clr(clear), .Read(Read), .MDRin(MDRin), .MDAtain(memory_out), .Q(MDR));
+	
+	//Memory modules
+	memory RAM (.clk(clock), .read(Read), .write(Write), .address(MAR[8:0]),   .data_in(MDR),.data_out(memory_out));
+	//conditional logic modules
+	//con_ff CON_FF (BusMux_IR[20:19], Mux_Out, CON_In, CON_Out);
 
     //BusMux initialization
     Bus BUS (
