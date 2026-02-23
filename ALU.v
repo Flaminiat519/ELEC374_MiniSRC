@@ -52,7 +52,7 @@ module ALU (
 	not_gate not_instance (RA, not_result);
 	
 	wire [31:0] div_quotient;
-wire [31:0] div_remainder;
+	wire [31:0] div_remainder;
 
 div div_instance(
 	.dividend(RA),
