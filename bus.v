@@ -2,12 +2,12 @@
 module Bus (
     //define 32-bit inputs for each relevant component
     //includes registers and control signals
-    input [31:0] RA, RB, R0, R1, R2, R3, R4, R5, R6, R7,
+    input [31:0] R0, R1, R2, R3, R4, R5, R6, R7,
     input [31:0] R8, R9, R10, R11, R12, R13, R14, R15,
     input [31:0] HI, LO, Z, ZHI, PC, MAR, MDR, IR, Y,
 
     //define inputs for the outputs of each register
-    input RAout, RBout, R0out, R1out, R2out, R3out, R4out, R5out, R6out, R7out,
+    input R0out, R1out, R2out, R3out, R4out, R5out, R6out, R7out,
     input R8out, R9out, R10out, R11out, R12out, R13out, R14out, R15out,
     input HIout, LOout, Zout, ZHIout, PCout, MARout, MDRout, IRout, Yout,
 
@@ -20,8 +20,6 @@ module Bus (
     //to determine which register to access
 always @(*) begin
     if (R0out) BusMuxOut = R0;
-    else if (RAout) BusMuxOut = RA;
-    else if (RBout) BusMuxOut = RB;
     else if (R1out) BusMuxOut = R1;
     else if (R2out) BusMuxOut = R2;
     else if (R3out) BusMuxOut = R3;
