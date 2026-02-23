@@ -1,0 +1,28 @@
+//Register0 module
+module register0 #(
+  parameter DATA_WIDTH_IN  = 32,
+  parameter DATA_WIDTH_OUT = 32,
+  parameter INIT           = 32'b0
+)(
+  input wire clear,
+  input wire clock,
+  input wire enable,
+  //specific input for R0
+  input wire BAout, 
+  input wire [DATA_WIDTH_IN-1:0]  BusMuxIn, //input?
+  output wire [DATA_WIDTH_OUT-1:0] BusMuxOut //output?
+);
+
+  reg [DATA_WIDTH_IN-1:0] q;
+  initial q = INIT;
+
+  always @(posedge clock) begin
+    if (clear)       q <= {DATA_WIDTH_IN{1'b0}};
+    else if (enable) q <= BusMuxIn;
+  end
+
+  //implement the logic for the AND with BAout
+  //make sure to NOT BAout
+  assign BusMuxOut = q & {DATA_WIDTH_OUT{~BAout}};
+
+endmodule
