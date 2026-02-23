@@ -83,7 +83,7 @@ module datapath_tb_mul;
         case(Present_state)
           
             L1a: begin 
-                MDatain <= 32'h4; Read <= 1; MDRin <= 1; 
+                MDatain <= -32'h12345678; Read <= 1; MDRin <= 1; 
             end
             
             L1b: begin 
@@ -91,7 +91,7 @@ module datapath_tb_mul;
             end
          
             L2a: begin 
-                MDatain <= 32'h5; Read <= 1; MDRin <= 1; 
+                MDatain <= 32'h10000000; Read <= 1; MDRin <= 1; 
             end
             
             L2b: begin 
