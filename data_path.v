@@ -43,8 +43,14 @@ module data_path (
 	ALU alu (.RA(Y), .RB(Bus), .ALU_op(alu_op), .RZ(ALU_Data));
 	
 	//idk
-	wire [31:0] memory_out;
+	
 	wire Mux_Out;
+	
+
+	wire CON;
+	wire [31:0] mem_data_out;
+	wire PC_enable;
+	assign PC_enable = PCin & CON;   // branch gating
 
 	//special z registers (HI AND LO)
     register Z_reg (.clear(clear), .clock(clock), .enable(Zin), .BusMuxIn(ALU_Data[31:0]), .BusMuxOut(Z));
@@ -78,13 +84,32 @@ module data_path (
 	//special register modules
     pc_reg PC_reg (.D(Bus),.clk(clock),.clr(clear),.increment(IncPC),.enable(PCin),.Q(PC));
     //mdr_reg MDR_reg (.BusMuxIn(Bus),.clk(clock),.clr(clear),.Read(Read),.MDRin(MDRin),.MDAtain(MDatain),.Q(MDR));
-	mdr_reg MDR_reg (.BusMuxIn(Bus), .clk(clock), .clr(clear), .Read(Read), .MDRin(MDRin), .MDAtain(memory_out), .Q(MDR));
+	mdr_reg MDR_reg (
+    .BusMuxIn(Bus),
+    .clk(clock),
+    .clr(clear),
+    .Read(Read),
+    .MDRin(MDRin),
+    .MDatain(mem_data_out),
+    .Q(MDR)
+	);
 	
 	//Memory modules
-	memory RAM (.clk(clock), .read(Read), .write(Write), .address(MAR[8:0]),   .data_in(MDR),.data_out(memory_out));
+	ram RAM (.clk(clock),
+    .read(Read),
+    .write(Write),
+    .address(MAR[8:0]),
+    .data_in(MDR),
+    .data_out(mem_data_out));
 	//conditional logic modules
-	//con_ff CON_FF (BusMux_IR[20:19], Mux_Out, CON_In, CON_Out);
-
+	con_ff CON_unit (
+    .clk(clock),
+    .clear(clear),
+    .CONin(CON_In),
+    .C2(IR[20:19]),
+    .Bus_Data(Bus),
+    .CON(CON)
+	);
     //BusMux initialization
     Bus BUS (
         .R0(R0), .RA(RA), .RB(RB), .R1(R1), .R2(R2), .R3(R3), .R4(R4), .R5(R5), .R6(R6), .R7(R7),

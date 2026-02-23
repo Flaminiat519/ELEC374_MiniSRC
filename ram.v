@@ -1,22 +1,31 @@
-module memory (
+module ram (
     input clk,
     input read,
     input write,
-    input [15:0] address,
+    input [8:0] address,   
     input [31:0] data_in,
     output reg [31:0] data_out
 );
 
-    // 256 words of 32-bit memory (you can adjust size)
-    reg [31:0] mem [0:255];
+reg [31:0] mem [511:0];
 
-    always @(posedge clk) begin
-        if (write) begin
-            mem[address] <= data_in;
-        end
-        if (read) begin
-            data_out <= mem[address];
-        end
-    end
+initial begin
+    $readmemh("ram.hex", mem);
+end
+
+always @(posedge clk) begin
+    if (write)
+        mem[address] <= data_in;
+
+    if (read)
+        data_out <= mem[address];
+end
 
 endmodule
+
+/*always @(*) begin
+    if (read)
+        data_out = mem[address];
+end*/
+
+//only ld and st use RAM
