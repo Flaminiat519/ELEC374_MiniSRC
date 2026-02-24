@@ -15,7 +15,7 @@ module data_path (
     input wire MDRin, MDRout,
     input wire IRin, IRout,
     input wire Yin, Yout,
-	input wire OUTPORT_In, INPORT_Out
+	input wire OUTPORT_In, INPORT_Out, OUTPORT_Out,
     //special external control enables
     input wire IncPC,
     input wire Read,
@@ -61,9 +61,10 @@ module data_path (
 	//special z registers (HI AND LO)
     register Z_reg (.clear(clear), .clock(clock), .enable(Zin), .BusMuxIn(ALU_Data[31:0]), .BusMuxOut(Z));
 	register ZHI_reg (.clear(clear), .clock(clock), .enable(ZHIin), .BusMuxIn(ALU_Data[63:32]), .BusMuxOut(ZHI));
-	
+
+	//special register 0
+	register0 R0_reg  (.clear(clear), .clock(clock), .enable(Rin_signals[0]), .BAout(BAout), .BusMuxIn(Bus), .BusMuxOut(R0));
     //general purpose registers
-    register R0_reg  (.clear(clear), .clock(clock), .enable(Rin_signals[0]),  .BusMuxIn(Bus), .BusMuxOut(R0));
     register R1_reg  (.clear(clear), .clock(clock), .enable(Rin_signals[1]),  .BusMuxIn(Bus), .BusMuxOut(R1));
     register R2_reg  (.clear(clear), .clock(clock), .enable(Rin_signals[2]),  .BusMuxIn(Bus), .BusMuxOut(R2));
     register R3_reg  (.clear(clear), .clock(clock), .enable(Rin_signals[3]),  .BusMuxIn(Bus), .BusMuxOut(R3));
@@ -115,7 +116,7 @@ module data_path (
     .CONin(CON_In),
     .C2(IR[20:19]),
     .Bus_Data(Bus),
-    .CON(CON)
+	.CON(CON),
 	//inport and outport
 	.INPORT(INPORT),
 	.OUTPORT(OUTPORT),
