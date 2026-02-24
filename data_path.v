@@ -121,7 +121,7 @@ module data_path (
 	.INPORT(INPORT),
 	.OUTPORT(OUTPORT),
 	.INPORTout(INPORT_Out),
-	.OUTPORTout(OUTPORT_Out),
+	.OUTPORTout(OUTPORT_Out)
 	);
 
     //BusMux initialization
