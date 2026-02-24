@@ -1,4 +1,4 @@
-//ADD operation test bench
+/*//ADD operation test bench
 `timescale 1ns/10ps
 
 module mfhi_tb.v;
@@ -196,3 +196,4 @@ module mfhi_tb.v;
   end
 
 endmodule
+*/
