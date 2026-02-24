@@ -7,7 +7,7 @@ module mdr_reg (
 	input wire clr,
 	input wire Read,
 	input wire MDRin,
-	input wire [31:0] MDAtain,
+	input wire [31:0] MDatain,
 	output wire [31:0] Q
 );
 	wire [31:0] D;
