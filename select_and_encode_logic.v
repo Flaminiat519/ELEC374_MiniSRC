@@ -24,7 +24,6 @@ assign dec = (16'b1 << Rsel);
 	
 //Gate decoder based of Rin and Rout
 assign R_in = dec & {16{Rin}};
-assign R_out = dec & {16{Rout}};
+assign R_out = dec & ({16{Rout | BAout}});
 
-//Remember to implement BAout functionality later
 endmodule
