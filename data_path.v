@@ -116,12 +116,7 @@ module data_path (
     .CONin(CON_In),
     .C2(IR[20:19]),
     .Bus_Data(Bus),
-	.CON(CON),
-	//inport and outport
-	.INPORT(INPORT),
-	.OUTPORT(OUTPORT),
-	.INPORTout(INPORT_Out),
-	.OUTPORTout(OUTPORT_Out),
+	.CON(CON)
 	);
 
     //BusMux initialization
@@ -130,7 +125,6 @@ module data_path (
         .R8(R8), .R9(R9), .R10(R10), .R11(R11), .R12(R12), .R13(R13), .R14(R14), .R15(R15),
         .HI(HI), .LO(LO), .Z(Z), .ZHI(ZHI), .PC(PC), .MAR(MAR), .MDR(MDR), .IR(IR), .Y(Y),
 		.INPORT(INPORT),
-		.OUTPORT(OUTPORT),
         .R0out(Rout_signals[0]), .R1out(Rout_signals[1]), .R2out(Rout_signals[2]),
         .R3out(Rout_signals[3]), .R4out(Rout_signals[4]), .R5out(Rout_signals[5]), .R6out(Rout_signals[6]), .R7out(Rout_signals[7]),
         .R8out(Rout_signals[8]), .R9out(Rout_signals[9]), .R10out(Rout_signals[10]), .R11out(Rout_signals[11]), .R12out(Rout_signals[12]),
@@ -138,7 +132,6 @@ module data_path (
         .HIout(HIout), .LOout(LOout), .Zout(Zout), .ZHIout(ZHIout), .PCout(PCout), .MARout(MARout),
         .MDRout(MDRout), .IRout(IRout), .Yout(Yout),
 		.INPORTout(INPORT_Out),
-		.OUTPORTout(OUTPORT_Out),
         .BusMuxOut(Bus)
     );
 
