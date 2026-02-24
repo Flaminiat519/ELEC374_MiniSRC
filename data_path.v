@@ -16,6 +16,7 @@ module data_path (
     input wire IRin, IRout,
     input wire Yin, Yout,
 	input wire OUTPORT_In, INPORT_Out, OUTPORT_Out,
+	input wire Cout,
     //special external control enables
     input wire IncPC,
     input wire Read,
@@ -123,7 +124,7 @@ module data_path (
     Bus BUS (
         .R0(R0), .R1(R1), .R2(R2), .R3(R3), .R4(R4), .R5(R5), .R6(R6), .R7(R7),
         .R8(R8), .R9(R9), .R10(R10), .R11(R11), .R12(R12), .R13(R13), .R14(R14), .R15(R15),
-        .HI(HI), .LO(LO), .Z(Z), .ZHI(ZHI), .PC(PC), .MAR(MAR), .MDR(MDR), .IR(IR), .Y(Y),
+        .HI(HI), .LO(LO), .Z(Z), .ZHI(ZHI), .PC(PC), .MAR(MAR), .MDR(MDR), .IR(IR), .Y(Y), .C_sign_extended(C),
 		.INPORT(INPORT),
         .R0out(Rout_signals[0]), .R1out(Rout_signals[1]), .R2out(Rout_signals[2]),
         .R3out(Rout_signals[3]), .R4out(Rout_signals[4]), .R5out(Rout_signals[5]), .R6out(Rout_signals[6]), .R7out(Rout_signals[7]),
@@ -131,7 +132,7 @@ module data_path (
         .R13out(Rout_signals[13]), .R14out(Rout_signals[14]), .R15out(Rout_signals[15]),
         .HIout(HIout), .LOout(LOout), .Zout(Zout), .ZHIout(ZHIout), .PCout(PCout), .MARout(MARout),
         .MDRout(MDRout), .IRout(IRout), .Yout(Yout),
-		.INPORTout(INPORT_Out),
+		.INPORTout(INPORT_Out), .Cout(Cout),
         .BusMuxOut(Bus)
     );
 

@@ -4,14 +4,14 @@ module Bus (
     //includes registers and control signals
     input [31:0] R0, R1, R2, R3, R4, R5, R6, R7,
     input [31:0] R8, R9, R10, R11, R12, R13, R14, R15,
-    input [31:0] HI, LO, Z, ZHI, PC, MAR, MDR, IR, Y,
+    input [31:0] HI, LO, Z, ZHI, PC, MAR, MDR, IR, Y, C_sign_extended,
 	input [31:0] INPORT,
 
     //define inputs for the outputs of each register
     input R0out, R1out, R2out, R3out, R4out, R5out, R6out, R7out,
     input R8out, R9out, R10out, R11out, R12out, R13out, R14out, R15out,
     input HIout, LOout, Zout, ZHIout, PCout, MARout, MDRout, IRout, Yout,
-	input INPORTout,
+	input INPORTout, Cout,
 
     //define 32-bit output register for the BusMuxOut
     output reg [31:0] BusMuxOut
@@ -47,6 +47,7 @@ always @(*) begin
     else if (IRout) BusMuxOut = IR;
     else if (Yout) BusMuxOut = Y;
 	else if (INPORTout) BusMuxOut = INPORT;
+	else if(Cout) BusMuxOut = C_sign_extended;
     else BusMuxOut = 32'b0;
 end
 
