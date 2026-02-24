@@ -15,6 +15,7 @@ module data_path (
     input wire MDRin, MDRout,
     input wire IRin, IRout,
     input wire Yin, Yout,
+	input wire OUTPORT_In, INPORT_Out, OUTPORT_Out,
     //special external control enables
     input wire IncPC,
     input wire Read,
@@ -31,6 +32,7 @@ module data_path (
     wire [31:0] R0, R1, R2, R3, R4, R5, R6, R7;
     wire [31:0] R8, R9, R10, R11, R12, R13, R14, R15;
     wire [31:0] HI, LO, PC, MAR, MDR, IR, Y, Z, ZHI;
+	wire [31:0] INPORT, OUTPORT;
 	//internal bus wire
     wire [31:0] Bus;
     //alu initialization
@@ -41,6 +43,10 @@ module data_path (
 	wire [15:0] Rin_signals, Rout_signals;
 	wire [31:0] C;
 	select_and_encode_logic selectandencode (.IR(IR), .Gra(Gra), .Grb(Grb), .Grc(Grc), .Rin(Rin), .Rout(Rout), .BAout(BAout), .C(C), .R_in(Rin_signals), .R_out(Rout_signals));
+	//wires for the input and output ports
+	wire [31:0] INPORT_Data;
+	wire [31:0] OUTPORT_Data;
+
 	
 	//idk
 	
@@ -55,9 +61,10 @@ module data_path (
 	//special z registers (HI AND LO)
     register Z_reg (.clear(clear), .clock(clock), .enable(Zin), .BusMuxIn(ALU_Data[31:0]), .BusMuxOut(Z));
 	register ZHI_reg (.clear(clear), .clock(clock), .enable(ZHIin), .BusMuxIn(ALU_Data[63:32]), .BusMuxOut(ZHI));
-	
+
+	//special register 0
+	register0 R0_reg  (.clear(clear), .clock(clock), .enable(Rin_signals[0]), .BAout(BAout), .BusMuxIn(Bus), .BusMuxOut(R0));
     //general purpose registers
-    register R0_reg  (.clear(clear), .clock(clock), .enable(Rin_signals[0]),  .BusMuxIn(Bus), .BusMuxOut(R0));
     register R1_reg  (.clear(clear), .clock(clock), .enable(Rin_signals[1]),  .BusMuxIn(Bus), .BusMuxOut(R1));
     register R2_reg  (.clear(clear), .clock(clock), .enable(Rin_signals[2]),  .BusMuxIn(Bus), .BusMuxOut(R2));
     register R3_reg  (.clear(clear), .clock(clock), .enable(Rin_signals[3]),  .BusMuxIn(Bus), .BusMuxOut(R3));
@@ -73,6 +80,9 @@ module data_path (
     register R13_reg (.clear(clear), .clock(clock), .enable(Rin_signals[13]), .BusMuxIn(Bus), .BusMuxOut(R13));
     register R14_reg (.clear(clear), .clock(clock), .enable(Rin_signals[14]), .BusMuxIn(Bus), .BusMuxOut(R14));
     register R15_reg (.clear(clear), .clock(clock), .enable(Rin_signals[15]), .BusMuxIn(Bus), .BusMuxOut(R15));
+	//general purpose registers for Inport and Outport
+	register INPORT_reg (.clear(clear), .clock(clock), .enable(INPORT_In), .BusMuxIn(MDatain), .BusMuxOut(INPORT));
+	register OUTPORT_reg (.clear(clear), .clock(clock), .enable(OUTPORT_In), .BusMuxIn(Bus), .BusMuxOut(OUTPORT));
     //special general registers HI/LO get ALU_Data directly
     register HI_reg (.clear(clear), .clock(clock), .enable(HIin), .BusMuxIn(Bus), .BusMuxOut(HI));
 	register LO_reg (.clear(clear), .clock(clock), .enable(LOin), .BusMuxIn(Bus), .BusMuxOut(LO));
@@ -106,19 +116,29 @@ module data_path (
     .CONin(CON_In),
     .C2(IR[20:19]),
     .Bus_Data(Bus),
-    .CON(CON)
+	.CON(CON),
+	//inport and outport
+	.INPORT(INPORT),
+	.OUTPORT(OUTPORT),
+	.INPORTout(INPORT_Out),
+	.OUTPORTout(OUTPORT_Out),
 	);
+
     //BusMux initialization
     Bus BUS (
         .R0(R0), .R1(R1), .R2(R2), .R3(R3), .R4(R4), .R5(R5), .R6(R6), .R7(R7),
         .R8(R8), .R9(R9), .R10(R10), .R11(R11), .R12(R12), .R13(R13), .R14(R14), .R15(R15),
         .HI(HI), .LO(LO), .Z(Z), .ZHI(ZHI), .PC(PC), .MAR(MAR), .MDR(MDR), .IR(IR), .Y(Y),
+		.INPORT(INPORT),
+		.OUTPORT(OUTPORT),
         .R0out(Rout_signals[0]), .R1out(Rout_signals[1]), .R2out(Rout_signals[2]),
         .R3out(Rout_signals[3]), .R4out(Rout_signals[4]), .R5out(Rout_signals[5]), .R6out(Rout_signals[6]), .R7out(Rout_signals[7]),
         .R8out(Rout_signals[8]), .R9out(Rout_signals[9]), .R10out(Rout_signals[10]), .R11out(Rout_signals[11]), .R12out(Rout_signals[12]),
         .R13out(Rout_signals[13]), .R14out(Rout_signals[14]), .R15out(Rout_signals[15]),
         .HIout(HIout), .LOout(LOout), .Zout(Zout), .ZHIout(ZHIout), .PCout(PCout), .MARout(MARout),
         .MDRout(MDRout), .IRout(IRout), .Yout(Yout),
+		.INPORTout(INPORT_Out),
+		.OUTPORTout(OUTPORT_Out),
         .BusMuxOut(Bus)
     );
 
