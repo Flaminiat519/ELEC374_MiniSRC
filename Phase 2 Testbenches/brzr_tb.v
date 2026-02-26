@@ -1,202 +1,257 @@
-
-
-//ADD operation test bench
-
-
 `timescale 1ns/10ps
+// ================================================================
+//  Testbench: tb_brzr
+//  brzr R3, 48  — branch if R3 == 0
+//
+//  Case 1 (TAKEN):     R3=0x00000000 -> CON=1 -> PC jumps to 0x41
+//  Case 2 (NOT TAKEN): R3=0x00000005 -> CON=0 -> PC stays at 0x11
+//
+//  Control Sequence:
+//    T0: PCout, MARin, IncPC, Zin
+//    T1: Zlowout, PCin, Read, MDRin
+//    T2: MDRout, IRin
+//    T3: Gra, Rout, CONin
+//    T4: PCout, Yin
+//    T5: Cout, ADD, Zin
+//    T6: Zlowout, CON->PCin
+//
+//  PC starts at 0x10, incremented to 0x11 in T1
+//  Branch offset C=48=0x30
+//  Taken target = 0x11 + 0x30 = 0x41
+//
+//  B-Format: {opcode[31:27], Ra[26:23], C2[22:19], C[18:0]}
+//  brzr: opcode=5'b10101, C2=2'b00 -> IR[22:19]=4'b0000
+// ================================================================
+module tb_brzr;
 
-module datapath_tb_add;
-  //Signal declarations
-  reg clock, clear;
-  reg R0in, RAin, RBin, R1in, R2in, R3in, R4in, R5in, R6in, R7in;
-  reg R8in, R9in, R10in, R11in, R12in, R13in, R14in, R15in;
-  reg R0out, RAout, RBout, R1out, R2out, R3out, R4out, R5out, R6out, R7out;
-  reg R8out, R9out, R10out, R11out, R12out, R13out, R14out, R15out;
-  reg HIin, HIout, LOin, LOout, Zin, Zout;
-  reg PCin, PCout, MARin, MARout, MDRin, MDRout, IRin, IRout, Yin, Yout;
-  reg IncPC, Read;
-  reg [31:0] MDatain;
+    reg         clock, clear;
+    reg         Gra, Grb, Grc, Rin, Rout, BAout;
+    reg         HIin, HIout, LOin, LOout;
+    reg         Zin, Zout, ZHIout, ZHIin;
+    reg         PCin, PCout;
+    reg         MARin, MARout;
+    reg         MDRin, MDRout;
+    reg         IRin, IRout;
+    reg         Yin, Yout;
+    reg         OUTPORT_In, INPORT_Out, OUTPORT_Out;
+    reg         Cout;
+    reg         IncPC, Read, Write;
+    reg  [31:0] MDatain;
+    reg  [12:0] alu_op;
+    reg         CON_In, CON_Out;
+    wire [31:0] BusMuxOut;
 
-  wire [31:0] BusMuxOut;
+    data_path DUT (
+        .clock(clock), .clear(clear),
+        .Gra(Gra), .Grb(Grb), .Grc(Grc),
+        .Rin(Rin), .Rout(Rout), .BAout(BAout),
+        .HIin(HIin), .HIout(HIout),
+        .LOin(LOin), .LOout(LOout),
+        .Zin(Zin), .Zout(Zout), .ZHIout(ZHIout), .ZHIin(ZHIin),
+        .PCin(PCin), .PCout(PCout),
+        .MARin(MARin), .MARout(MARout),
+        .MDRin(MDRin), .MDRout(MDRout),
+        .IRin(IRin), .IRout(IRout),
+        .Yin(Yin), .Yout(Yout),
+        .OUTPORT_In(OUTPORT_In), .INPORT_Out(INPORT_Out), .OUTPORT_Out(OUTPORT_Out),
+        .Cout(Cout),
+        .IncPC(IncPC), .Read(Read), .Write(Write),
+        .MDatain(MDatain),
+        .alu_op(alu_op),
+        .CON_In(CON_In), .CON_Out(CON_Out),
+        .BusMuxOut(BusMuxOut)
+    );
 
-  //State machine parameters
-  parameter Default      = 4'b0000,
-            Reg_load1a   = 4'b0001,
-            Reg_load1b   = 4'b0010,
-            Reg_load2a   = 4'b0011,
-            Reg_load2b   = 4'b0100,
-			Reg_load3a   = 4'b0101,
-            Reg_load3b   = 4'b0110,
-            T0           = 4'b0111,
-            T1           = 4'b1000,
-            T2           = 4'b1001,
-            T3           = 4'b1010,
-            T4           = 4'b1011,
-            T5           = 4'b1100;
+    initial clock = 0;
+    always #10 clock = ~clock;
 
-  reg [3:0] Present_state = Default;
+    localparam ADD = 13'b0000000010000;
+    // brzr R3, 48: opcode=10101, Ra=R3(0011), C2=00(brzr)->IR[22:19]=4'b0000, C=48
+    localparam IR_BRZR = {5'b10101, 4'd3, 4'b0000, 19'd48};
 
-  //datapath instantiation
-  data_path DUT (
-    .clock(clock), .clear(clear),
-    
-    .R0in(R0in), .RAin(RAin), .RBin(RBin), .R1in(R1in), .R2in(R2in), .R3in(R3in), .R4in(R4in), .R5in(R5in),
-    .R6in(R6in), .R7in(R7in), .R8in(R8in), .R9in(R9in), .R10in(R10in), .R11in(R11in), .R12in(R12in),
-    .R13in(R13in), .R14in(R14in), .R15in(R15in),
-    .R0out(R0out), .RAout(RAout), .RBout(RBout), .R1out(R1out), .R2out(R2out), .R3out(R3out), .R4out(R4out),
-    .R5out(R5out), .R6out(R6out), .R7out(R7out), .R8out(R8out), .R9out(R9out), .R10out(R10out), .R11out(R11out),
-    .R12out(R12out), .R13out(R13out), .R14out(R14out), .R15out(R15out),
-    .HIin(HIin), .HIout(HIout),
-    .LOin(LOin), .LOout(LOout),
-    .Zin(Zin), .Zout(Zout),
-    .PCin(PCin), .PCout(PCout),
-    .MARin(MARin), .MARout(MARout),
-    .MDRin(MDRin), .MDRout(MDRout),
-    .IRin(IRin), .IRout(IRout),
-    .Yin(Yin), .Yout(Yout),
-    .IncPC(IncPC),
-    .Read(Read),
-    .MDatain(MDatain),
+    parameter
+        Default   = 4'd0,
+        // Case 1: TAKEN (R3=0)
+        C1_T0     = 4'd1,
+        C1_T1     = 4'd2,
+        C1_T2     = 4'd3,
+        C1_T3     = 4'd4,
+        C1_T4     = 4'd5,
+        C1_T5     = 4'd6,
+        C1_T6     = 4'd7,
+        C1_Done   = 4'd8,
+        // Case 2: NOT TAKEN (R3=5)
+        C2_T0     = 4'd9,
+        C2_T1     = 4'd10,
+        C2_T2     = 4'd11,
+        C2_T3     = 4'd12,
+        C2_T4     = 4'd13,
+        C2_T5     = 4'd14,
+        C2_T6     = 4'd15,
+        Done      = 4'd0; // reuse 0 as Done (last state)
 
-    .BusMuxOut(BusMuxOut)
-  );
+    // Need 5 bits since Done wraps — use 5-bit state
+    parameter DONE = 5'd16;
+    reg [4:0] Present_state = Default;
 
-  //clock setup
-  initial begin
-    clock = 0;
-    forever #10 clock = ~clock;
-  end
-
-  //function to deassert all control signals (wanna make sure that we only turn on the ones we need)
-  task deassert_all;
-  begin
-    R0in = 0; RAin = 0; RBin = 0; R1in = 0; R2in = 0; R3in = 0; R4in = 0; R5in = 0; 
-    R6in = 0; R7in = 0; R8in = 0; R9in = 0; R10in = 0; R11in = 0; R12in = 0; R13in = 0; 
-    R14in = 0; R15in = 0;
-    R0out = 0; RAout = 0; RBout = 0; R1out = 0; R2out = 0; R3out = 0; R4out = 0; R5out = 0; 
-    R6out = 0; R7out = 0; R8out = 0; R9out = 0; R10out = 0; R11out = 0; R12out = 0; R13out = 0; 
-    R14out = 0; R15out = 0;
-    HIin = 0; HIout = 0; LOin = 0; LOout = 0;
-    Zin = 0; Zout = 0; PCin = 0; PCout = 0;
-    MARin = 0; MARout = 0; MDRin = 0; MDRout = 0;
-    IRin = 0; IRout = 0; Yin = 0; Yout = 0;
-    IncPC = 0; Read = 0;
-  end
-  endtask
-
-  //State machine transitions
-  always @(posedge clock) begin
-    if (clear) begin
-      Present_state <= Default;
-    end else begin
-      case (Present_state)
-        Default      : Present_state <= Reg_load1a;
-        Reg_load1a   : Present_state <= Reg_load1b;
-        Reg_load1b   : Present_state <= Reg_load2a;
-        Reg_load2a   : Present_state <= Reg_load2b;
-		Reg_load2b : Present_state <= Reg_load3a;
-		Reg_load3a : Present_state <= Reg_load3b;
-		Reg_load3b : Present_state <= T0;
-        T0           : Present_state <= T1;
-        T1           : Present_state <= T2;
-        T2           : Present_state <= T3;
-        T3           : Present_state <= T4;
-        T4           : Present_state <= T5;
-      endcase
+    always @(posedge clock) begin
+        if (clear) Present_state <= Default;
+        else case (Present_state)
+            Default : Present_state <= C1_T0;
+            C1_T0   : Present_state <= C1_T1;
+            C1_T1   : Present_state <= C1_T2;
+            C1_T2   : Present_state <= C1_T3;
+            C1_T3   : Present_state <= C1_T4;
+            C1_T4   : Present_state <= C1_T5;
+            C1_T5   : Present_state <= C1_T6;
+            C1_T6   : Present_state <= C1_Done;
+            C1_Done : Present_state <= C2_T0;
+            C2_T0   : Present_state <= C2_T1;
+            C2_T1   : Present_state <= C2_T2;
+            C2_T2   : Present_state <= C2_T3;
+            C2_T3   : Present_state <= C2_T4;
+            C2_T4   : Present_state <= C2_T5;
+            C2_T5   : Present_state <= C2_T6;
+            C2_T6   : Present_state <= DONE;
+            DONE    : Present_state <= DONE;
+        endcase
     end
-  end
 
-  //State outputs
-  always @(Present_state) begin
-    case (Present_state)
-      Default: begin
-        deassert_all();
-        MDatain <= 32'h00000000; //clear
-      end
+    task deassert_all;
+    begin
+        {Gra,Grb,Grc,Rin,Rout,BAout}       = 6'b0;
+        {HIin,HIout,LOin,LOout}             = 4'b0;
+        {Zin,Zout,ZHIout,ZHIin}            = 4'b0;
+        {PCin,PCout,MARin,MARout}           = 4'b0;
+        {MDRin,MDRout,IRin,IRout}           = 4'b0;
+        {Yin,Yout,Cout}                     = 3'b0;
+        {OUTPORT_In,INPORT_Out,OUTPORT_Out} = 3'b0;
+        {IncPC,Read,Write,CON_In,CON_Out}   = 5'b0;
+        alu_op                              = 13'b0;
+        MDatain                             = 32'b0;
+    end
+    endtask
 
-      Reg_load1a: begin
+    always @(Present_state) begin
         deassert_all();
-        MDatain <= 32'h34; //load 32
-        Read <= 1; MDRin <= 1;
-      end
+        case (Present_state)
 
-      Reg_load1b: begin
-        deassert_all();
-        MDRout <= 1; R5in <= 1;  
-      end
+            // ═══════════════════════════════════
+            // Case 1: TAKEN — R3=0, CON=1
+            // PC=0x10 -> after fetch PC=0x11
+            // branch target = 0x11 + 48 = 0x41
+            // ═══════════════════════════════════
+            Default: begin
+                force DUT.R3_reg.q    = 32'h00000000;
+                force DUT.PC_reg.qTemp = 32'h00000010;
+                force DUT.IR_reg.q    = IR_BRZR;
+            end
+            C1_T0: begin
+                PCout <= 1; MARin <= 1; IncPC <= 1; Zin <= 1;
+            end
+            C1_T1: begin
+                Zout <= 1; PCin <= 1; Read <= 1; MDRin <= 1;
+            end
+            C1_T2: begin
+                MDRout <= 1; IRin <= 1;
+                force DUT.IR_reg.q = IR_BRZR;
+            end
+            C1_T3: begin
+                Gra <= 1; Rout <= 1; CON_In <= 1;
+            end
+            C1_T4: begin
+                PCout <= 1; Yin <= 1;
+            end
+            C1_T5: begin
+                Cout <= 1; alu_op <= ADD; Zin <= 1;
+            end
+            C1_T6: begin
+                Zout <= 1; PCin <= 1;
+            end
+            C1_Done: begin
+                release DUT.R3_reg.q;
+                release DUT.PC_reg.qTemp;
+                release DUT.IR_reg.q;
+            end
 
-      Reg_load2a: begin
-        deassert_all();
-        MDatain <= 32'h45; //load 52
-        Read <= 1; MDRin <= 1;
-      end
+            // ═══════════════════════════════════
+            // Case 2: NOT TAKEN — R3=5, CON=0
+            // PC=0x10 -> after fetch PC=0x11
+            // branch NOT taken, PC stays at 0x11
+            // ═══════════════════════════════════
+            C2_T0: begin
+                force DUT.R3_reg.q    = 32'h00000005;
+                force DUT.PC_reg.qTemp = 32'h00000010;
+                force DUT.IR_reg.q    = IR_BRZR;
+                PCout <= 1; MARin <= 1; IncPC <= 1; Zin <= 1;
+            end
+            C2_T1: begin
+                Zout <= 1; PCin <= 1; Read <= 1; MDRin <= 1;
+            end
+            C2_T2: begin
+                MDRout <= 1; IRin <= 1;
+                force DUT.IR_reg.q = IR_BRZR;
+            end
+            C2_T3: begin
+                Gra <= 1; Rout <= 1; CON_In <= 1;
+            end
+            C2_T4: begin
+                PCout <= 1; Yin <= 1;
+            end
+            C2_T5: begin
+                Cout <= 1; alu_op <= ADD; Zin <= 1;
+            end
+            C2_T6: begin
+                Zout <= 1; PCin <= 1;
+            end
 
-      Reg_load2b: begin
-        deassert_all();
-        MDRout <= 1; R6in <= 1;  
-      end
-	  
-	  Reg_load3a: begin
-        deassert_all();
-        MDatain <= 32'h67; //load 67
-		Read <= 1; MDRin <= 1;
-        //Read <= 0; MDRin <= 0;
-      end
+            DONE: begin
+                release DUT.R3_reg.q;
+                release DUT.PC_reg.qTemp;
+                release DUT.IR_reg.q;
+            end
 
-      Reg_load3b: begin
-        deassert_all();
-        MDRout <= 1; R2in <= 1;  
-		//MDRout <= 0; R2in <= 0;  
-		
-      end
+        endcase
+    end
 
-      //begin control sequence!
-      T0: begin
-        deassert_all();
-        //fetch instruction address
-        PCout <= 1; MARin <= 1; IncPC <= 1;
-      end
+    integer pass = 0, fail = 0;
+    task check;
+        input [31:0] got;
+        input [31:0] expected;
+        input [127:0] label;
+        begin
+            if (got === expected) begin
+                $display("  PASS %-35s got=0x%08h", label, got);
+                pass = pass + 1;
+            end else begin
+                $display("  FAIL %-35s exp=0x%08h got=0x%08h", label, expected, got);
+                fail = fail + 1;
+            end
+        end
+    endtask
 
-      T1: begin
-        deassert_all();
-        //read instruction
-        Read <= 1; MDRin <= 1;
-        MDatain <= 32'b00000101010101010101010101010101;  //loaded random val for rn since no control unit
-      end
+    always @(posedge clock) begin
+        #2;
+        case (Present_state)
+            C1_Done: begin
+                $display("-- brzr Case 1: TAKEN (R3=0) --");
+                check(DUT.CON_unit.CON,   1'b1,        "CON FF = 1");
+                check(DUT.PC_reg.qTemp,   32'h00000041, "PC = 0x41 (branch taken)");
+            end
+            DONE: begin
+                $display("-- brzr Case 2: NOT TAKEN (R3=5) --");
+                check(DUT.CON_unit.CON,   1'b0,        "CON FF = 0");
+                check(DUT.PC_reg.qTemp,   32'h00000011, "PC = 0x11 (not taken)");
+                $display("===== Results: %0d passed, %0d failed =====", pass, fail);
+                $stop;
+            end
+        endcase
+    end
 
-      T2: begin
-        deassert_all();
-        //update IR
-        MDRout <= 1; IRin <= 1;
-      end
-
-      T3: begin
-        deassert_all();
-        //load r5
-        R5out <= 1; Yin <= 1;
-      end
-
-      T4: begin
-        deassert_all();
-        //load r6
-        R6out <= 1; Zin <= 1;
-        //perform ADD operation
-        force DUT.alu_op = (13'b1 << 4);  //ADD index 4
-      end
-
-      T5: begin
-        deassert_all();
-        //load result in correct reg
-        Zout <= 1; R2in <= 1;
-        release DUT.alu_op;
-      end
-    endcase
-  end
-
-  //clear signal
-  initial begin
-    clear = 1;
-    #20 clear = 0;
-  end
+    initial begin
+        $display("===== brzr Testbench =====");
+        clear = 1;
+        #20 clear = 0;
+    end
 
 endmodule
