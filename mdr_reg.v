@@ -12,7 +12,7 @@ module mdr_reg (
 );
 	wire [31:0] D;
 	//choosing bus or memory data
-	mdr_mux muxmdr (BusMuxIn, Read, MDAtain, D);
+	mdr_mux muxmdr (BusMuxIn, Read, MDatain, D);
 	//reg instantiation
 	register mdr (.clear(clr), .clock(clk), .enable(MDRin), .BusMuxOut(Q), .BusMuxIn(D)
 );

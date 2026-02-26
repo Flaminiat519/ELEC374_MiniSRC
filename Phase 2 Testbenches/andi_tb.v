@@ -36,7 +36,7 @@ module andi_tb;
 
     reg [3:0] Present_state = Default;
 
-    // ✅ CORRECT instantiation using named mapping
+    //  CORRECT instantiation using named mapping
     data_path DUT(
         .clock(clock),
         .clear(clear),

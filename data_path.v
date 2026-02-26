@@ -27,7 +27,8 @@ module data_path (
 	//Memory control enables
 	//Conditional Logic Control Enables
 	input wire CON_In,
-	input wire CON_Out
+	input wire CON_Out,
+	input wire [12:0] alu_op       // TEMP: remove when Phase 3 decoder added
 );
     //internal wires for registers
     wire [31:0] R0, R1, R2, R3, R4, R5, R6, R7;
@@ -38,7 +39,7 @@ module data_path (
     wire [31:0] Bus;
     //alu initialization
     wire [63:0] ALU_Data;
-    wire [12:0] alu_op;
+    //wire [12:0] alu_op;
 	ALU alu (.RA(Y), .RB(Bus), .ALU_op(alu_op), .RZ(ALU_Data));
 	//Select and encode logic initialization
 	wire [15:0] Rin_signals, Rout_signals;
@@ -140,3 +141,31 @@ module data_path (
     assign BusMuxOut = Bus;
 
 endmodule
+
+// ── HOW TO REVERT IN PHASE 3 ────────────────────────────────────
+// When your decoder module is ready, inside data_path:
+//   1. Remove alu_op from the port list
+//   2. Add:  wire [12:0] alu_op;
+//   3. Add:  alu_decoder dec (.IR(IR), .alu_op(alu_op));
+// Everything else stays the same.
+
+// ── ALU OP BIT MAPPING (for reference in testbenches) ────────────
+// Bit 0  = AND
+// Bit 1  = OR
+// Bit 2  = NOT
+// Bit 3  = NEG
+// Bit 4  = ADD
+// Bit 5  = SUB
+// Bit 6  = MUL
+// Bit 7  = DIV
+// Bit 8  = SLL
+// Bit 9  = SRL
+// Bit 10 = SRA
+// Bit 11 = ROR
+// Bit 12 = ROL
+//
+// Examples:
+//   ADD  = 13'b0000000010000  (bit 4)
+//   SUB  = 13'b0000000100000  (bit 5)
+//   AND  = 13'b0000000000001  (bit 0)
+//   OR   = 13'b0000000000010  (bit 1)
