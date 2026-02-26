@@ -1,24 +1,22 @@
 `timescale 1ns/10ps
 // ================================================================
-//  Testbench: tb_addi
-//  addi R7, R4, -9  — R7 = R4 + (-9)
+//  Testbench: tb_ori
+//  ori R7, R4, 0x71  — R7 = R4 | 0x71
 //
-//  Control Sequence (Section 3.3):
-//    T0: PCout, MARin, IncPC, Zin
-//    T1: Zlowout, PCin, Read, MDRin
-//    T2: MDRout, IRin
-//    T3: Grb, Rout, Yin           (Y = R4)
-//    T4: Cout, ADD, Zin           (Z = R4 + C)
-//    T5: Zlowout, Gra, Rin        (R7 = Z)
+//  Control Sequence (same as addi but OR in T4):
+//    T0-T2: instruction fetch
+//    T3: Grb, Rout, Yin
+//    T4: Cout, OR, Zin
+//    T5: Zlowout, Gra, Rin
 //
 //  I-Format: {opcode[31:27], Ra[26:23], Rb[22:19], C[18:0]}
-//  addi opcode = 5'b01001
+//  ori opcode = 5'b01011
 //
 //  Test cases:
-//    Case 1: addi R7, R4, -9   R4=0x00000014(20) -> R7 = 20+(-9) = 11 = 0xB
-//    Case 2: addi R7, R4, 0x71 R4=0x00000010(16) -> R7 = 16+0x71 = 0x81
+//    Case 1: ori R7, R4, 0x71  R4=0x00 -> R7 = 0x00 | 0x71 = 0x71
+//    Case 2: ori R7, R4, 0x71  R4=0x88 -> R7 = 0x88 | 0x71 = 0xF9
 // ================================================================
-module addi_tb;
+module ori_tb;
 
     reg         clock, clear;
     reg         Gra, Grb, Grc, Rin, Rout, BAout;
@@ -61,15 +59,11 @@ module addi_tb;
     initial clock = 0;
     always #10 clock = ~clock;
 
-    localparam ADD = 13'b0000000010000;
+    localparam OR  = 13'b0000000000010; // bit 1
+    localparam ADD = 13'b0000000010000; // bit 4
 
-    // addi R7, R4, -9
-    // C = -9 in 19-bit 2's complement = 19'h7FFF7 = 19'b111_1111_1111_1111_0111
-    // Sign bit IR[18] = 1 -> sign extends to 0xFFFFFFF7
-    localparam IR_ADDI_C1 = {5'b01001, 4'd7, 4'd4, 19'h7FFF7}; // -9 in 19-bit
-
-    // addi R7, R4, 0x71
-    localparam IR_ADDI_C2 = {5'b01001, 4'd7, 4'd4, 19'h00071};
+    // ori R7, R4, 0x71
+    localparam IR_ORI = {5'b01011, 4'd7, 4'd4, 19'h00071};
 
     parameter
         Default  = 5'd0,
@@ -131,12 +125,12 @@ module addi_tb;
         case (Present_state)
 
             // ═══════════════════════════════════
-            // Case 1: addi R7, R4, -9
-            // R4=20=0x14 -> R7 = 20 + (-9) = 11 = 0xB
+            // Case 1: ori R7, R4, 0x71
+            // R4=0x00 -> R7 = 0x00 | 0x71 = 0x71
             // ═══════════════════════════════════
             Default: begin
-                force DUT.R4_reg.q = 32'h00000014;
-                force DUT.IR_reg.q = IR_ADDI_C1;
+                force DUT.R4_reg.q = 32'h00000000;
+                force DUT.IR_reg.q = IR_ORI;
             end
             C1_T0: begin
                 PCout <= 1; MARin <= 1; IncPC <= 1; Zin <= 1;
@@ -146,17 +140,17 @@ module addi_tb;
             end
             C1_T2: begin
                 MDRout <= 1; IRin <= 1;
-                force DUT.IR_reg.q = IR_ADDI_C1;
+                force DUT.IR_reg.q = IR_ORI;
             end
-            // T3: Grb, Rout, Yin -> Y = R4 = 0x14
+            // T3: Y = R4 = 0x00
             C1_T3: begin
                 Grb <= 1; Rout <= 1; Yin <= 1;
             end
-            // T4: Cout, ADD, Zin -> Z = 0x14 + (-9) = 0xB
+            // T4: Z = Y | C = 0x00 | 0x71 = 0x71
             C1_T4: begin
-                Cout <= 1; alu_op <= ADD; Zin <= 1;
+                Cout <= 1; alu_op <= OR; Zin <= 1;
             end
-            // T5: Zlowout, Gra, Rin -> R7 = 0xB
+            // T5: R7 = Z = 0x71
             C1_T5: begin
                 Zout <= 1; Gra <= 1; Rin <= 1;
             end
@@ -166,12 +160,15 @@ module addi_tb;
             end
 
             // ═══════════════════════════════════
-            // Case 2: addi R7, R4, 0x71
-            // R4=0x10(16) -> R7 = 16 + 0x71 = 0x81
+            // Case 2: ori R7, R4, 0x71
+            // R4=0x88 -> R7 = 0x88 | 0x71 = 0xF9
+            // 0x88 = 1000 1000
+            // 0x71 = 0111 0001
+            // OR   = 1111 1001 = 0xF9
             // ═══════════════════════════════════
             C2_T0: begin
-                force DUT.R4_reg.q = 32'h00000010;
-                force DUT.IR_reg.q = IR_ADDI_C2;
+                force DUT.R4_reg.q = 32'h00000088;
+                force DUT.IR_reg.q = IR_ORI;
                 PCout <= 1; MARin <= 1; IncPC <= 1; Zin <= 1;
             end
             C2_T1: begin
@@ -179,13 +176,13 @@ module addi_tb;
             end
             C2_T2: begin
                 MDRout <= 1; IRin <= 1;
-                force DUT.IR_reg.q = IR_ADDI_C2;
+                force DUT.IR_reg.q = IR_ORI;
             end
             C2_T3: begin
                 Grb <= 1; Rout <= 1; Yin <= 1;
             end
             C2_T4: begin
-                Cout <= 1; alu_op <= ADD; Zin <= 1;
+                Cout <= 1; alu_op <= OR; Zin <= 1;
             end
             C2_T5: begin
                 Zout <= 1; Gra <= 1; Rin <= 1;
@@ -218,12 +215,12 @@ module addi_tb;
         #2;
         case (Present_state)
             C1_Done: begin
-                $display("-- addi Case 1: addi R7, R4, -9 (R4=20) --");
-                check(DUT.R7_reg.q, 32'h0000000B, "R7 = 20+(-9) = 11 = 0xB");
+                $display("-- ori Case 1: ori R7, R4, 0x71 (R4=0x00) --");
+                check(DUT.R7_reg.q, 32'h00000071, "R7 = 0x00 | 0x71 = 0x71");
             end
             DONE: begin
-                $display("-- addi Case 2: addi R7, R4, 0x71 (R4=0x10) --");
-                check(DUT.R7_reg.q, 32'h00000081, "R7 = 0x10+0x71 = 0x81");
+                $display("-- ori Case 2: ori R7, R4, 0x71 (R4=0x88) --");
+                check(DUT.R7_reg.q, 32'h000000F9, "R7 = 0x88 | 0x71 = 0xF9");
                 $display("===== Results: %0d passed, %0d failed =====", pass, fail);
                 $stop;
             end
@@ -231,7 +228,7 @@ module addi_tb;
     end
 
     initial begin
-        $display("===== addi Testbench =====");
+        $display("===== ori Testbench =====");
         clear = 1;
         #20 clear = 0;
     end
