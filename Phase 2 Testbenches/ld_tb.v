@@ -93,8 +93,6 @@ module ld_tb;
                 #20 PCout <= 0; MARin <= 0; Read <= 0; MDRin <= 0; IncPC <= 0;
             end
 			
-			
-            
             //Load instruction from MDR into IR
             T1: begin
                 MDRout <= 1; IRin <= 1;

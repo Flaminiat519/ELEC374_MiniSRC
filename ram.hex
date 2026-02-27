@@ -11,7 +11,7 @@
 @005
 9330001F  // st 0x1F(R6), R6
 @006
-4BA7FFFF  // addi R7, R4, -1
+4BA7FFFF  // addi R7, R4, -1 //CHANGE
 @007
 4BA00071  // addi R7, R4, 0x71
 @008
