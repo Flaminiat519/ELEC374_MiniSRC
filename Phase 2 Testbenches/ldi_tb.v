@@ -1,4 +1,3 @@
-
 `timescale 1ns/10ps
 module ldi_tb;
 
@@ -41,10 +40,10 @@ module ldi_tb;
 
     initial begin
 
-        // Case 1: ldi R7, 0x65  ->  R7 = 0x65
+        //Case 1: ldi R7, 0x65  aka  R7 = 0x65
         DUT.RAM.mem[0] = 32'h8B800065;
 
-        // Case 2: ldi R0, 0x72(R2)  ->  R0 = R2+0x72 = 0x57+0x72 = 0xC9
+        //Case 2: ldi R0, 0x72(R2)  ->  R0 = R2+0x72 = 0x57+0x72 = 0xC9
         // DUT.RAM.mem[0]   = 32'h88100072;
         // DUT.R2_reg.q     = 32'h00000057; // preload R2 = 0x57
 
@@ -52,7 +51,7 @@ module ldi_tb;
         forever #10 Clock = ~Clock;
     end
 
-    // ── State transitions ────────────────────────────────────
+    //State Transitions
     always @(posedge Clock) begin
         case (Present_state)
             Default : #30 Present_state = T0;
@@ -64,7 +63,7 @@ module ldi_tb;
         endcase
     end
 
-    // ── State outputs ────────────────────────────────────────
+    //State Outputs
     always @(Present_state) begin
         {PCin,IRin,HIin,LOin,ZHIin,Zin,MARin,MDRin,OUTPORT_In,Yin} <= 0;
         {PCout,HIout,LOout,ZHIout,Zout,INPORT_Out,MDRout,Cout}      <= 0;
@@ -80,27 +79,27 @@ module ldi_tb;
                 CON_In <= 0;
                 alu_op <= 13'b0;
             end
-            // T0: fetch instruction from RAM[PC=0] into MDR
+            //Fetch instruction from RAM[PC=0] into MDR
             T0: begin
                 PCout <= 1; MARin <= 1; Read <= 1; MDRin <= 1;
                 #40 PCout <= 0; MARin <= 0; Read <= 0; MDRin <= 0;
             end
-            // T1: increment PC
+            //Increment PC
             T1: begin
                 IncPC <= 1;
                 #20 IncPC <= 0;
             end
-            // T2: load instruction from MDR into IR
+            //Load instruction from MDR into IR
             T2: begin
                 MDRout <= 1; IRin <= 1;
                 #40 MDRout <= 0; IRin <= 0;
             end
-            // T3: Y = Rb (0 if Rb=R0 due to BAout masking)
+            //Y = Rb (0 if Rb=R0 due to BAout masking)
             T3: begin
                 Grb <= 1; BAout <= 1; Yin <= 1;
                 #40 Grb <= 0; BAout <= 0; Yin <= 0;
             end
-            // T4: Z = Y + C (sign-extended immediate)
+            //Z = Y + C (sign-extended immediate)
             T4: begin
                 Cout <= 1; alu_op <= 13'b0000000010000; Zin <= 1;
                 #40 Cout <= 0; Zin <= 0;

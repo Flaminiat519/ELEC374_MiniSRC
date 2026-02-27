@@ -7,7 +7,7 @@ module ram (
     output reg [31:0] data_out
 );
 reg [31:0] mem [511:0];
-integer i;                    // moved here, outside initial block
+integer i;                   
 
 initial begin
     for (i = 0; i < 512; i = i + 1)

@@ -41,12 +41,14 @@ module ld_tb;
     );
 
     initial begin
-        // ── Switch between cases by commenting/uncommenting ──
-
-        // Case 1: ld R7, 0x65  ->  R7 = mem[0x65] = 0x84
+        //Case 1: ld R7, 0x65 aka R7 = mem[0x65] = 0x84
+		//IR[31:27] = 10001 = ldi opcode
+		//IR[26:23] = 0111 = Ra = R7
+		//IR[22:19] = 0000 = Rb = R0
+		//IR[18:0]  = 0x065 = C field
         //DUT.RAM.mem[0] = 32'h83800065;
 
-        // Case 2: ld R0, 0x72(R2)  R2=0x57  ->  R0 = mem[0xC9] = 0x2B
+        // Case 2: ld R0, 0x72(R2) aka  R2=0x57 and R0 = mem[0xC9] = 0x2B
         DUT.RAM.mem[0] = 32'h80100072;
         DUT.R2_reg.q   = 32'h00000057; // preload R2 = 0x57
 
@@ -54,7 +56,7 @@ module ld_tb;
         forever #10 Clock = ~Clock;
     end
 
-    // ── State transitions ────────────────────────────────────
+    //State Transitions
     always @(posedge Clock) begin
         case (Present_state)
             Default : #30 Present_state = T0;
@@ -69,7 +71,7 @@ module ld_tb;
         endcase
     end
 
-    // ── State outputs ────────────────────────────────────────
+    //State Outputs
     always @(Present_state) begin
         {PCin,IRin,HIin,LOin,ZHIin,Zin,MARin,MDRin,OUTPORT_In,Yin} <= 0;
         {PCout,HIout,LOout,ZHIout,Zout,INPORT_Out,MDRout,Cout}      <= 0;
@@ -85,47 +87,47 @@ module ld_tb;
                 CON_In <= 0;
                 alu_op <= 13'b0;
             end
-            // T0: fetch instruction from RAM[PC=0] into MDR
+            //Fetch instruction from RAM[PC=0] into MDR
             T0: begin
                 PCout <= 1; MARin <= 1; Read <= 1; MDRin <= 1;
                 #40 PCout <= 0; MARin <= 0; Read <= 0; MDRin <= 0;
             end
-            // T1: increment PC
+            //Increment PC
             T1: begin
                 IncPC <= 1;
                 #20 IncPC <= 0;
             end
-            // T2: load instruction from MDR into IR
+            //Load instruction from MDR into IR
             T2: begin
                 MDRout <= 1; IRin <= 1;
                 #40 MDRout <= 0; IRin <= 0;
             end
-            // T3: Y = Rb (0 if Rb=R0 due to BAout masking)
+            //Y = Rb (0 if Rb=R0 due to BAout masking)
             T3: begin
                 Grb <= 1; BAout <= 1; Yin <= 1;
                 #40 Grb <= 0; BAout <= 0; Yin <= 0;
             end
-            // T4: Z = Y + C (effective address)
+            //Z = Y + C (effective address)
             T4: begin
                 Cout <= 1; alu_op <= 13'b0000000010000; Zin <= 1;
                 #40 Cout <= 0; Zin <= 0;
             end
-            // T5: MAR = Z (effective address)
+            //MAR = Z (effective address)
             T5: begin
                 Zout <= 1; MARin <= 1;
                 #40 Zout <= 0; MARin <= 0;
             end
-            // T6: assert Read — RAM output becomes stable next cycle
+            //Assert Read — RAM output becomes stable next cycle
             T6: begin
                 Read <= 1;
                 #40 Read <= 0;
             end
-            // T6b: MDRin — latch stable RAM data into MDR
+            //MDRin — latch stable RAM data into MDR
             T6b: begin
                 Read <= 1; MDRin <= 1;
                 #40 Read <= 0; MDRin <= 0;
             end
-            // T7: Ra = MDR (destination register gets memory data)
+            //1Ra = MDR (destination register gets memory data)
             T7: begin
                 MDRout <= 1; Gra <= 1; Rin <= 1;
                 #40 MDRout <= 0; Gra <= 0; Rin <= 0;
