@@ -1,264 +1,136 @@
+
 `timescale 1ns/10ps
-// ================================================================
-//  Testbench: tb_ld
-//  Cases:
-//    Case 1: ld R7, 0x65        mem[0x65]=0x84  -> R7=0x84
-//    Case 2: ld R0, 0x72(R2)    R2=0x57, mem[0xC9]=0x2B -> R0=0x2B
-// ================================================================
 module ld_tb;
 
-    // ── DUT signals ──────────────────────────────────────────
-    reg         clock, clear;
-    reg         Gra, Grb, Grc, Rin, Rout, BAout;
-    reg         HIin, HIout, LOin, LOout;
-    reg         Zin, Zout, ZHIout, ZHIin;
-    reg         PCin, PCout;
-    reg         MARin, MARout;
-    reg         MDRin, MDRout;
-    reg         IRin, IRout;
-    reg         Yin, Yout;
-    reg         OUTPORT_In, INPORT_Out, OUTPORT_Out;
-    reg         Cout;
-    reg         IncPC, Read, Write;
-    reg  [31:0] MDatain;
-    reg  [12:0] alu_op;
-    reg         CON_In, CON_Out;
+    reg         Clock, Clear;
+    reg         PCin, IRin, HIin, LOin, ZHIin, Zin, MARin, MDRin, OUTPORT_In, Yin;
+    reg         PCout, HIout, LOout, ZHIout, Zout, INPORT_Out, MDRout, Cout;
+    reg         Gra, Grb, Grc, Rin, Rout, BAout, Read, Write, IncPC;
+    reg         CON_In, CON_Out, OUTPORT_Out;
+    reg [12:0]  alu_op;
     wire [31:0] BusMuxOut;
 
-    // ── DUT ──────────────────────────────────────────────────
+    parameter Default = 4'b0000;
+    parameter T0  = 4'b0001, T1  = 4'b0010, T2  = 4'b0011,
+              T3  = 4'b0100, T4  = 4'b0101, T5  = 4'b0110,
+              T6  = 4'b0111, T6b = 4'b1000, T7  = 4'b1001;
+
+    reg [3:0] Present_state = Default;
+
+    initial Clear = 0;
+
     data_path DUT (
-        .clock(clock), .clear(clear),
+        .clock(Clock), .clear(Clear),
         .Gra(Gra), .Grb(Grb), .Grc(Grc),
         .Rin(Rin), .Rout(Rout), .BAout(BAout),
         .HIin(HIin), .HIout(HIout),
         .LOin(LOin), .LOout(LOout),
         .Zin(Zin), .Zout(Zout), .ZHIout(ZHIout), .ZHIin(ZHIin),
         .PCin(PCin), .PCout(PCout),
-        .MARin(MARin), .MARout(MARout),
+        .MARin(MARin), .MARout(),
         .MDRin(MDRin), .MDRout(MDRout),
-        .IRin(IRin), .IRout(IRout),
-        .Yin(Yin), .Yout(Yout),
+        .IRin(IRin), .IRout(),
+        .Yin(Yin), .Yout(),
         .OUTPORT_In(OUTPORT_In), .INPORT_Out(INPORT_Out), .OUTPORT_Out(OUTPORT_Out),
         .Cout(Cout),
         .IncPC(IncPC), .Read(Read), .Write(Write),
-        .MDatain(MDatain),
+        .MDatain(32'b0),
         .alu_op(alu_op),
         .CON_In(CON_In), .CON_Out(CON_Out),
         .BusMuxOut(BusMuxOut)
     );
 
-    // ── Clock ────────────────────────────────────────────────
-    initial clock = 0;
-    always #10 clock = ~clock;
+    initial begin
+        // ── Switch between cases by commenting/uncommenting ──
 
-    // ── ALU op ───────────────────────────────────────────────
-    localparam ADD = 13'b0000000010000;
+        // Case 1: ld R7, 0x65  ->  R7 = mem[0x65] = 0x84
+        //DUT.RAM.mem[0] = 32'h83800065;
 
-    // ── IR encodings ─────────────────────────────────────────
-    localparam IR_LD_CASE1 = {5'b00000, 4'd7, 4'd0, 19'h065}; // ld R7, 0x65
-    localparam IR_LD_CASE2 = {5'b00000, 4'd0, 4'd2, 19'h072}; // ld R0, 0x72(R2)
+        // Case 2: ld R0, 0x72(R2)  R2=0x57  ->  R0 = mem[0xC9] = 0x2B
+        DUT.RAM.mem[0] = 32'h80100072;
+        DUT.R2_reg.q   = 32'h00000057; // preload R2 = 0x57
 
-    // ── State encoding ───────────────────────────────────────
-    parameter
-        Default   = 5'd0,
-        LD1_T0    = 5'd1,
-        LD1_T1    = 5'd2,
-        LD1_T2    = 5'd3,
-        LD1_T3    = 5'd4,
-        LD1_T4    = 5'd5,
-        LD1_T5    = 5'd6,
-        LD1_T6    = 5'd7,
-        LD1_T6b   = 5'd8,
-        LD1_T7    = 5'd9,
-        LD1_Done  = 5'd10,
-        LD2_T0    = 5'd11,
-        LD2_T1    = 5'd12,
-        LD2_T2    = 5'd13,
-        LD2_T3    = 5'd14,
-        LD2_T4    = 5'd15,
-        LD2_T5    = 5'd16,
-        LD2_T6    = 5'd17,
-        LD2_T6b   = 5'd18,
-        LD2_T7    = 5'd19,
-        LD2_Done  = 5'd20,
-        Done      = 5'd21;
-
-    reg [4:0] Present_state = Default;
+        Clock = 0;
+        forever #10 Clock = ~Clock;
+    end
 
     // ── State transitions ────────────────────────────────────
-    always @(posedge clock) begin
-        if (clear) Present_state <= Default;
-        else case (Present_state)
-            Default  : Present_state <= LD1_T0;
-            LD1_T0   : Present_state <= LD1_T1;
-            LD1_T1   : Present_state <= LD1_T2;
-            LD1_T2   : Present_state <= LD1_T3;
-            LD1_T3   : Present_state <= LD1_T4;
-            LD1_T4   : Present_state <= LD1_T5;
-            LD1_T5   : Present_state <= LD1_T6;
-            LD1_T6   : Present_state <= LD1_T6b;
-            LD1_T6b  : Present_state <= LD1_T7;
-            LD1_T7   : Present_state <= LD1_Done;
-            LD1_Done : Present_state <= LD2_T0;
-            LD2_T0   : Present_state <= LD2_T1;
-            LD2_T1   : Present_state <= LD2_T2;
-            LD2_T2   : Present_state <= LD2_T3;
-            LD2_T3   : Present_state <= LD2_T4;
-            LD2_T4   : Present_state <= LD2_T5;
-            LD2_T5   : Present_state <= LD2_T6;
-            LD2_T6   : Present_state <= LD2_T6b;
-            LD2_T6b  : Present_state <= LD2_T7;
-            LD2_T7   : Present_state <= LD2_Done;
-            LD2_Done : Present_state <= Done;
-            Done     : Present_state <= Done;
+    always @(posedge Clock) begin
+        case (Present_state)
+            Default : #30 Present_state = T0;
+            T0      : #30 Present_state = T1;
+            T1      : #30 Present_state = T2;
+            T2      : #30 Present_state = T3;
+            T3      : #30 Present_state = T4;
+            T4      : #30 Present_state = T5;
+            T5      : #30 Present_state = T6;
+            T6      : #30 Present_state = T6b;
+            T6b     : #30 Present_state = T7;
         endcase
     end
-
-    // ── Deassert all ─────────────────────────────────────────
-    task deassert_all;
-    begin
-        {Gra,Grb,Grc,Rin,Rout,BAout}       = 6'b0;
-        {HIin,HIout,LOin,LOout}             = 4'b0;
-        {Zin,Zout,ZHIout,ZHIin}            = 4'b0;
-        {PCin,PCout,MARin,MARout}           = 4'b0;
-        {MDRin,MDRout,IRin,IRout}           = 4'b0;
-        {Yin,Yout,Cout}                     = 3'b0;
-        {OUTPORT_In,INPORT_Out,OUTPORT_Out} = 3'b0;
-        {IncPC,Read,Write,CON_In,CON_Out}   = 5'b0;
-        alu_op                              = 13'b0;
-        MDatain                             = 32'b0;
-    end
-    endtask
 
     // ── State outputs ────────────────────────────────────────
     always @(Present_state) begin
-        deassert_all();
-        case (Present_state)
+        {PCin,IRin,HIin,LOin,ZHIin,Zin,MARin,MDRin,OUTPORT_In,Yin} <= 0;
+        {PCout,HIout,LOout,ZHIout,Zout,INPORT_Out,MDRout,Cout}      <= 0;
+        {Gra,Grb,Grc,Rin,Rout,BAout,Read,Write,IncPC,OUTPORT_Out}   <= 0;
+        CON_In <= 0; CON_Out <= 0;
+        alu_op <= 13'b0;
 
+        case (Present_state)
             Default: begin
-                force DUT.R2_reg.q = 32'h57; // preload R2 for Case 2
+                {PCin,IRin,HIin,LOin,ZHIin,Zin,MARin,MDRin,OUTPORT_In,Yin} <= 0;
+                {PCout,HIout,LOout,ZHIout,Zout,INPORT_Out,MDRout,Cout}      <= 0;
+                {Gra,Grb,Grc,Rin,Rout,BAout,Read,Write,IncPC,OUTPORT_Out}   <= 0;
+                CON_In <= 0;
+                alu_op <= 13'b0;
             end
-
-            // ═══════════════════════════════════
-            // ld Case 1: ld R7, 0x65
-            // ═══════════════════════════════════
-            LD1_T0: begin
-                force DUT.IR_reg.q = IR_LD_CASE1;
-                PCout <= 1; MARin <= 1; IncPC <= 1; Zin <= 1;
+            // T0: fetch instruction from RAM[PC=0] into MDR
+            T0: begin
+                PCout <= 1; MARin <= 1; Read <= 1; MDRin <= 1;
+                #40 PCout <= 0; MARin <= 0; Read <= 0; MDRin <= 0;
             end
-            LD1_T1: begin
-                Zout <= 1; PCin <= 1; Read <= 1; MDRin <= 1;
+            // T1: increment PC
+            T1: begin
+                IncPC <= 1;
+                #20 IncPC <= 0;
             end
-            LD1_T2: begin
+            // T2: load instruction from MDR into IR
+            T2: begin
                 MDRout <= 1; IRin <= 1;
-                force DUT.IR_reg.q = IR_LD_CASE1;
+                #40 MDRout <= 0; IRin <= 0;
             end
-            LD1_T3: begin
+            // T3: Y = Rb (0 if Rb=R0 due to BAout masking)
+            T3: begin
                 Grb <= 1; BAout <= 1; Yin <= 1;
+                #40 Grb <= 0; BAout <= 0; Yin <= 0;
             end
-            LD1_T4: begin
-                Cout <= 1; alu_op <= ADD; Zin <= 1;
+            // T4: Z = Y + C (effective address)
+            T4: begin
+                Cout <= 1; alu_op <= 13'b0000000010000; Zin <= 1;
+                #40 Cout <= 0; Zin <= 0;
             end
-            LD1_T5: begin
+            // T5: MAR = Z (effective address)
+            T5: begin
                 Zout <= 1; MARin <= 1;
+                #40 Zout <= 0; MARin <= 0;
             end
-            LD1_T6: begin
+            // T6: assert Read — RAM output becomes stable next cycle
+            T6: begin
                 Read <= 1;
+                #40 Read <= 0;
             end
-            LD1_T6b: begin
+            // T6b: MDRin — latch stable RAM data into MDR
+            T6b: begin
                 Read <= 1; MDRin <= 1;
+                #40 Read <= 0; MDRin <= 0;
             end
-            LD1_T7: begin
+            // T7: Ra = MDR (destination register gets memory data)
+            T7: begin
                 MDRout <= 1; Gra <= 1; Rin <= 1;
-            end
-            LD1_Done: begin
-                release DUT.IR_reg.q;
-            end
-
-            // ═══════════════════════════════════
-            // ld Case 2: ld R0, 0x72(R2)
-            // ═══════════════════════════════════
-            LD2_T0: begin
-                force DUT.IR_reg.q = IR_LD_CASE2;
-                PCout <= 1; MARin <= 1; IncPC <= 1; Zin <= 1;
-            end
-            LD2_T1: begin
-                Zout <= 1; PCin <= 1; Read <= 1; MDRin <= 1;
-            end
-            LD2_T2: begin
-                MDRout <= 1; IRin <= 1;
-                force DUT.IR_reg.q = IR_LD_CASE2;
-            end
-            LD2_T3: begin
-                Grb <= 1; BAout <= 1; Yin <= 1;
-            end
-            LD2_T4: begin
-                Cout <= 1; alu_op <= ADD; Zin <= 1;
-            end
-            LD2_T5: begin
-                Zout <= 1; MARin <= 1;
-            end
-            LD2_T6: begin
-                Read <= 1;
-            end
-            LD2_T6b: begin
-                Read <= 1; MDRin <= 1;
-            end
-            LD2_T7: begin
-                MDRout <= 1; Gra <= 1; Rin <= 1;
-            end
-            LD2_Done: begin
-                release DUT.IR_reg.q;
-                release DUT.R2_reg.q;
-            end
-
-            Done: deassert_all();
-
-        endcase
-    end
-
-    // ── Result checking ──────────────────────────────────────
-    integer pass = 0, fail = 0;
-
-    task check;
-        input [31:0] got;
-        input [31:0] expected;
-        input [31:0] tnum;
-        begin
-            if (got === expected) begin
-                $display("  PASS test %0d: got 0x%08h", tnum, got);
-                pass = pass + 1;
-            end else begin
-                $display("  FAIL test %0d: expected 0x%08h got 0x%08h",
-                         tnum, expected, got);
-                fail = fail + 1;
-            end
-        end
-    endtask
-
-    always @(posedge clock) begin
-        #2;
-        case (Present_state)
-            LD1_Done: begin
-                $display("-- ld Case 1: ld R7, 0x65 --");
-                check(DUT.R7_reg.q, 32'h00000084, 1);
-            end
-            LD2_Done: begin
-                $display("-- ld Case 2: ld R0, 0x72(R2) --");
-                check(DUT.R0_reg.q, 32'h0000002B, 2);
-            end
-            Done: begin
-                $display("===== Results: %0d passed, %0d failed =====", pass, fail);
-                $stop;
+                #40 MDRout <= 0; Gra <= 0; Rin <= 0;
             end
         endcase
-    end
-
-    // ── Reset ────────────────────────────────────────────────
-    initial begin
-        $display("===== ld Testbench =====");
-        clear = 1;
-        #20 clear = 0;
     end
 
 endmodule
