@@ -93,6 +93,7 @@ module data_path (
     register MAR_reg (.clear(clear), .clock(clock), .enable(MARin), .BusMuxIn(Bus), .BusMuxOut(MAR));
 	//special register modules
     pc_reg PC_reg (.D(Bus),.clk(clock),.clr(clear),.increment(IncPC),.enable(PCin),.Q(PC));
+	//pc_reg PC_reg (.D(Bus), .clk(clock), .clr(clear),.increment(IncPC), .enable(PC_enable), .Q(PC));
     //mdr_reg MDR_reg (.BusMuxIn(Bus),.clk(clock),.clr(clear),.Read(Read),.MDRin(MDRin),.MDAtain(MDatain),.Q(MDR));
 	mdr_reg MDR_reg (
     .BusMuxIn(Bus),
