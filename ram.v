@@ -17,7 +17,7 @@ initial begin
     mem[9'h01F] = 32'h000000D4;
     mem[9'h082] = 32'h000000A7;
     //$readmemh("C:/Users/flami/Documents/ELEC374_MiniSRC/ram.hex", mem); //ram.hex location on Flaminia's computer
-	$readmemh("C:\ELEC374_Repo\ELEC374_MiniSRC\ram.hex", mem); //ram.hex location on Duncan's computer
+	$readmemh("C:/ELEC374_Repo/ELEC374_MiniSRC/ram.hex", mem); //ram.hex location on Duncan's computer
 end
 
 always @(posedge clk) begin
