@@ -1,6 +1,6 @@
 `timescale 1ns/10ps
 
-module ALU_immediate_instructions_tb;
+module mfhi_tb;
 
     reg         Clock, Clear;
     reg         PCin, IRin, HIin, LOin, ZHIin, Zin, MARin, MDRin, OUTPORT_In, Yin;
@@ -16,11 +16,11 @@ module ALU_immediate_instructions_tb;
     // T1  : IncPC
     // T2  : MDRout, IRin
     // Execute mfhi:
-    // T3  : Grb, Rin, HIout
+    // T3  : Gra, Rin, HIout
    
     parameter Default = 4'b0000;
     parameter T0  = 4'b0001, T0b = 4'b0010, T1  = 4'b0011,
-              T2  = 4'b0100, T3  = 4'b0101
+              T2  = 4'b0100, T3  = 4'b0101;
 
     reg [3:0] Present_state = Default;
 
@@ -102,10 +102,10 @@ module ALU_immediate_instructions_tb;
             end
 
             // ---- EXECUTE instruction ----
-			//Grb, Rin, HIout
+			//Gra, Rin, HIout
             T3: begin
-                Grb <= 1; Rin <= 1; HIout <= 1;         
-                #40 Grb <= 0; Rin <= 0; HIout <= 0;
+                Gra <= 1; Rin <= 1; HIout <= 1;         
+                #40 Gra <= 0; Rin <= 0; HIout <= 0;
             end
 			
         endcase
