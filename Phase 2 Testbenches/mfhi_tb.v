@@ -19,8 +19,8 @@ module mfhi_tb;
     // T3  : Gra, Rin, HIout
    
     parameter Default = 4'b0000;
-    parameter T0  = 4'b0001, T0b = 4'b0010, T1  = 4'b0011,
-              T2  = 4'b0100, T3  = 4'b0101;
+    parameter T0  = 4'b0001, T1  = 4'b0010,
+              T2  = 4'b0011, T3  = 4'b0100;
 
     reg [3:0] Present_state = Default;
 
@@ -50,7 +50,7 @@ module mfhi_tb;
     initial begin
 		//MFHI instruction mfhi R7
 		//loading number into R7
-		DUT.R7_reg.q = 32'h21;
+		DUT.R5_reg.q = 32'h21;
 		//loading number into HI register
 		DUT.HI_reg.q = 32'h55;
         DUT.PC_reg.qTemp = 32'hE; //instruction located at 0xE in ram
@@ -63,8 +63,7 @@ module mfhi_tb;
     always @(posedge Clock) begin
         case (Present_state)
             Default : #30 Present_state = T0;
-            T0      : #30 Present_state = T0b;
-            T0b     : #30 Present_state = T1;
+            T0      : #30 Present_state = T1;
             T1      : #30 Present_state = T2;
             T2      : #30 Present_state = T3;
         endcase
@@ -80,27 +79,22 @@ module mfhi_tb;
 
         case (Present_state)
 
-            // ---- FETCH from ram.hex (@PC) ----
+          // ---- FETCH from ram.hex (@PC) ----
             T0: begin
-                PCout <= 1; MARin <= 1; Read <= 1;     // start read
-                #40 PCout <= 0; MARin <= 0; Read <= 0;
-            end
-
-            T0b: begin
-                Read <= 1; MDRin <= 1;                 // latch stable mem_data_out
-                #40 Read <= 0; MDRin <= 0;
+                PCout <= 1; MARin <= 1; Read <= 1; IncPC <= 1;     // start read
+                #20 PCout <= 0; MARin <= 0; Read <= 0; IncPC <= 0;
             end
 
             T1: begin
-                IncPC <= 1;
-                #20 IncPC <= 0;
+                Read <= 1; MDRin <= 1;                 // latch stable mem_data_out
+                #40 Read <= 0; MDRin <= 0;
             end
-
+			
             T2: begin
                 MDRout <= 1; IRin <= 1;                // IR <= instruction
                 #40 MDRout <= 0; IRin <= 0;
             end
-
+			
             // ---- EXECUTE instruction ----
 			//Gra, Rin, HIout
             T3: begin

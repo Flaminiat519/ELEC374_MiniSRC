@@ -23,9 +23,9 @@ module ALU_immediate_instructions_tb;
     // T4  : Cout, ADD, Zin
     // T5  : Zout, Gra, Rin
     parameter Default = 4'b0000;
-    parameter T0  = 4'b0001, T0b = 4'b0010, T1  = 4'b0011,
-              T2  = 4'b0100, T3  = 4'b0101, T4  = 4'b0110,
-              T5  = 4'b0111;
+    parameter T0  = 4'b0001, T1  = 4'b0010,
+              T2  = 4'b0011, T3  = 4'b0100, T4  = 4'b0101,
+              T5  = 4'b0110;
 
     reg [3:0] Present_state = Default;
 
@@ -56,9 +56,11 @@ module ALU_immediate_instructions_tb;
         //ADDI instrcution addi R7, R4, -9.
         //DUT.R4_reg.q = 32'd100;
         //DUT.PC_reg.qTemp = 32'd6; //instruction located at 0x6 in ram
+		
 		//ANDI instruction
 		//DUT.R4_reg.q = 32'h34;
         //DUT.PC_reg.qTemp = 32'd8; //instruction located at 0x8 in ram
+		
 		//ORI instruction
 		DUT.R4_reg.q = 32'h34;
         DUT.PC_reg.qTemp = 32'd9; //instruction located at 0x8 in ram
@@ -71,8 +73,7 @@ module ALU_immediate_instructions_tb;
     always @(posedge Clock) begin
         case (Present_state)
             Default : #30 Present_state = T0;
-            T0      : #30 Present_state = T0b;
-            T0b     : #30 Present_state = T1;
+            T0      : #30 Present_state = T1;
             T1      : #30 Present_state = T2;
             T2      : #30 Present_state = T3;
             T3      : #30 Present_state = T4;
@@ -89,23 +90,20 @@ module ALU_immediate_instructions_tb;
         alu_op <= 13'b0;
 
         case (Present_state)
+		
+		
 
             // ---- FETCH from ram.hex (@PC) ----
             T0: begin
-                PCout <= 1; MARin <= 1; Read <= 1;     // start read
-                #40 PCout <= 0; MARin <= 0; Read <= 0;
-            end
-
-            T0b: begin
-                Read <= 1; MDRin <= 1;                 // latch stable mem_data_out
-                #40 Read <= 0; MDRin <= 0;
+                PCout <= 1; MARin <= 1; Read <= 1; IncPC <= 1;     // start read
+                #20 PCout <= 0; MARin <= 0; Read <= 0; IncPC <= 0;
             end
 
             T1: begin
-                IncPC <= 1;
-                #20 IncPC <= 0;
+                Read <= 1; MDRin <= 1;                 // latch stable mem_data_out
+                #40 Read <= 0; MDRin <= 0;
             end
-
+			
             T2: begin
                 MDRout <= 1; IRin <= 1;                // IR <= instruction
                 #40 MDRout <= 0; IRin <= 0;

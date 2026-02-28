@@ -85,23 +85,17 @@ module jump_instructions_tb;
         alu_op <= 13'b0;
 
         case (Present_state)
-
-            // ---- FETCH from ram.hex (@PC) ----
+           // ---- FETCH from ram.hex (@PC) ----
             T0: begin
-                PCout <= 1; MARin <= 1; Read <= 1;     // start read
-                #40 PCout <= 0; MARin <= 0; Read <= 0;
-            end
-
-            T0b: begin
-                Read <= 1; MDRin <= 1;                 // latch stable mem_data_out
-                #40 Read <= 0; MDRin <= 0;
+                PCout <= 1; MARin <= 1; Read <= 1; IncPC <= 1;     // start read
+                #20 PCout <= 0; MARin <= 0; Read <= 0; IncPC <= 0;
             end
 
             T1: begin
-                IncPC <= 1;
-                #20 IncPC <= 0;
+                Read <= 1; MDRin <= 1;                 // latch stable mem_data_out
+                #40 Read <= 0; MDRin <= 0;
             end
-
+			
             T2: begin
                 MDRout <= 1; IRin <= 1;                // IR <= instruction
                 #40 MDRout <= 0; IRin <= 0;
