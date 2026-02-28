@@ -40,13 +40,14 @@ module ldi_tb;
 
     initial begin
 
-        datapath_instance.ram_instance.memory[0] = 32'hA9800030; //brzr R3, 48
 		
-		datapath_instance.ram_instance.memory[0] = 32'hA9880030; //brnz R3, 48
+        DUT.PC_reg.qTemp = 32'hA; //brzr R3, 48
 		
-		datapath_instance.ram_instance.memory[0] = 32'hA9900030; //brpl R3, 48
+		DUT.PC_reg.qTemp = 32'hB; //brnz R3, 48
 		
-		datapath_instance.ram_instance.memory[0] = 32'hA9980030; //brmi R3, 48
+		DUT.PC_reg.qTemp = 32'hC;//brpl R3, 48
+		
+		DUT.PC_reg.qTemp = 32'hD; //brmi R3, 48
 
         Clock = 0;
         forever #10 Clock = ~Clock;
