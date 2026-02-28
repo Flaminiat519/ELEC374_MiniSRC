@@ -47,10 +47,10 @@ module ld_tb;
 		//IR[22:19] = 0000 = Rb = R0
 		//IR[18:0]  = 0x065 = C field
         //DUT.RAM.mem[0] = 32'h83800065;
-		//DUT.PC_reg.qTemp = 32'd0; 
+		//DUT.PC_reg.qTemp = 32'd2; 
 		
         // Case 2: ld R0, 0x72(R2) aka  R2=0x57 and R0 = mem[0xC9] = 0x2B
-        DUT.PC_reg.qTemp = 32'd1; 
+        DUT.PC_reg.qTemp = 32'd3; 
         DUT.R2_reg.q   = 32'h00000057; // preload R2 = 0x57
 
         Clock = 0;
