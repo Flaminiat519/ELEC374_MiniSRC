@@ -48,8 +48,8 @@ module mfhi_tb;
     );
 
     initial begin
-		//MFHI instruction mfhi R7
-		//loading number into R7
+		//MFHI instruction mfhi R5
+		//loading number into R5
 		DUT.R5_reg.q = 32'h21;
 		//loading number into HI register
 		DUT.HI_reg.q = 32'h55;
