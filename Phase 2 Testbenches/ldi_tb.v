@@ -41,10 +41,9 @@ module ldi_tb;
     initial begin
 
         //Case 1: ldi R7, 0x65  aka  R7 = 0x65
-        DUT.RAM.mem[0] = 32'h8B800065;
-
+        DUT.PC_reg.qTemp = 32'd0;
         //Case 2: ldi R0, 0x72(R2)  ->  R0 = R2+0x72 = 0x57+0x72 = 0xC9
-        // DUT.RAM.mem[0]   = 32'h88100072;
+        // DUT.PC_reg.qTemp = 32'd1;
         // DUT.R2_reg.q     = 32'h00000057; // preload R2 = 0x57
 
         Clock = 0;

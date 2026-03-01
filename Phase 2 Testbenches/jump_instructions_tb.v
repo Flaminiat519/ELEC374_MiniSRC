@@ -1,5 +1,7 @@
 `timescale 1ns/10ps
-module addi_tb;
+
+
+module jump_instructions_tb;
 
     reg         Clock, Clear;
     reg         PCin, IRin, HIin, LOin, ZHIin, Zin, MARin, MDRin, OUTPORT_In, Yin;
@@ -20,8 +22,7 @@ module addi_tb;
     // T5  : Zout, Gra, Rin
     parameter Default = 4'b0000;
     parameter T0  = 4'b0001, T0b = 4'b0010, T1  = 4'b0011,
-              T2  = 4'b0100, T3  = 4'b0101, T4  = 4'b0110,
-              T5  = 4'b0111, Done = 4'b1000;
+              T2  = 4'b0100, T3  = 4'b0101, T4 = 4'b0110;
 
     reg [3:0] Present_state = Default;
 
@@ -49,16 +50,15 @@ module addi_tb;
     );
 
     initial begin
-        // We are relying on ram.hex
-        // Put addi R7,R4,-9 at @006 as: 4BA7FFF7
-        // (Your existing file already has addi patterns at @006/@007.)
+        //jump instruction jr R12
+        //DUT.R12_reg.q = 32'hff;
+        //DUT.PC_reg.qTemp = 32'h10; //instruction located at 0x10 in ram
+		
+		//jal instruction jal R4
+		DUT.R4_reg.q = 32'h32;
+		DUT.R12_reg.q = 32'hff;
+        DUT.PC_reg.qTemp = 32'hf; //instruction located at 0x10 in ram
 
-        // preload registers
-        DUT.R4_reg.q = 32'd100;
-
-        // set PC to @006 so the instruction is fetched from ram.hex
-        // (PC is word-addressed in your design: IncPC adds 1)
-        DUT.PC_reg.qTemp = 32'd6;
 
         Clock = 0;
         forever #10 Clock = ~Clock;
@@ -72,10 +72,7 @@ module addi_tb;
             T0b     : #30 Present_state = T1;
             T1      : #30 Present_state = T2;
             T2      : #30 Present_state = T3;
-            T3      : #30 Present_state = T4;
-            T4      : #30 Present_state = T5;
-            T5      : #30 Present_state = Done;
-            Done    : #30 Present_state = Done;
+			T3		: #30 Present_state = T4;
         endcase
     end
 
@@ -88,57 +85,39 @@ module addi_tb;
         alu_op <= 13'b0;
 
         case (Present_state)
-
-            // ---- FETCH from ram.hex (@PC) ----
+           // ---- FETCH from ram.hex (@PC) ----
             T0: begin
-                PCout <= 1; MARin <= 1; Read <= 1;     // start read
-                #40 PCout <= 0; MARin <= 0; Read <= 0;
-            end
-
-            T0b: begin
-                Read <= 1; MDRin <= 1;                 // latch stable mem_data_out
-                #40 Read <= 0; MDRin <= 0;
+                PCout <= 1; MARin <= 1; Read <= 1; IncPC <= 1;     // start read
+                #20 PCout <= 0; MARin <= 0; Read <= 0; IncPC <= 0;
             end
 
             T1: begin
-                IncPC <= 1;
-                #20 IncPC <= 0;
+                Read <= 1; MDRin <= 1;                 // latch stable mem_data_out
+                #40 Read <= 0; MDRin <= 0;
             end
-
+			
             T2: begin
                 MDRout <= 1; IRin <= 1;                // IR <= instruction
                 #40 MDRout <= 0; IRin <= 0;
             end
 
-            // ---- EXECUTE addi R7,R4,-9 ----
+            // ---- EXECUTE instruction ----
             T3: begin
-                Grb <= 1; Rout <= 1; Yin <= 1;         // Y = R4
-                #40 Grb <= 0; Rout <= 0; Yin <= 0;
+				//jr R12 instruction
+                //Gra <= 1; Rout <= 1; PCin <= 1;         // PC = RA (R12)
+                //#40 Gra <= 0; Rout <= 0; PCin <= 0;
+				//jal R4 instruction
+				Grb <= 1; Rin <= 1; PCout <= 1;				//R12 = PC + 1
+				#40 Grb <= 0; Rin <= 0; PCout <= 0; 
+				
             end
+			
+			//Only for jal R4
+			T4: begin
+				Gra <= 1; Rout <= 1; PCin <= 1;			//PC = R4
+				#40 Gra <= 0; Rout <= 0; PCin <= 0;
+			end
 
-            T4: begin
-                Cout <= 1; alu_op <= 13'b0000000010000; Zin <= 1;  // Z = Y + C
-                #40 Cout <= 0; Zin <= 0;
-            end
-
-            T5: begin
-                Zout <= 1; Gra <= 1; Rin <= 1;         // R7 = Z
-                #40 Zout <= 0; Gra <= 0; Rin <= 0;
-            end
-
-            Done: begin
-                $display("PC start = %0d", 32'd6);
-                $display("IR       = 0x%08h", DUT.IR_reg.q);
-                $display("R4       = %0d (0x%08h)", DUT.R4_reg.q, DUT.R4_reg.q);
-                $display("R7       = %0d (0x%08h)", DUT.R7_reg.q, DUT.R7_reg.q);
-
-                if (DUT.R7_reg.q === 32'd91)
-                    $display("PASS: addi R7, R4, -9");
-                else
-                    $display("FAIL: expected 91, got %0d (0x%08h)", DUT.R7_reg.q, DUT.R7_reg.q);
-
-                $stop;
-            end
         endcase
     end
 

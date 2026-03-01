@@ -1,6 +1,9 @@
 `timescale 1ns/10ps
+`define ADD 13'b0000000010000
+`define AND 13'b0000000000001
+`define OR 13'b0000000000010
 
-module mfhi_tb;
+module ALU_immediate_instructions_tb;
 
     reg         Clock, Clear;
     reg         PCin, IRin, HIin, LOin, ZHIin, Zin, MARin, MDRin, OUTPORT_In, Yin;
@@ -15,12 +18,14 @@ module mfhi_tb;
     // T0b : Read, MDRin                   (MDR latches stable mem_data_out)
     // T1  : IncPC
     // T2  : MDRout, IRin
-    // Execute mfhi:
-    // T3  : Gra, Rin, HIout
-   
+    // Execute addi:
+    // T3  : Grb, Rout, Yin
+    // T4  : Cout, ADD, Zin
+    // T5  : Zout, Gra, Rin
     parameter Default = 4'b0000;
     parameter T0  = 4'b0001, T1  = 4'b0010,
-              T2  = 4'b0011, T3  = 4'b0100;
+              T2  = 4'b0011, T3  = 4'b0100, T4  = 4'b0101,
+              T5  = 4'b0110;
 
     reg [3:0] Present_state = Default;
 
@@ -48,12 +53,17 @@ module mfhi_tb;
     );
 
     initial begin
-		//MFHI instruction mfhi R5
-		//loading number into R5
-		DUT.R5_reg.q = 32'h21;
-		//loading number into HI register
-		DUT.HI_reg.q = 32'h55;
-        DUT.PC_reg.qTemp = 32'hE; //instruction located at 0xE in ram
+        //ADDI instrcution addi R7, R4, -9.
+        //DUT.R4_reg.q = 32'd100;
+        //DUT.PC_reg.qTemp = 32'd6; //instruction located at 0x6 in ram
+		
+		//ANDI instruction
+		//DUT.R4_reg.q = 32'h34;
+        //DUT.PC_reg.qTemp = 32'd8; //instruction located at 0x8 in ram
+		
+		//ORI instruction
+		DUT.R4_reg.q = 32'h34;
+        DUT.PC_reg.qTemp = 32'd9; //instruction located at 0x8 in ram
 
         Clock = 0;
         forever #10 Clock = ~Clock;
@@ -66,6 +76,8 @@ module mfhi_tb;
             T0      : #30 Present_state = T1;
             T1      : #30 Present_state = T2;
             T2      : #30 Present_state = T3;
+            T3      : #30 Present_state = T4;
+            T4      : #30 Present_state = T5;
         endcase
     end
 
@@ -78,8 +90,10 @@ module mfhi_tb;
         alu_op <= 13'b0;
 
         case (Present_state)
+		
+		
 
-          // ---- FETCH from ram.hex (@PC) ----
+            // ---- FETCH from ram.hex (@PC) ----
             T0: begin
                 PCout <= 1; MARin <= 1; Read <= 1; IncPC <= 1;     // start read
                 #20 PCout <= 0; MARin <= 0; Read <= 0; IncPC <= 0;
@@ -94,14 +108,27 @@ module mfhi_tb;
                 MDRout <= 1; IRin <= 1;                // IR <= instruction
                 #40 MDRout <= 0; IRin <= 0;
             end
-			
+
             // ---- EXECUTE instruction ----
-			//Gra, Rin, HIout
             T3: begin
-                Gra <= 1; Rin <= 1; HIout <= 1;         
-                #40 Gra <= 0; Rin <= 0; HIout <= 0;
+                Grb <= 1; Rout <= 1; Yin <= 1;         // Y = R4
+                #40 Grb <= 0; Rout <= 0; Yin <= 0;
             end
-			
+
+            T4: begin
+                Cout <= 1; 
+				//Comment Out instructions not being tested
+				//alu_op <= `ADD;
+				//alu_op <= `AND;
+				alu_op <= `OR;
+				Zin <= 1;  // Z = Y + C
+                #40 Cout <= 0; Zin <= 0;
+            end
+
+            T5: begin
+                Zout <= 1; Gra <= 1; Rin <= 1;         // R7 = Z
+                #40 Zout <= 0; Gra <= 0; Rin <= 0;
+            end
         endcase
     end
 
