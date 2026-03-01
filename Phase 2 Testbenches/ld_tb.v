@@ -13,7 +13,7 @@ module ld_tb;
     parameter Default = 4'b0000;
     parameter T0  = 4'b0001, T1  = 4'b0010, T2  = 4'b0011,
               T3  = 4'b0100, T4  = 4'b0101, T5  = 4'b0110,
-              T6  = 4'b0111, T7 = 4'b1000;
+              T6  = 4'b0111, T7 = 4'b1000, T8 = 4'b1001;
 
     reg [3:0] Present_state = Default;
 
@@ -68,6 +68,7 @@ module ld_tb;
             T4      : #30 Present_state = T5;
             T5      : #30 Present_state = T6;
             T6      : #30 Present_state = T7;
+			T7      : #30 Present_state = T8;
            
         endcase
     end
@@ -90,42 +91,46 @@ module ld_tb;
             end
             //Fetch instruction from RAM[PC=0] into MDR
             T0: begin
-                PCout <= 1; MARin <= 1; Read <= 1; MDRin <= 1; IncPC <= 1;
-                #20 PCout <= 0; MARin <= 0; Read <= 0; MDRin <= 0; IncPC <= 0;
+                PCout <= 1; MARin <= 1; Read <= 1; IncPC <= 1;     // start read
+                #20 PCout <= 0; MARin <= 0; Read <= 0; IncPC <= 0;
+            end
+
+            T1: begin
+                Read <= 1; MDRin <= 1;                 // latch stable mem_data_out
+                #40 Read <= 0; MDRin <= 0;
             end
 			
-            //Load instruction from MDR into IR
-            T1: begin
-                MDRout <= 1; IRin <= 1;
+            T2: begin
+                MDRout <= 1; IRin <= 1;                // IR <= instruction
                 #40 MDRout <= 0; IRin <= 0;
             end
             //Y = Rb (0 if Rb=R0 due to BAout masking)
-            T2: begin
+            T3: begin
                 Grb <= 1; BAout <= 1; Yin <= 1;
                 #40 Grb <= 0; BAout <= 0; Yin <= 0;
             end
             //Z = Y + C (effective address)
-            T3: begin
+            T4: begin
                 Cout <= 1; alu_op <= 13'b0000000010000; Zin <= 1;
                 #40 Cout <= 0; Zin <= 0;
             end
             //MAR = Z (effective address)
-            T4: begin
+            T5: begin
                 Zout <= 1; MARin <= 1;
                 #40 Zout <= 0; MARin <= 0;
             end
             //Assert Read — RAM output becomes stable next cycle
-            T5: begin
+            T6: begin
                 Read <= 1;
                 #40 Read <= 0;
             end
             //MDRin — latch stable RAM data into MDR
-            T6: begin
+            T7: begin
                 Read <= 1; MDRin <= 1;
                 #40 Read <= 0; MDRin <= 0;
             end
             //1Ra = MDR (destination register gets memory data)
-            T7: begin
+            T8: begin
                 MDRout <= 1; Gra <= 1; Rin <= 1;
                 #40 MDRout <= 0; Gra <= 0; Rin <= 0;
             end
