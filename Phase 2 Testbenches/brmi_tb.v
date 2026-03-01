@@ -40,13 +40,13 @@ module ldi_tb;
 
     initial begin
 
-        //datapath_instance.ram_instance.memory[0] = 32'hA9800030; //brzr R3, 48
+        datapath_instance.ram_instance.memory[0] = 32'hA9800030; //brzr R3, 48
 		
-		//datapath_instance.ram_instance.memory[0] = 32'hA9880030; //brnz R3, 48
+		datapath_instance.ram_instance.memory[0] = 32'hA9880030; //brnz R3, 48
 		
-		//datapath_instance.ram_instance.memory[0] = 32'hA9900030; //brpl R3, 48
+		datapath_instance.ram_instance.memory[0] = 32'hA9900030; //brpl R3, 48
 		
-		//datapath_instance.ram_instance.memory[0] = 32'hA9980030; //brmi R3, 48
+		datapath_instance.ram_instance.memory[0] = 32'hA9980030; //brmi R3, 48
 
         Clock = 0;
         forever #10 Clock = ~Clock;
@@ -82,11 +82,16 @@ module ldi_tb;
             end
             //Fetch instruction from RAM[PC=0] into MDR
             T0: begin
-                PCout <= 1; MARin <= 1; Read <= 1; MDRin <= 1; IncPC <= 1;
-                #20 PCout <= 0; MARin <= 0; Read <= 0; MDRin <= 0; IncPC <= 0;
+                PCout <= 1; MARin <= 1; Read <= 1; MDRin <= 1;
+                #40 PCout <= 0; MARin <= 0; Read <= 0; MDRin <= 0;
+            end
+            //Increment PC
+            T1: begin
+                IncPC <= 1;
+                #20 IncPC <= 0;
             end
             //Load instruction from MDR into IR
-            T1: begin
+            T2: begin
                 MDRout <= 1; IRin <= 1;
                 #40 MDRout <= 0; IRin <= 0;
             end
@@ -100,8 +105,8 @@ module ldi_tb;
 					#40 PCout <= 0; Yin <= 0;
 			end
 			T5: begin
-					Cout <= 1; OP <= 5'b00100; Zin <=1;
-					#40 Cout <= 0; Zin <= 0;
+					Cout <= 1; OP <= 5'b00100; ZLowin <= 1; ZHighin <= 1;
+					#40 Cout <= 0; ZLowin <= 0; ZHighin <= 0;
 			end
 			T6: begin
 					ZLowout <= 1; PCin <= CON_Out;

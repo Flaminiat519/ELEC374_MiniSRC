@@ -11,7 +11,7 @@ module ldi_tb;
 
     parameter Default = 3'b000;
     parameter T0 = 3'b001, T1 = 3'b010, T2 = 3'b011,
-              T3 = 3'b100, T4 = 3'b101, T5 = 3'b110;
+              T3 = 3'b100, T4 = 3'b101;
 
     reg [2:0] Present_state = Default;
 
@@ -59,7 +59,7 @@ module ldi_tb;
             T1      : #30 Present_state = T2;
             T2      : #30 Present_state = T3;
             T3      : #30 Present_state = T4;
-            T4      : #30 Present_state = T5;
+            
         endcase
     end
 
@@ -81,31 +81,26 @@ module ldi_tb;
             end
             //Fetch instruction from RAM[PC=0] into MDR
             T0: begin
-                PCout <= 1; MARin <= 1; Read <= 1; MDRin <= 1;
-                #40 PCout <= 0; MARin <= 0; Read <= 0; MDRin <= 0;
-            end
-            //Increment PC
-            T1: begin
-                IncPC <= 1;
-                #20 IncPC <= 0;
+                PCout <= 1; MARin <= 1; Read <= 1; MDRin <= 1; IncPC <= 1;
+                #20 PCout <= 0; MARin <= 0; Read <= 0; MDRin <= 0; IncPC <= 0;
             end
             //Load instruction from MDR into IR
-            T2: begin
+            T1: begin
                 MDRout <= 1; IRin <= 1;
                 #40 MDRout <= 0; IRin <= 0;
             end
             //Y = Rb (0 if Rb=R0 due to BAout masking)
-            T3: begin
+            T2: begin
                 Grb <= 1; BAout <= 1; Yin <= 1;
                 #40 Grb <= 0; BAout <= 0; Yin <= 0;
             end
             //Z = Y + C (sign-extended immediate)
-            T4: begin
+            T3: begin
                 Cout <= 1; alu_op <= 13'b0000000010000; Zin <= 1;
                 #40 Cout <= 0; Zin <= 0;
             end
             // T5: Ra = Z  (no memory access — ldi is done here)
-            T5: begin
+            T4: begin
                 Zout <= 1; Gra <= 1; Rin <= 1;
                 #40 Zout <= 0; Gra <= 0; Rin <= 0;
             end
