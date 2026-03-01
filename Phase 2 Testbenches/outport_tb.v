@@ -16,7 +16,7 @@ module outport_tb;
     // T1  : IncPC
     // T2  : MDRout, IRin
     // Execute mfhi:
-    // T3  : Gra, Rout, OUTPORT_Out
+    // T3  : Gra, Rout, OUTPORT_In
    
     parameter Default = 4'b0000;
     parameter T0  = 4'b0001, T1  = 4'b0010,
@@ -96,10 +96,10 @@ module outport_tb;
             end
 			
             // ---- EXECUTE instruction ----
-			//Gra, Rout, OUTPORT_Out
+			//Gra, Rout, OUTPORT_In
             T3: begin
-                Gra <= 1; Rout <= 1; OUTPORT_Out <= 1;         
-                #40 Gra <= 0; Rout <= 0; OUTPORT_Out <= 0;
+                Gra <= 1; Rout <= 1; OUTPORT_In <= 1;         
+                #40 Gra <= 0; Rout <= 0; OUTPORT_In <= 0;
             end
 			
         endcase
