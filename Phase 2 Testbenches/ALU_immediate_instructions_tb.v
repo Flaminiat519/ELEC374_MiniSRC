@@ -1,10 +1,12 @@
 `timescale 1ns/10ps
+//Defines for different ALU operations
 `define ADD 13'b0000000010000
 `define AND 13'b0000000000001
 `define OR 13'b0000000000010
 
 module ALU_immediate_instructions_tb;
 
+	//Initialize DUT signals
     reg         Clock, Clear;
     reg         PCin, IRin, HIin, LOin, ZHIin, Zin, MARin, MDRin, OUTPORT_In, Yin;
     reg         PCout, HIout, LOout, ZHIout, Zout, INPORT_Out, MDRout, Cout;
@@ -13,15 +15,7 @@ module ALU_immediate_instructions_tb;
     reg [12:0]  alu_op;
     wire [31:0] BusMuxOut;
 
-    // Fetch w/ synchronous RAM:
-    // T0  : PCout, MARin, Read            (RAM updates mem_data_out on posedge)
-    // T0b : Read, MDRin                   (MDR latches stable mem_data_out)
-    // T1  : IncPC
-    // T2  : MDRout, IRin
-    // Execute addi:
-    // T3  : Grb, Rout, Yin
-    // T4  : Cout, ADD, Zin
-    // T5  : Zout, Gra, Rin
+    //Setup state machine
     parameter Default = 4'b0000;
     parameter T0  = 4'b0001, T1  = 4'b0010,
               T2  = 4'b0011, T3  = 4'b0100, T4  = 4'b0101,
@@ -31,6 +25,7 @@ module ALU_immediate_instructions_tb;
 
     initial Clear = 0;
 
+	//Instantiate data_path	
     data_path DUT (
         .clock(Clock), .clear(Clear),
         .Gra(Gra), .Grb(Grb), .Grc(Grc),
@@ -52,18 +47,22 @@ module ALU_immediate_instructions_tb;
         .BusMuxOut(BusMuxOut)
     );
 
+	//Preload registers and set PC
     initial begin
         //ADDI instrcution addi R7, R4, -9.
+		//DUT.R7_reg.q = 32'd420;
         //DUT.R4_reg.q = 32'd100;
         //DUT.PC_reg.qTemp = 32'd6; //instruction located at 0x6 in ram
 		
-		//ANDI instruction
+		//ANDI instruction andi R7, R4, 0x71
+		//DUT.R7_reg.q = 32'h42;
 		//DUT.R4_reg.q = 32'h34;
         //DUT.PC_reg.qTemp = 32'd8; //instruction located at 0x8 in ram
 		
-		//ORI instruction
+		//ORI instruction ori R7, R4, 0x71
+		DUT.R7_reg.q = 32'h42;
 		DUT.R4_reg.q = 32'h34;
-        DUT.PC_reg.qTemp = 32'd9; //instruction located at 0x8 in ram
+        DUT.PC_reg.qTemp = 32'd9; //instruction located at 0x9 in ram
 
         Clock = 0;
         forever #10 Clock = ~Clock;
@@ -83,6 +82,7 @@ module ALU_immediate_instructions_tb;
 
     //State Outputs
     always @(Present_state) begin
+		//Deassert all enables
         {PCin,IRin,HIin,LOin,ZHIin,Zin,MARin,MDRin,OUTPORT_In,Yin} <= 0;
         {PCout,HIout,LOout,ZHIout,Zout,INPORT_Out,MDRout,Cout}      <= 0;
         {Gra,Grb,Grc,Rin,Rout,BAout,Read,Write,IncPC,OUTPORT_Out}   <= 0;
@@ -93,25 +93,25 @@ module ALU_immediate_instructions_tb;
 		
 		
 
-            // ---- FETCH from ram.hex (@PC) ----
+            //FETCH from ram.hex at location in PC
             T0: begin
-                PCout <= 1; MARin <= 1; Read <= 1; IncPC <= 1;     // start read
+                PCout <= 1; MARin <= 1; Read <= 1; IncPC <= 1;
                 #20 PCout <= 0; MARin <= 0; Read <= 0; IncPC <= 0;
             end
 
             T1: begin
-                Read <= 1; MDRin <= 1;                 // latch stable mem_data_out
+                Read <= 1; MDRin <= 1;
                 #40 Read <= 0; MDRin <= 0;
             end
 			
             T2: begin
-                MDRout <= 1; IRin <= 1;                // IR <= instruction
+                MDRout <= 1; IRin <= 1; // IR <= instruction
                 #40 MDRout <= 0; IRin <= 0;
             end
 
-            // ---- EXECUTE instruction ----
+            // EXECUTE instruction
             T3: begin
-                Grb <= 1; Rout <= 1; Yin <= 1;         // Y = R4
+                Grb <= 1; Rout <= 1; Yin <= 1;// Y = R4
                 #40 Grb <= 0; Rout <= 0; Yin <= 0;
             end
 
@@ -126,7 +126,7 @@ module ALU_immediate_instructions_tb;
             end
 
             T5: begin
-                Zout <= 1; Gra <= 1; Rin <= 1;         // R7 = Z
+                Zout <= 1; Gra <= 1; Rin <= 1; // R7 = Z
                 #40 Zout <= 0; Gra <= 0; Rin <= 0;
             end
         endcase
