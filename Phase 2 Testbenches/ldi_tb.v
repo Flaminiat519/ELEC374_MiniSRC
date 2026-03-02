@@ -1,6 +1,7 @@
+//LDI instruction test bench
 `timescale 1ns/10ps
 module ldi_tb;
-
+	//Initializing registers
     reg         Clock, Clear;
     reg         PCin, IRin, HIin, LOin, ZHIin, Zin, MARin, MDRin, OUTPORT_In, Yin;
     reg         PCout, HIout, LOout, ZHIout, Zout, INPORT_Out, MDRout, Cout;
@@ -8,15 +9,15 @@ module ldi_tb;
     reg         CON_In, CON_Out, OUTPORT_Out;
     reg [12:0]  alu_op;
     wire [31:0] BusMuxOut;
-
+	//Initializing states
     parameter Default = 3'b000;
     parameter T0 = 3'b001, T1 = 3'b010, T2 = 3'b011,
               T3 = 3'b100, T4 = 3'b101, T5 = 3'b110;
 
     reg [2:0] Present_state = Default;
-
     initial Clear = 0;
 
+	//Initializing datapath
     data_path DUT (
         .clock(Clock), .clear(Clear),
         .Gra(Gra), .Grb(Grb), .Grc(Grc),
@@ -39,12 +40,11 @@ module ldi_tb;
     );
 
     initial begin
-
-        //Case 1: ldi R7, 0x65  aka  R7 = 0x65
+        //Case 1
         DUT.PC_reg.qTemp = 32'd0;
-        //Case 2: ldi R0, 0x72(R2)  ->  R0 = R2+0x72 = 0x57+0x72 = 0xC9
-        // DUT.PC_reg.qTemp = 32'd1;
-        // DUT.R2_reg.q     = 32'h00000057; // preload R2 = 0x57
+        //Case 2
+        //DUT.PC_reg.qTemp = 32'd1;
+        //DUT.R2_reg.q     = 32'h00000057;
 
         Clock = 0;
         forever #10 Clock = ~Clock;
@@ -79,33 +79,28 @@ module ldi_tb;
                 CON_In <= 0;
                 alu_op <= 13'b0;
             end
-            //Fetch instruction from RAM[PC=0] into MDR
+            //Instruction fetch T0-T2
             T0: begin
-                PCout <= 1; MARin <= 1; Read <= 1; IncPC <= 1;     // start read
+                PCout <= 1; MARin <= 1; Read <= 1; IncPC <= 1; 
                 #20 PCout <= 0; MARin <= 0; Read <= 0; IncPC <= 0;
             end
-
             T1: begin
-                Read <= 1; MDRin <= 1;                 // latch stable mem_data_out
+                Read <= 1; MDRin <= 1;                 
                 #40 Read <= 0; MDRin <= 0;
             end
-			
             T2: begin
-                MDRout <= 1; IRin <= 1;                // IR <= instruction
+                MDRout <= 1; IRin <= 1;              
                 #40 MDRout <= 0; IRin <= 0;
             end
-            //Y = Rb (0 if Rb=R0 due to BAout masking)
-            T3: begin
+            T3: begin //Y= Rb
                 Grb <= 1; BAout <= 1; Yin <= 1;
                 #40 Grb <= 0; BAout <= 0; Yin <= 0;
             end
-            //Z = Y + C (sign-extended immediate)
-            T4: begin
+            T4: begin //Z=Y+C
                 Cout <= 1; alu_op <= 13'b0000000010000; Zin <= 1;
                 #40 Cout <= 0; Zin <= 0;
             end
-            // T5: Ra = Z  (no memory access — ldi is done here)
-            T5: begin
+            T5: begin //Ra = Z, there's no memory access
                 Zout <= 1; Gra <= 1; Rin <= 1;
                 #40 Zout <= 0; Gra <= 0; Rin <= 0;
             end
