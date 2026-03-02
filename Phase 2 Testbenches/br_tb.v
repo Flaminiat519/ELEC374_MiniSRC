@@ -36,54 +36,55 @@ module branch_tb;
     );
 
     initial begin
-        // ============================================================
-        // CASE 1: brzr R3, 48  — branch taken when R3 == 0
-        //   PC=0x00A, fetch gets A9800030 from RAM
-        //   TAKEN:     R3=0            → PC after T6 = 0x00A+1+48 = 0x03B
-        //   NOT TAKEN: R3=32'h1        → PC after T6 = 0x00B
-        DUT.PC_reg.qTemp = 32'h00A;
-        DUT.R3_reg.q     = 32'h0;       // swap to 32'h1 for NOT TAKEN
-
-        // ============================================================
-        // CASE 2: brnz R3, 48  — branch taken when R3 != 0
-        //   PC=0x00B, fetch gets A9880030 from RAM
-        //   TAKEN:     R3=32'h1        → PC after T6 = 0x03C
-        //   NOT TAKEN: R3=32'h0        → PC after T6 = 0x00C
-        // DUT.PC_reg.qTemp = 32'h00B;
-        // DUT.R3_reg.q     = 32'h1;    // swap to 32'h0 for NOT TAKEN
-
-        // ============================================================
-        // CASE 3: brpl R3, 48  — branch taken when R3 >= 0
-        //   PC=0x00C, fetch gets A9900030 from RAM
-        //   TAKEN:     R3=32'h5        → PC after T6 = 0x03D
-        //   NOT TAKEN: R3=32'h80000000 → PC after T6 = 0x00D
-        // DUT.PC_reg.qTemp = 32'h00C;
-        // DUT.R3_reg.q     = 32'h5;    // swap to 32'h80000000 for NOT TAKEN
-
-        // ============================================================
-        // CASE 4: brmi R3, 48  — branch taken when R3 < 0
-        //   PC=0x00D, fetch gets A9980030 from RAM
-        //   TAKEN:     R3=32'h80000000 → PC after T6 = 0x03E
-        //   NOT TAKEN: R3=32'h5        → PC after T6 = 0x00E
-        // DUT.PC_reg.qTemp = 32'h00D;
-        // DUT.R3_reg.q     = 32'h80000000; // swap to 32'h5 for NOT TAKEN
-
         Clock = 0;
         forever #10 Clock = ~Clock;
     end
 
+    initial begin
+        #1;
+        // ============================================================
+        // CASE 1: brzr R3, 48 — TAKEN when R3 == 0
+        //   RAM @00A = A9800030, target = 0x00A+1+48 = 0x03B
+        //   NOT TAKEN: change R3_reg.q to 32'h1
+        DUT.PC_reg.qTemp = 32'h00A;
+        DUT.R3_reg.q     = 32'h0;
+
+        // ============================================================
+        // CASE 2: brnz R3, 48 — TAKEN when R3 != 0
+        //   RAM @00B = A9880030, target = 0x03C
+        //   NOT TAKEN: change R3_reg.q to 32'h0
+        // DUT.PC_reg.qTemp = 32'h00B;
+        // DUT.R3_reg.q     = 32'h1;
+
+        // ============================================================
+        // CASE 3: brpl R3, 48 — TAKEN when R3 >= 0
+        //   RAM @00C = A9900030, target = 0x03D
+        //   NOT TAKEN: change R3_reg.q to 32'h80000000
+        // DUT.PC_reg.qTemp = 32'h00C;
+        // DUT.R3_reg.q     = 32'h5;
+
+        // ============================================================
+        // CASE 4: brmi R3, 48 — TAKEN when R3 < 0
+        //   RAM @00D = A9980030, target = 0x03E
+        //   NOT TAKEN: change R3_reg.q to 32'h5
+        // DUT.PC_reg.qTemp = 32'h00D;
+        // DUT.R3_reg.q     = 32'h80000000;
+    end
+
+    // State Transitions
     always @(posedge Clock) begin
         case (Present_state)
-            Default : #30 Present_state = T0;
-            T0      : #30 Present_state = T1;
-            T1      : #30 Present_state = T2;
-            T2      : #30 Present_state = T3;
-            T3      : #30 Present_state = T4;
-            T4      : #30 Present_state = T5;
-            T5      : #30 Present_state = T6;
+            Default : Present_state = T0;
+            T0      : #40 Present_state = T1;
+            T1      : #40 Present_state = T2;
+            T2      : #40 Present_state = T3;
+            T3      : #40 Present_state = T4;
+            T4      : #40 Present_state = T5;
+            T5      : #40 Present_state = T6;
         endcase
     end
 
+    // State Outputs
     always @(Present_state) begin
         {PCin,IRin,HIin,LOin,ZHIin,Zin,MARin,MDRin,OUTPORT_In,Yin} <= 0;
         {PCout,HIout,LOout,ZHIout,Zout,INPORT_Out,MDRout,Cout}      <= 0;
@@ -92,44 +93,51 @@ module branch_tb;
         alu_op <= 13'b0;
 
         case (Present_state)
-            // T0: PC → MAR, read RAM → MDR, IncPC
+            Default: begin
+            end
+
+            // T0: PC → MAR, IncPC
             T0: begin
-                PCout<=1; MARin<=1; Read<=1; MDRin<=1; IncPC<=1;
-                #20;
-                PCout<=0; MARin<=0; Read<=0; MDRin<=0; IncPC<=0;
+                #10 PCout <= 1; MARin <= 1; IncPC <= 1;
             end
-            // T1: MDR → IR
+
+            // T1: drop T0 signals, assert Read so RAM sees address at next posedge
             T1: begin
-                MDRout<=1; IRin<=1;
-                #40;
-                MDRout<=0; IRin<=0;
+                #10 PCout <= 0; MARin <= 0; IncPC <= 0;
+                #10 Read <= 1; MDRin <= 1;
             end
-            // T2: IR settles, no bus activity
-            T2: begin end
-            // T3: Ra (R3) → bus, latch CON FF
+
+            // T2: drop Read/MDRin, MDR now has instruction, load IR
+            T2: begin
+                #10 Read <= 0; MDRin <= 0;
+                #10 MDRout <= 1; IRin <= 1;
+            end
+
+            // T3: drop IR load, put R3 on bus, latch CON FF
             T3: begin
-                Gra<=1; Rout<=1; CON_In<=1;
-                #40;
-                Gra<=0; Rout<=0; CON_In<=0;
+                #10 MDRout <= 0; IRin <= 0;
+                #10 Gra <= 1; Rout <= 1; CON_In <= 1;
             end
-            // T4: PC+1 → Y
+
+            // T4: drop T3 signals, PC+1 → Y
             T4: begin
-                PCout<=1; Yin<=1;
-                #40;
-                PCout<=0; Yin<=0;
+                #10 Gra <= 0; Rout <= 0; CON_In <= 0;
+                #10 PCout <= 1; Yin <= 1;
             end
-            // T5: Z = Y + C  (PC+1 + sign-extended 48)
+
+            // T5: drop T4 signals, Z = Y + C (ADD)
             T5: begin
-                Cout<=1; alu_op<=13'b0000000000011; Zin<=1;
-                #40;
-                Cout<=0; alu_op<=13'b0; Zin<=0;
+                #10 PCout <= 0; Yin <= 0;
+                #10 Cout <= 1; alu_op <= 13'b0000000010000; Zin <= 1;
             end
-            // T6: if CON_FF=1, PC ← branch target; else PC unchanged
+
+            // T6: drop T5 signals, if CON=1 PC gets branch target
             T6: begin
-                Zout<=1; PCin<=CON_Out;
-                #40;
-                Zout<=0; PCin<=0;
+                #10 Cout <= 0; alu_op <= 13'b0; Zin <= 0;
+                #10 Zout <= 1; PCin <= DUT.CON;
             end
+
         endcase
     end
+
 endmodule
