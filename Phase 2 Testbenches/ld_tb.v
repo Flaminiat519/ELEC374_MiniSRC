@@ -1,7 +1,7 @@
-
+//LD instruction Test Bench
 `timescale 1ns/10ps
 module ld_tb;
-
+	//Initialize Registers
     reg         Clock, Clear;
     reg         PCin, IRin, HIin, LOin, ZHIin, Zin, MARin, MDRin, OUTPORT_In, Yin;
     reg         PCout, HIout, LOout, ZHIout, Zout, INPORT_Out, MDRout, Cout;
@@ -10,15 +10,16 @@ module ld_tb;
     reg [12:0]  alu_op;
     wire [31:0] BusMuxOut;
 
+	//Initialize steps
     parameter Default = 4'b0000;
     parameter T0  = 4'b0001, T1  = 4'b0010, T2  = 4'b0011,
               T3  = 4'b0100, T4  = 4'b0101, T5  = 4'b0110,
               T6  = 4'b0111, T7 = 4'b1000, T8 = 4'b1001;
 
     reg [3:0] Present_state = Default;
-
     initial Clear = 0;
 
+	//Initialize Datapath
     data_path DUT (
         .clock(Clock), .clear(Clear),
         .Gra(Gra), .Grb(Grb), .Grc(Grc),
@@ -41,17 +42,12 @@ module ld_tb;
     );
 
     initial begin
-        //Case 1: ld R7, 0x65 aka R7 = mem[0x65] = 0x84
-		//IR[31:27] = 10001 = ldi opcode
-		//IR[26:23] = 0111 = Ra = R7
-		//IR[22:19] = 0000 = Rb = R0
-		//IR[18:0]  = 0x065 = C field
-        //DUT.RAM.mem[0] = 32'h83800065;
+        //Case 1
 		//DUT.PC_reg.qTemp = 32'd2; 
 		
-        // Case 2: ld R0, 0x72(R2) aka  R2=0x57 and R0 = mem[0xC9] = 0x2B
+        //Case 2
         DUT.PC_reg.qTemp = 32'd3; 
-        DUT.R2_reg.q   = 32'h00000057; // preload R2 = 0x57
+        DUT.R2_reg.q   = 32'h00000057; //preload R2 = 0x57
 
         Clock = 0;
         forever #10 Clock = ~Clock;
@@ -89,48 +85,42 @@ module ld_tb;
                 CON_In <= 0;
                 alu_op <= 13'b0;
             end
-            //Fetch instruction from RAM[PC=0] into MDR
+            //Instruction fetch T0-T2
             T0: begin
-                PCout <= 1; MARin <= 1; Read <= 1; IncPC <= 1;     // start read
+                PCout <= 1; MARin <= 1; Read <= 1; IncPC <= 1;
                 #20 PCout <= 0; MARin <= 0; Read <= 0; IncPC <= 0;
             end
-
             T1: begin
-                Read <= 1; MDRin <= 1;                 // latch stable mem_data_out
+                Read <= 1; MDRin <= 1; 
                 #40 Read <= 0; MDRin <= 0;
             end
-			
             T2: begin
-                MDRout <= 1; IRin <= 1;                // IR <= instruction
+                MDRout <= 1; IRin <= 1; //instruction enters the IR
                 #40 MDRout <= 0; IRin <= 0;
             end
-            //Y = Rb (0 if Rb=R0 due to BAout masking)
-            T3: begin
+
+			//Instruction begins
+            T3: begin //Y=Rb
                 Grb <= 1; BAout <= 1; Yin <= 1;
                 #40 Grb <= 0; BAout <= 0; Yin <= 0;
             end
-            //Z = Y + C (effective address)
-            T4: begin
+            T4: begin //Computing effective address, Z = Y + C
                 Cout <= 1; alu_op <= 13'b0000000010000; Zin <= 1;
                 #40 Cout <= 0; Zin <= 0;
             end
-            //MAR = Z (effective address)
             T5: begin
                 Zout <= 1; MARin <= 1;
                 #40 Zout <= 0; MARin <= 0;
             end
-            //Assert Read — RAM output becomes stable next cycle
-            T6: begin
+            T6: begin //Assert Read, RAM output becomes stable next cycle because of our synchronous ram
                 Read <= 1;
                 #40 Read <= 0;
             end
-            //MDRin — latch stable RAM data into MDR
             T7: begin
                 Read <= 1; MDRin <= 1;
                 #40 Read <= 0; MDRin <= 0;
             end
-            //1Ra = MDR (destination register gets memory data)
-            T8: begin
+            T8: begin //Destination register gets memory data
                 MDRout <= 1; Gra <= 1; Rin <= 1;
                 #40 MDRout <= 0; Gra <= 0; Rin <= 0;
             end
