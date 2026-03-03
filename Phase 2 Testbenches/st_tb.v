@@ -43,9 +43,9 @@ module st_tb;
 
     initial begin
         //Case 1
-        DUT.PC_reg.qTemp = 32'd4;
+        //DUT.PC_reg.qTemp = 32'd4;
         //Case 2
-        // DUT.PC_reg.qTemp = 32'd5;
+        DUT.PC_reg.qTemp = 32'd5;
         //For both cases
         DUT.R6_reg.q = 32'h00000063;
 
@@ -132,8 +132,8 @@ module st_tb;
                 Read <= 1; MDRin <= 1;
                 #40 Read <= 0; MDRin <= 0;
 
-                $display("=== READ-BACK (T8) ===");
-                $display("MDR = 0x%08h  (expects 0x00000063 -- confirms write succeeded)", DUT.MDR_reg.Q);
+                $display("READ-BACK to verify");
+                $display("MDR = 0x%08h  (expects 0x00000063)", DUT.MDR_reg.Q);
             end
 
         endcase
