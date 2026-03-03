@@ -13,6 +13,7 @@ assign RC = IR[18:15];
 
 //Sign extend C by fanning out the msb of the IR feild that relates to RC
 assign C = {{13{IR[18]}}, {IR[18:0]}};
+//assign C  = {{14{IR[17]}}, IR[17:0]};
 
 //Select which register feild to use
 wire [3:0] Rsel = (RA & {4{Gra}}) | (RB & {4{Grb}}) | (RC & {4{Grc}});

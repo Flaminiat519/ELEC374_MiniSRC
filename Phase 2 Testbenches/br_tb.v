@@ -35,14 +35,15 @@ module br_tb;
     );
     initial begin
         // Case 1: Branch if R3 == 0
-        DUT.PC_reg.qTemp = 32'hA;
-        DUT.R3_reg.q = 32'h00000000; //TAKEN
+        //DUT.PC_reg.qTemp = 32'hA;
+        //DUT.R3_reg.q = 32'h00000000; //TAKEN
         //DUT.R3_reg.q = 32'h00000001; //NOT TAKEN
 
         // Case 2: Branch if R3 != 0
-        //DUT.PC_reg.qTemp = 32'hB;
+        DUT.PC_reg.qTemp = 32'hB;
         //DUT.R3_reg.q = 32'h00000001; //TAKEN
-        //DUT.R3_reg.q = 32'h00000000; //NOT TAKEN
+        DUT.R3_reg.q = 32'h00000000; //NOT TAKEN
+		
 
         // Case 3: brpl, Branch if R3 >= 0 
         //DUT.PC_reg.qTemp = 32'hC;
@@ -57,6 +58,7 @@ module br_tb;
         Clock = 0;
         forever #10 Clock = ~Clock;
     end
+	
 
     // State Transitions
     always @(posedge Clock) begin
@@ -111,7 +113,7 @@ module br_tb;
             end
             //PC+1 + 48
             T5: begin
-                Cout <= 1; alu_op <= 13'b0000000100000; Zin <= 1; ZHIin <= 1;
+                Cout <= 1; alu_op <= 13'b0000000010000; Zin <= 1; ZHIin <= 1;
                 #40 Cout <= 0; Zin <= 0; ZHIin <= 0;
             end
             //CON=1: PCin pulses (branch taken)
