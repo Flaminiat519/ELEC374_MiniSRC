@@ -1,3 +1,4 @@
+//mflo testbench
 `timescale 1ns/10ps
 
 module mflo_tb;
@@ -79,23 +80,26 @@ module mflo_tb;
 
         case (Present_state)
 
-          // ---- FETCH from ram.hex (@PC) ----
+			//Fetch from ram.hex (in PC)
+			// start read
             T0: begin
-                PCout <= 1; MARin <= 1; Read <= 1; IncPC <= 1;     // start read
+                PCout <= 1; MARin <= 1; Read <= 1; IncPC <= 1;     
                 #20 PCout <= 0; MARin <= 0; Read <= 0; IncPC <= 0;
             end
 
+			// latch stable mem_data_out
             T1: begin
-                Read <= 1; MDRin <= 1;                 // latch stable mem_data_out
+                Read <= 1; MDRin <= 1;                 
                 #40 Read <= 0; MDRin <= 0;
             end
-			
+
+			// IR <- instruction
             T2: begin
-                MDRout <= 1; IRin <= 1;                // IR <= instruction
+                MDRout <= 1; IRin <= 1;                
                 #40 MDRout <= 0; IRin <= 0;
             end
 			
-            // ---- EXECUTE instruction ----
+            //Execute instruction
 			//Gra, Rin, LOout
             T3: begin
                 Gra <= 1; Rin <= 1; LOout <= 1;         
