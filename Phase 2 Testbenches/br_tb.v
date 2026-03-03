@@ -34,43 +34,22 @@ module br_tb;
         .BusMuxOut(BusMuxOut)
     );
     initial begin
-
-        // ---------------------------------------------------------------
-        // Case 1: brzr R3, 48  --> RAM[0x0A] = 0xA9800030
-        //   Branch if R3 == 0
-        //   TAKEN:     R3 = 0x00000000, PC -> 0x3B
-        //   NOT TAKEN: R3 = 0x00000001, PC stays 0x0B
-        // ---------------------------------------------------------------
+        // Case 1: Branch if R3 == 0
         DUT.PC_reg.qTemp = 32'hA;
-        DUT.R3_reg.q = 32'h00000000; // TAKEN
-        //DUT.R3_reg.q = 32'h00000001; // NOT TAKEN
+        DUT.R3_reg.q = 32'h00000000; //TAKEN
+        //DUT.R3_reg.q = 32'h00000001; //NOT TAKEN
 
-        // ---------------------------------------------------------------
-        // Case 2: brnz R3, 48  --> RAM[0x0B] = 0xA9880030
-        //   Branch if R3 != 0
-        //   TAKEN:     R3 = 0x00000001, PC -> 0x3D
-        //   NOT TAKEN: R3 = 0x00000000, PC stays 0x0C
-        // ---------------------------------------------------------------
+        // Case 2: Branch if R3 != 0
         //DUT.PC_reg.qTemp = 32'hB;
-        //DUT.R3_reg.q = 32'h00000001; // TAKEN
-        //DUT.R3_reg.q = 32'h00000000; // NOT TAKEN
+        //DUT.R3_reg.q = 32'h00000001; //TAKEN
+        //DUT.R3_reg.q = 32'h00000000; //NOT TAKEN
 
-        // ---------------------------------------------------------------
-        // Case 3: brpl R3, 48  --> RAM[0x0C] = 0xA9900030
-        //   Branch if R3 >= 0 (positive or zero, MSB = 0)
-        //   TAKEN:     R3 = 0x00000001, PC -> 0x3F
-        //   NOT TAKEN: R3 = 0xFFFFFFFF, PC stays 0x0D
-        // ---------------------------------------------------------------
+        // Case 3: brpl, Branch if R3 >= 0 
         //DUT.PC_reg.qTemp = 32'hC;
-        //DUT.R3_reg.q = 32'h00000001; // TAKEN
-        //DUT.R3_reg.q = 32'hFFFFFFFF; // NOT TAKEN
+        //DUT.R3_reg.q = 32'h00000001; //TAKEN
+        //DUT.R3_reg.q = 32'hFFFFFFFF; //NOT TAKEN
 
-        // ---------------------------------------------------------------
-        // Case 4: brmi R3, 48  --> RAM[0x0D] = 0xA9980030
-        //   Branch if R3 < 0  (negative, MSB = 1)
-        //   TAKEN:     R3 = 0xFFFFFFFF, PC -> 0x41
-        //   NOT TAKEN: R3 = 0x00000001, PC stays 0x0E
-        // ---------------------------------------------------------------
+        //Case 4: Branch if R3 < 0
         //DUT.PC_reg.qTemp = 32'hD;
         //DUT.R3_reg.q = 32'hFFFFFFFF; // TAKEN
         //DUT.R3_reg.q = 32'h00000001; // NOT TAKEN
@@ -79,9 +58,7 @@ module br_tb;
         forever #10 Clock = ~Clock;
     end
 
-    // ---------------------------------------------------------------
     // State Transitions
-    // ---------------------------------------------------------------
     always @(posedge Clock) begin
         case (Present_state)
             Default : #30 Present_state = T0;
@@ -94,17 +71,6 @@ module br_tb;
         endcase
     end
 
-    // ---------------------------------------------------------------
-    // State Outputs
-    // Control Sequence:
-    //   T0: PCout, MARin, Read, IncPC
-    //   T1: Read, MDRin
-    //   T2: MDRout, IRin
-    //   T3: Gra, Rout, CONin
-    //   T4: PCout, Yin
-    //   T5: Cout, ADD, Zin
-    //   T6: Zout, CON -> PCin
-    // ---------------------------------------------------------------
     always @(Present_state) begin
         {PCin,IRin,HIin,LOin,ZHIin,Zin,MARin,MDRin,OUTPORT_In,Yin} <= 0;
         {PCout,HIout,LOout,ZHIout,Zout,INPORT_Out,MDRout,Cout}      <= 0;
@@ -119,6 +85,7 @@ module br_tb;
                 CON_In <= 0;
                 alu_op <= 13'b0;
             end
+            //Instruction Fetch
             T0: begin
                 PCout <= 1; MARin <= 1; Read <= 1; IncPC <= 1;
                 #20 PCout <= 0; MARin <= 0; Read <= 0; IncPC <= 0;
@@ -131,24 +98,24 @@ module br_tb;
                 MDRout <= 1; IRin <= 1;
                 #40 MDRout <= 0; IRin <= 0;
             end
-            // Load Ra (R3) onto bus, latch condition into CON FF
+            //Load Ra (R3) onto bus
             T3: begin
                 Gra <= 1; Rout <= 1;
                 #5 CON_In <= 1;
                 #35 Gra <= 0; Rout <= 0; CON_In <= 0;
             end
-            // Y <= PC (incremented value from T0)
+            //Y <= PC (incremented value from T0)
             T4: begin
                 PCout <= 1; Yin <= 1;
                 #40 PCout <= 0; Yin <= 0;
             end
-            // Z <= Y + sign_extended(C) = PC+1 + 48
+            //PC+1 + 48
             T5: begin
                 Cout <= 1; alu_op <= 13'b0000000100000; Zin <= 1; ZHIin <= 1;
                 #40 Cout <= 0; Zin <= 0; ZHIin <= 0;
             end
-            // IF CON=1: PCin pulses and PC <= Z (branch taken)
-            // IF CON=0: PCin stays low and PC unchanged (branch not taken)
+            //CON=1: PCin pulses (branch taken)
+            //CON=0: PCin stays low (branch not taken)
             T6: begin
                 Zout <= 1;
                 #5 PCin <= DUT.CON;
