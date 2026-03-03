@@ -34,25 +34,25 @@ module br_tb;
         .BusMuxOut(BusMuxOut)
     );
     initial begin
-        // Case 1: Branch if R3 == 0
+        //Case 1: brzr, Branch if R3 == 0
         //DUT.PC_reg.qTemp = 32'hA;
         //DUT.R3_reg.q = 32'h00000000; //TAKEN
         //DUT.R3_reg.q = 32'h00000001; //NOT TAKEN
 
-        // Case 2: Branch if R3 != 0
-        DUT.PC_reg.qTemp = 32'hB;
+        //Case 2: brnz, Branch if R3 != 0
+        //DUT.PC_reg.qTemp = 32'hB;
         //DUT.R3_reg.q = 32'h00000001; //TAKEN
-        DUT.R3_reg.q = 32'h00000000; //NOT TAKEN
+        //DUT.R3_reg.q = 32'h00000000; //NOT TAKEN
 		
 
-        // Case 3: brpl, Branch if R3 >= 0 
+        //Case 3: brpl, Branch if R3 >= 0 
         //DUT.PC_reg.qTemp = 32'hC;
         //DUT.R3_reg.q = 32'h00000001; //TAKEN
         //DUT.R3_reg.q = 32'hFFFFFFFF; //NOT TAKEN
 
-        //Case 4: Branch if R3 < 0
-        //DUT.PC_reg.qTemp = 32'hD;
-        //DUT.R3_reg.q = 32'hFFFFFFFF; // TAKEN
+        //Case 4: brmi Branch if R3 < 0
+        DUT.PC_reg.qTemp = 32'hD;
+        DUT.R3_reg.q = 32'hFFFFFFFF; // TAKEN
         //DUT.R3_reg.q = 32'h00000001; // NOT TAKEN
 
         Clock = 0;
