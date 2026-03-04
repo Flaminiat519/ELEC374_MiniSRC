@@ -43,9 +43,9 @@ module st_tb;
 
     initial begin
         //Case 1
-        //DUT.PC_reg.qTemp = 32'd4;
+        DUT.PC_reg.qTemp = 32'd4;
         //Case 2
-        DUT.PC_reg.qTemp = 32'd5;
+        //DUT.PC_reg.qTemp = 32'd5;
         //For both cases
         DUT.R6_reg.q = 32'h00000063;
 

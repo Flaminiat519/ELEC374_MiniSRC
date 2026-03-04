@@ -43,11 +43,11 @@ module ld_tb;
 
     initial begin
         //Case 1
-		//DUT.PC_reg.qTemp = 32'd2; 
+		DUT.PC_reg.qTemp = 32'd2; 
 		
         //Case 2
-        DUT.PC_reg.qTemp = 32'd3; 
-        DUT.R2_reg.q   = 32'h00000057; //preload R2 = 0x57
+        //DUT.PC_reg.qTemp = 32'd3; 
+        //DUT.R2_reg.q   = 32'h00000057; //preload R2 = 0x57
 
         Clock = 0;
         forever #10 Clock = ~Clock;

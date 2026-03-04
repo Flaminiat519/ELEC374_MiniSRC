@@ -46,13 +46,13 @@ module jump_instructions_tb;
 	//Preload registers and set up PC to point to the correct instruction
     initial begin
         //jump instruction jr R12
-        //DUT.R12_reg.q = 32'hff;
-        //DUT.PC_reg.qTemp = 32'h10; //instruction located at 0x10 in ram
+        DUT.R12_reg.q = 32'hff;
+        DUT.PC_reg.qTemp = 32'h10; //instruction located at 0x10 in ram
 		
 		//jal instruction jal R4
-		DUT.R4_reg.q = 32'h32;
-		DUT.R12_reg.q = 32'hff;
-        DUT.PC_reg.qTemp = 32'hf; //instruction located at 0xf in ram
+		//DUT.R4_reg.q = 32'h32;
+		//DUT.R12_reg.q = 32'hff;
+        //DUT.PC_reg.qTemp = 32'hf; //instruction located at 0xf in ram
 
 
         Clock = 0;
@@ -99,19 +99,19 @@ module jump_instructions_tb;
             // EXECUTE instruction
             T3: begin
 				//jr R12 instruction
-                //Gra <= 1; Rout <= 1; PCin <= 1;  // PC = RA (R12)
-                //#40 Gra <= 0; Rout <= 0; PCin <= 0;
+                Gra <= 1; Rout <= 1; PCin <= 1;  // PC = RA (R12)
+                #40 Gra <= 0; Rout <= 0; PCin <= 0;
 				//jal R4 instruction
-				Grb <= 1; Rin <= 1; PCout <= 1;	//R12 = PC + 1
-				#40 Grb <= 0; Rin <= 0; PCout <= 0; 
+				//Grb <= 1; Rin <= 1; PCout <= 1;	//R12 = PC + 1
+				//#40 Grb <= 0; Rin <= 0; PCout <= 0; 
 				
             end
 			
 			//Only for jal R4
-			T4: begin
-				Gra <= 1; Rout <= 1; PCin <= 1; //PC = R4
-				#40 Gra <= 0; Rout <= 0; PCin <= 0;
-			end
+			//T4: begin
+			//	Gra <= 1; Rout <= 1; PCin <= 1; //PC = R4
+			//	#40 Gra <= 0; Rout <= 0; PCin <= 0;
+			//end
 
         endcase
     end
