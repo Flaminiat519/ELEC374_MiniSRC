@@ -1,3 +1,4 @@
+//control unit module
 `timescale 1ns/10ps
 
 module control_unit(
