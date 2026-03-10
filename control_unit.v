@@ -1,63 +1,37 @@
 //CONTROL UNIT MODULE
 `timescale 1ns/10ps
+
+//OP code degine statements
 `define ADD 00000
-
 `define SUB 00001
-
 `define AND 00010
-
 `define OR 00011
-
 `define SHR 00100
-
 `define SHRA 00101
-
 `define SHL 00110
-
 `define ROR 00111
-
 `define ROL 01000
-
 `define ADDI 01001
-
 `define ANDI 01010
-
 `define ORI 01011
-
 `define DIV 01100
-
 `define MUL 01101
-
 `define NEG 01110
-
 `define NOT 01111
-
 `define LD 10000
-
 `define LDI 10001
-
 `define ST 10010
-
 `define JR 10011
-
 `define JAL 10100
-
 `define BRANCH 10101
-
 `define IN 10110
-
 `define OUT 10111
-
 `define MFHI 11000
-
 `define MFLO 11001
-
 `define NOP 11010
-
 `define HALT 11011
 
-
-
+//ALU code define statements
 `define AND_OP 1b'0000000000001
 `define OR_OP 1b'0000000000010
 `define NOT_OP 1b'0000000000100
@@ -84,13 +58,38 @@ module control_unit (
 	input Clock, Reset, Stop
 );
 	
-	parameter 	reset_state = 4’b0000, 
-				fetch0 = 4’b0001, 
-				fetch1 = 4’b0010, 
-				fetch2 = 4’b0011,
-				add3 = 4’b0100, 
-				add4 = 4’b0101, 
-				add5 = 4’b0110;
+	parameter 	reset_state = 6’b00000, 
+				fetch0 = 6’b00001, 
+				fetch1 = 6’b00010, 
+				fetch2 = 6’b00011,
+				alu3 = 6’b00100, 
+				alu4 = 6’b00101, 
+				alu5 = 6’b00111,
+				muldiv3 = 6’b01001, 
+				muldiv4 = 6’b01010, 
+				muldiv5 = 6’b01011,
+				muldiv6 = 6’b01100, 
+				negnot3 = 6’b01101, 
+				negnot4 = 6’b01110,
+				readwrite3 = 6’b01111, 
+				readwrite4 = 6’b10000,
+				st5 = 6’b10001, 
+				st6 = 6’b10010,
+				st7 = 6’b10011, 
+				st8 = 6’b10100,
+				load5 = 6’b10101, 
+				load6 = 6’b10111,
+				load7 = 6’b11000, 
+				load8 = 6’b11001,
+				alui3 = 6’b11010, 
+				alui4 = 6’b11011, 
+				alui5 = 6’b11100,
+				branch3 = 6’b11101, 
+				branch4 = 6’b11111,
+				jal3 = 6’b100000, 
+				jal4 = 6’b100001,
+				nop = 6’b100010, 
+				halt = 6’b100011;
  
 	reg [3:0] present_state = reset_state; 
 	
@@ -110,9 +109,9 @@ module control_unit (
 				fetch2: begin
 							case (IR[31:27]) // inst. decoding based on the opcode to set the next state
 								`ADD, `SUB, `AND, `OR, `SHR, `SHRA, `SHL, `ROR, `ROL: present_state = alu3; 
-								`MUL, `DIV: present_state = muldiv1; 
-								`NEG, `NOT: present_state = negnot1; 
-								`ST, `LD, `LDI: present_state = readwrite1; 
+								`MUL, `DIV: present_state = muldiv3; 
+								`NEG, `NOT: present_state = negnot4; 
+								`ST, `LD, `LDI: present_state = readwrite3; 
 								`ADDI,`ANDI, `ORI: present_state = alui3; 
 								`JR: present_state = jr3; 
 								`JAL: present_state = jal3; 
@@ -132,28 +131,25 @@ module control_unit (
 					present_state = reset_state;
 					
 				//MUL AND DIV
-				muldiv1: 
-					present_state = muldiv2;
-				muldiv2: 
-					present_state = muldiv3;
 				muldiv3: 
 					present_state = muldiv4;
-				muldiv4;
+				muldiv4: 
+					present_state = muldiv5;
+				muldiv5: 
+					present_state = muldiv6;
+				muldiv6;
 					present_state = reset_state;
 			
-				
-					
 				//NEG AND NOT
-				negnot1: 
-					present_state = negnot2;
-				negnot2:
+				negnot3: 
+					present_state = negnot4;
+				negnot4:
 					present_state = reset_state;
-				
 					
 				//READ AND WRITE
-				readwrite1: 
-					present_state = readwrite2;
-				readwrite2:
+				readwrite3: 
+					present_state = readwrite4;
+				readwrite4:
 					`ST: present_state = st5; 
 					`LD: present_state = load5;
 					`LDI: present_state = loadi5;
@@ -186,6 +182,9 @@ module control_unit (
 				alui5:
 					present_state = reset_state;
 					
+				//JR
+				jr3:
+					present_state = reset_state;
 				//JAL 
 				jal3:
 					present_state = ja4;
@@ -195,6 +194,7 @@ module control_unit (
 				//NOP
 				nop:
 					present_state = reset_state;
+				
 					
 				//BRANCHING
 				branch3:
@@ -235,138 +235,138 @@ module control_unit (
 		
 			//ADD, AND, OR, SUB, SHR, SHL, SHRA, ROL, ROR
 			alu3: begin
-				Grb
-				Rout
-				Yin
+				Grb <= 1;
+				Rout <= 1;
+				Yin <= 1;
 			end	
 			alu4: begin
-				Grc
-				Rout
-				Zin
+				Grc <= 1;
+				Rout <= 1;
+				Zin <= 1;
 				if (IR[31:17] == `ADD){
 					alu_op = `ADD_OP; 
 				} else if (IR[31:17] == `OR){
-					
+					alu_op = `OR_OP; 
 				} else if (IR[31:17] == `AND){
-				
+					alu_op = `AND_OP; 
 				} else if (IR[31:17] == `SUB){
-				
+					alu_op = `SUB_OP; 
 				} else if (IR[31:17] == `SHR){
-				
+					alu_op = `SHR_OP; 
 				} else if (IR[31:17] == `SHRA){
-				
+					alu_op = `SHRA_OP; 
 				} else if (IR[31:17] == `ROR){
-				
+					alu_op = `ROR_OP; 
 				} else if (IR[31:17] == `ROL){
-				
+					alu_op = `ROL_OP; 
 				}
 					
 			end
 			alu5: begin
-				Zout
-				Gra
-				Rin
+				Zout <= 1;
+				Gra <= 1;
+				Rin <= 1;
 			end
 			
 			//MUL, DIV
 			muldiv1: begin
-				Gra
-				Rout
-				Yin
+				Gra <= 1;
+				Rout <= 1;
+				Yin <= 1;
 			end
 			muldiv2: begin
-				Grb
-				Rout
-				Zin
-				ZHi
+				Grb <= 1;
+				Rout <= 1;
+				Zin <= 1;
+				ZHi <= 1;
 				alu_op = ADD_OP;
 			end
 			muldiv3: begin
-				Zout
-				Loin
+				Zout <= 1;
+				Loin <= 1;
 			end
 			muldiv4: begin
-				ZHIout
-				HIin
+				ZHIout <= 1;
+				HIin <= 1;
 				
 			end
 			
 			//NEG, NOT
 			negnot1: begin
-				Grb
-				Rout
+				Grb <= 1;
+				Rout <= 1;
 				if (IR[31:17] == `NOT){
 					alu_op = 
 				} else if (IR[31:17] == `NEG){
 					alu_op = 
 				}
-				Zin
+				Zin <= 1;
 			end
 			negnot2: begin
-				Zout
-				Gra
-				Rin
+				Zout <= 1;
+				Gra <= 1;
+				Rin <= 1;
 			end
 			
 			//ST,LDI,LD (beginning)
 			readwrite1: begin
-				Grb
-				BAout
-				Yin
+				Grb <= 1;
+				BAout <= 1;
+				Yin <= 1;
 			end
 			readwrite2: begin
-				Cout
+				Cout <= 1;
 				alu_op = ADD_OP;
-				Zin
+				Zin <= 1;
 			end
 			
 			load5: begin
-				Zout
-				MARin
+				Zout <= 1;
+				MARin <= 1;
 			end
 			load6: begin
-				Read
+				Read <= 1;
 			end
 			load7: begin
-				Read
-				MRin
+				Read <= 1;
+				MRin <= 1;
 			end
 			load8: begin
-				MDRout
-				GRa
-				Rin
+				MDRout <= 1;
+				GRa <= 1;
+				Rin <= 1;
 			end
 			
 			loadi5: begin
-				Zout
-				Gra
-				Rin
+				Zout <= 1;
+				Gra <= 1;
+				Rin <= 1;
 			end
 			
 			st5: begin
-				zout
-				MARin
+				Zout <= 1;
+				MARin <= 1;
 			end
 			st6: begin
-				GRA
-				Rout
-				MDRin
+				GRA <= 1;
+				Rout <= 1;
+				MDRin <= 1;
 			end
 			st7: begin
-				Write
+				Write <= 1;
 			end
 			st8: begin
-				Read
+				Read <= 1;
 			end
 			
 			//ALU IMMEDIATE INSTRUCTIONS
 			alui3: begin
-				Grb
-				Rout
-				Yin
+				Grb <= 1;
+				Rout <= 1;
+				Yin <= 1;
 			end
 			alui4: begin
-				Cout
+				Cout <= 1;
 				if (IR[31:17] == `ADDI){
 					alu_op = 
 				} else if (IR[31:17] == `ORI){
@@ -374,41 +374,41 @@ module control_unit (
 				} else if (IR[31:17] == `ANDI){
 				
 				}
-				Zin
+				Zin <= 1; 
 			end
 			alui5: begin
-				zout
-				gra
-				Rin
+				Zout <= 1;
+				Gra <= 1;
+				Rin <= 1;
 			end
 			
 			//JUMP
 			jr3: begin
-				Gra
-				Rout
-				PCin
+				Gra <= 1;
+				Rout <= 1;
+				PCin <= 1;
 			end
 			jal3: begin
-				Grb
-				Rin
-				Pcout
+				Grb <= 1;
+				Rin <= 1;
+				Pcout <= 1;
 			end
 			jal4: begin
-				Gra
-				Rout
-				PCin
+				Gra <= 1;
+				Rout <= 1;
+				PCin <= 1;
 			
 			//MOVING
 			mflo3: begin
-				Gra
-				Rin
-				LOout
+				Gra <= 1;
+				Rin <= 1;
+				LOout <= 1;
 			end
 			
 			mfhi3: begin
-				Gra
-				Rin
-				Hiout
+				Gra <= 1;
+				Rin <= 1;
+				Hiout <= 1;
 			end
 			
 			halt: begin
@@ -419,20 +419,20 @@ module control_unit (
 			
 			//BRANCHING
 			branch3: begin 
-				Gra
-				Rout
-				CON_In
-				Gra
+				Gra <= 1;
+				Rout <= 1;
+				CON_In <= 1;
+				Gra <= 1;
 			end
 			branch4: begin	
-				Pcout
-				Yin
+				Pcout <= 1;
+				Yin <= 1;
 			end
 			branch5: begin
-				Cout
+				Cout <= 1;
 				alu_op = ADD_OP;
-				Zin
-				ZHIin
+				Zin <= 1;
+				ZHIin <= 1;
 			end
 				
 	
