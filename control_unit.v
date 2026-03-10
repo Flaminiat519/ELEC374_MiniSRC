@@ -65,8 +65,11 @@ module control_unit (
 	
 	input [31:0] IR,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 	input Clock, Reset, Stop);
 =======
+=======
+>>>>>>> Stashed changes
 	input Clock, Reset, Stop
 );
 	
