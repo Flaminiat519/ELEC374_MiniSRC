@@ -64,16 +64,9 @@ module control_unit (
     output reg         CON_In, CON_Out, OUTPORT_Out;
 	
 	input [31:0] IR,
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-	input Clock, Reset, Stop);
-=======
-=======
->>>>>>> Stashed changes
 	input Clock, Reset, Stop
 );
 	
->>>>>>> Stashed changes
 	parameter 	reset_state = 4’b0000, 
 				fetch0 = 4’b0001, 
 				fetch1 = 4’b0010, 
