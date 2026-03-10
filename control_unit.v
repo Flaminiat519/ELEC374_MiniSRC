@@ -34,7 +34,7 @@ always @(posedge Clock, posedge Reset, …) // finite state machine; if clock or
  endcase
  end
  end
-6
+
 always @(IR)
 	begin
  	ADD_s <= 0; AND_s <= 0; …
