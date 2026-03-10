@@ -59,7 +59,15 @@ module control_unit (
 				PCout <= 1; // see if you need to de-assert these signals
 				MARin <= 1;
 				IncPC <= 1;
-				Zin <= 1;
+				Read <= 1;
+			end
+			fetch1: begin
+				Read <= 1; 
+				MDRin <= 1;
+			end
+			fetch2: begin
+				MDRout <= 1;
+				IRin <= 1;
 			end
 			add3: begin
 				Grb <= 1; Rout <= 1;
