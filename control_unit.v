@@ -1,6 +1,61 @@
 //CONTROL UNIT MODULE
 `timescale 1ns/10ps
+`define ADD 00000
 
+`define SUB 00001
+
+`define AND 00010
+
+`define OR 00011
+
+`define SHR 00100
+
+`define SHRA 00101
+
+`define SHL 00110
+
+`define ROR 00111
+
+`define ROL 01000
+
+`define ADDI 01001
+
+`define ANDI 01010
+
+`define ORI 01011
+
+`define DIV 01100
+
+`define MUL 01101
+
+`define NEG 01110
+
+`define NOT 01111
+
+`define LD 10000
+
+`define LDI 10001
+
+`define ST 10010
+
+`define JR 10011
+
+`define JAL 10100
+
+`define BRANCH 10101
+
+`define IN 10110
+
+`define OUT 10111
+
+`define MFHI 11000
+
+`define MFLO 11001
+
+`define NOP 11010
+
+`define HALT 11011
+ 
 module control_unit (
 	output reg         Clock, Clear;
     output reg         PCin, IRin, HIin, LOin, ZHIin, Zin, MARin, MDRin, OUTPORT_In, Yin;
@@ -9,7 +64,13 @@ module control_unit (
     output reg         CON_In, CON_Out, OUTPORT_Out;
 	
 	input [31:0] IR,
+<<<<<<< Updated upstream
 	input Clock, Reset, Stop);
+=======
+	input Clock, Reset, Stop
+);
+	
+>>>>>>> Stashed changes
 	parameter 	reset_state = 4’b0000, 
 				fetch0 = 4’b0001, 
 				fetch1 = 4’b0010, 
@@ -26,6 +87,7 @@ module control_unit (
 			present_state = reset_state;
 		else 
 			case (present_state)
+				//INSTRUCTION FETCH
 				reset_state: 
 					present_state = fetch0;
 				fetch0: 
@@ -34,13 +96,101 @@ module control_unit (
 					present_state = fetch2;
 				fetch2: begin
 							case (IR[31:27]) // inst. decoding based on the opcode to set the next state
-								5’b00000: present_state = add3; // this is the add instruction
+								`ADD, `SUB, `AND, `OR, `SHR, `SHRA, `SHL, `ROR, `ROL: present_state = alu3; 
+								`MUL, `DIV: present_state = muldiv1; 
+								`NEG, `NOT: present_state = negnot1; 
+								`ST, `LD, `LDI: present_state = readwrite1; 
+								`ADDI,`ANDI, `ORI: present_state = alui3; 
+								`JR: present_state = jr3; 
+								`JAL: present_state = jal3; 
+								`MFLO: present_state = mflo3; 
+								`MFHI: present_state = mfhi3; 
+								`HALT: present_state = halt;
+								`NOP: present_state = nop;
+								`BRANCH: present_state = branch3;
 							endcase
 						end
-				add3: 
-					present_state = add4;
-				add4: 
-					present_state = add5;
+				//ALU OPERATIONS
+				alu3: 
+					present_state = alu4;
+				alu4: 
+					present_state = alu5;
+				alu5:
+					present_state = reset_state;
+					
+				//MUL AND DIV
+				muldiv1: 
+					present_state = muldiv2;
+				muldiv2: 
+					present_state = muldiv3;
+				muldiv3: 
+					present_state = muldiv4;
+				muldiv4;
+					present_state = reset_state;
+			
+				
+					
+				//NEG AND NOT
+				negnot1: 
+					present_state = negnot2;
+				negnot2:
+					present_state = reset_state;
+				
+					
+				//READ AND WRITE
+				readwrite1: 
+					present_state = readwrite2;
+				readwrite2:
+					`ST: present_state = st5; 
+					`LD: present_state = load5;
+					`LDI: present_state = loadi5;
+				
+				//STORE
+				st5:
+					present_state = st6;
+				st6:
+					present_state = st7;
+				st7:
+					present_state = st8;
+				st8:
+					present_state = reset_state;
+					
+				//LD
+				load5:
+					present_state = load6;
+				load6:
+					present_state = load7;
+				load7:
+					present_state = load8;
+				load8:
+					present_state = reset_state;
+					
+				//ALU IMMEDIATE
+				alui3:
+					present_state = alui4;
+				alui4:
+					present_state = alui5;
+				alui5:
+					present_state = reset_state;
+					
+				//JAL 
+				jal3:
+					present_state = ja4;
+				jal4:
+					present_state = reset_state;
+					
+				//NOP
+				nop:
+					present_state = reset_state;
+					
+				//BRANCHING
+				branch3:
+					present_state= branch4;
+				branch4:
+					present_state = reset_state;
+					
+				
+				
 			endcase
 	end
 	
@@ -54,6 +204,7 @@ module control_unit (
 				CON_In <=0; CON_Out <=0; OUTPORT_Out <=0;
 			end
 		
+			//INSTRUCTION FETCH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
 			fetch0: begin
 				PCout <= 1; // see if you need to de-assert these signals
 				MARin <= 1;
@@ -68,10 +219,185 @@ module control_unit (
 				MDRout <= 1;
 				IRin <= 1;
 			end
-			add3: begin
-				Grb <= 1; Rout <= 1;
-				Yin <= 1;
+		
+			//ADD, AND, OR, SUB, SHR, SHL, SHRA, ROL, ROR
+			alu3: begin
+				Grb
+				Rout
+				Yin
+			end	
+			alu4: begin
+				Grc
+				Rout
+				Zin
+				ALU-op
+				if ir31-27 = define statement for alu3 //to set alu on
+					
 			end
+			alu5: begin
+				Zout
+				Gra
+				Rin
+			end
+			
+			//MUL, DIV
+			muldiv1: begin
+				Gra
+				Rout
+				Yin
+			end
+			muldiv2: begin
+				Grb
+				Rout
+				Zin
+				ZHi
+				alu_op
+			end
+			muldiv3: begin
+				Zout
+				Loin
+			end
+			muldiv4: begin
+				ZHIout
+				HIin
+				
+			end
+			
+			//NEG, NOT
+			negnot1: begin
+				Grb
+				Rout
+				ALU_op
+				Zin
+			end
+			negnot2: begin
+				Zout
+				Gra
+				Rin
+			end
+			
+			//ST,LDI,LD (beginning)
+			readwrite1: begin
+				Grb
+				BAout
+				Yin
+			end
+			readwrite2: begin
+				Cout
+				ALU_op add
+				Zin
+			end
+			
+			load5: begin
+				Zout
+				MARin
+			end
+			load6: begin
+				Read
+			end
+			load7: begin
+				Read
+				MRin
+			end
+			load8: begin
+				MDRout
+				GRa
+				Rin
+			end
+			
+			loadi5: begin
+				Zout
+				Gra
+				Rin
+			end
+			
+			st5: begin
+				zout
+				MARin
+			end
+			st6: begin
+				GRA
+				Rout
+				MDRin
+			end
+			st7: begin
+				Write
+			end
+			st8: begin
+				Read
+			end
+			
+			//ALU IMMEDIATE INSTRUCTIONS
+			alui3: begin
+				Grb
+				Rout
+				Yin
+			end
+			alui4: begin
+				Cout
+				alu_op
+				Zin
+			end
+			alui5: begin
+				zout
+				gra
+				Rin
+			end
+			
+			//JUMP
+			jr3: begin
+				Gra
+				Rout
+				PCin
+			end
+			jal3: begin
+				Grb
+				Rin
+				Pcout
+			end
+			jal4: begin
+				Gra
+				Rout
+				PCin
+			
+			//MOVING
+			mflo3: begin
+				Gra
+				Rin
+				LOout
+			end
+			
+			mfhi3: begin
+				Gra
+				Rin
+				Hiout
+			end
+			
+			halt: begin
+			end
+			
+			nop: begin
+			end
+			
+			//BRANCHING
+			branch3: begin 
+				Gra
+				Rout
+				CON_In
+				Gra
+			end
+			branch4: begin	
+				Pcout
+				Yin
+			end
+			branch5: begin
+				Cout
+				alu_op add
+				Zin
+				ZHIin
+			end
+				
+				
 		endcase
 	end
 	endmodule
