@@ -4,7 +4,7 @@ module control_unit(
 	output reg Gra, Grb, Grc, Rin, …, Rout, // define the inputs and outputs to your Control Unit here
 	 Yin, Zin, PCout, IncPC, Zlowout, …, MARin,
 	Read, Write, …, Clear,
- 	ADD, AND, …, SHR,
+ 	output reg [12:0] alu_op,
 	
 	input [31:0] IR,
  	input Clock, Reset, Stop, …, Con_FF);
