@@ -50,9 +50,9 @@ module ALU_immediate_instructions_tb;
 	//Preload registers and set PC
     initial begin
         //ADDI instrcution addi R7, R4, -9.
-		//DUT.R7_reg.q = 32'd420;
-        //DUT.R4_reg.q = 32'd100;
-        //DUT.PC_reg.qTemp = 32'd6; //instruction located at 0x6 in ram
+		DUT.R7_reg.q = 32'd420;
+        DUT.R4_reg.q = 32'd100;
+        DUT.PC_reg.qTemp = 32'd6; //instruction located at 0x6 in ram
 		
 		//ANDI instruction andi R7, R4, 0x71
 		//DUT.R7_reg.q = 32'h42;
@@ -60,9 +60,9 @@ module ALU_immediate_instructions_tb;
         //DUT.PC_reg.qTemp = 32'd8; //instruction located at 0x8 in ram
 		
 		//ORI instruction ori R7, R4, 0x71
-		DUT.R7_reg.q = 32'h42;
-		DUT.R4_reg.q = 32'h34;
-        DUT.PC_reg.qTemp = 32'd9; //instruction located at 0x9 in ram
+		//DUT.R7_reg.q = 32'h42;
+		//DUT.R4_reg.q = 32'h34;
+        //DUT.PC_reg.qTemp = 32'd9; //instruction located at 0x9 in ram
 
         Clock = 0;
         forever #10 Clock = ~Clock;
@@ -118,9 +118,9 @@ module ALU_immediate_instructions_tb;
             T4: begin
                 Cout <= 1; 
 				//Comment Out instructions not being tested
-				//alu_op <= `ADD;
+				alu_op <= `ADD;
 				//alu_op <= `AND;
-				alu_op <= `OR;
+				//alu_op <= `OR;
 				Zin <= 1;  // Z = Y + C
                 #40 Cout <= 0; Zin <= 0;
             end

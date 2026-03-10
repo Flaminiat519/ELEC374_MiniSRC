@@ -142,31 +142,3 @@ module data_path (
     assign BusMuxOut = Bus;
 
 endmodule
-
-// ── HOW TO REVERT IN PHASE 3 ────────────────────────────────────
-// When your decoder module is ready, inside data_path:
-//   1. Remove alu_op from the port list
-//   2. Add:  wire [12:0] alu_op;
-//   3. Add:  alu_decoder dec (.IR(IR), .alu_op(alu_op));
-// Everything else stays the same.
-
-// ── ALU OP BIT MAPPING (for reference in testbenches) ────────────
-// Bit 0  = AND
-// Bit 1  = OR
-// Bit 2  = NOT
-// Bit 3  = NEG
-// Bit 4  = ADD
-// Bit 5  = SUB
-// Bit 6  = MUL
-// Bit 7  = DIV
-// Bit 8  = SLL
-// Bit 9  = SRL
-// Bit 10 = SRA
-// Bit 11 = ROR
-// Bit 12 = ROL
-//
-// Examples:
-//   ADD  = 13'b0000000010000  (bit 4)
-//   SUB  = 13'b0000000100000  (bit 5)
-//   AND  = 13'b0000000000001  (bit 0)
-//   OR   = 13'b0000000000010  (bit 1)
