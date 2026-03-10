@@ -1,5 +1,33 @@
 //CONTROL UNIT MODULE
 `timescale 1ns/10ps
+`define ADD 00000
+`define SUB 00001
+`define AND 00010
+`define OR 00011
+`define SHR 00100
+`define SHRA 00101
+`define SHL 00110
+`define ROR 00111
+`define ROL 01000
+`define ADDI 01001
+`define ANDI 01010
+`define ORI 01011
+`define DIV 01100
+`define MUL 01101
+`define NEG 01110
+`define NOT 01111
+`define LD 10000
+`define LDI 10001
+`define ST 10010
+`define JR 10011
+`define JAL 10100
+`define BRANCH 10101
+`define IN 10110
+`define OUT 10111
+`define MFHI 11000
+`define MFLO 11001
+`define NOP 11010
+`define HALT 11011
 
 module control_unit (
 	output reg         Clock, Clear;
@@ -9,8 +37,7 @@ module control_unit (
     output reg         CON_In, CON_Out, OUTPORT_Out;
 	
 	input [31:0] IR,
-	input Clock, Reset, Stop;
-	
+	input Clock, Reset, Stop);
 	parameter 	reset_state = 4’b0000, 
 				fetch0 = 4’b0001, 
 				fetch1 = 4’b0010, 
