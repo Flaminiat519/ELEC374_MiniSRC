@@ -11,14 +11,6 @@ module inport_tb;
     reg [12:0]  alu_op;
     wire [31:0] BusMuxOut;
 
-    // Fetch w/ synchronous RAM:
-    // T0  : PCout, MARin, Read            (RAM updates mem_data_out on posedge)
-    // T0b : Read, MDRin                   (MDR latches stable mem_data_out)
-    // T1  : IncPC
-    // T2  : MDRout, IRin
-    // Execute mfhi:
-    // T3  : Gra, Rin, INPORT_Out
-   
     parameter Default = 4'b0000;
     parameter T0  = 4'b0001, T1  = 4'b0010,
               T2  = 4'b0011, T3  = 4'b0100;

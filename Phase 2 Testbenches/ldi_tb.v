@@ -41,10 +41,10 @@ module ldi_tb;
 
     initial begin
         //Case 1
-        //DUT.PC_reg.qTemp = 32'd0;
+        DUT.PC_reg.qTemp = 32'd0;
         //Case 2
-        DUT.PC_reg.qTemp = 32'd1;
-        DUT.R2_reg.q     = 32'h00000057;
+        //DUT.PC_reg.qTemp = 32'd1;
+        //DUT.R2_reg.q     = 32'h00000057;
 
         Clock = 0;
         forever #10 Clock = ~Clock;
