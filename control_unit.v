@@ -55,13 +55,30 @@
 `define NOP 11010
 
 `define HALT 11011
+
+
+
+`define AND_OP 1b'0000000000001
+`define OR_OP 1b'0000000000010
+`define NOT_OP 1b'0000000000100
+`define NEG_OP 1b'0000000001000
+`define ADD_OP 1b'0000000010000
+`define SUB_OP 1b'0000000100000
+`define MUL_OP 1b'0000001000000
+`define DIV_OP 1b'0000010000000
+`define SLL_OP 1b'0000100000000
+`define SRL_OP 1b'0001000000000
+`define SRA_OP 1b'0010000000000
+`define ROR_OP 1b'0100000000000
+`define ROL_OP 1b'1000000000000
+ 
  
 module control_unit (
 	output reg         Clock, Clear;
     output reg         PCin, IRin, HIin, LOin, ZHIin, Zin, MARin, MDRin, OUTPORT_In, Yin;
     output reg         PCout, HIout, LOout, ZHIout, Zout, INPORT_Out, MDRout, Cout;
     output reg         Gra, Grb, Grc, Rin, Rout, BAout, Read, Write, IncPC;
-    output reg         CON_In, CON_Out, OUTPORT_Out;
+    output reg         CON_In, CON_Out, OUTPORT_Out, alu_op;
 	
 	input [31:0] IR,
 	input Clock, Reset, Stop
@@ -226,8 +243,23 @@ module control_unit (
 				Grc
 				Rout
 				Zin
-				ALU-op
-				if ir31-27 = define statement for alu3 //to set alu on
+				if (IR[31:17] == `ADD){
+					alu_op = `ADD_OP; 
+				} else if (IR[31:17] == `OR){
+					
+				} else if (IR[31:17] == `AND){
+				
+				} else if (IR[31:17] == `SUB){
+				
+				} else if (IR[31:17] == `SHR){
+				
+				} else if (IR[31:17] == `SHRA){
+				
+				} else if (IR[31:17] == `ROR){
+				
+				} else if (IR[31:17] == `ROL){
+				
+				}
 					
 			end
 			alu5: begin
@@ -247,7 +279,7 @@ module control_unit (
 				Rout
 				Zin
 				ZHi
-				alu_op
+				alu_op = ADD_OP;
 			end
 			muldiv3: begin
 				Zout
@@ -263,7 +295,11 @@ module control_unit (
 			negnot1: begin
 				Grb
 				Rout
-				ALU_op
+				if (IR[31:17] == `NOT){
+					alu_op = 
+				} else if (IR[31:17] == `NEG){
+					alu_op = 
+				}
 				Zin
 			end
 			negnot2: begin
@@ -280,7 +316,7 @@ module control_unit (
 			end
 			readwrite2: begin
 				Cout
-				ALU_op add
+				alu_op = ADD_OP;
 				Zin
 			end
 			
@@ -331,7 +367,13 @@ module control_unit (
 			end
 			alui4: begin
 				Cout
-				alu_op
+				if (IR[31:17] == `ADDI){
+					alu_op = 
+				} else if (IR[31:17] == `ORI){
+					
+				} else if (IR[31:17] == `ANDI){
+				
+				}
 				Zin
 			end
 			alui5: begin
@@ -388,12 +430,12 @@ module control_unit (
 			end
 			branch5: begin
 				Cout
-				alu_op add
+				alu_op = ADD_OP;
 				Zin
 				ZHIin
 			end
 				
-				
+	
 		endcase
 	end
 	endmodule
