@@ -28,18 +28,13 @@ end
 // MAIN TEST
 //
 initial begin
-
-    $display("=====================================");
-    $display("      MiniSRC Phase 3 Simulation     ");
-    $display("=====================================");
-
     Stop = 0;
     Reset = 1;
 
     #50;
     Reset = 0;
 
-    // allow program to run
+    //allow program to run
     #60000;
 
     $display("Simulation timeout reached.");
