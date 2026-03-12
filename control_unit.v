@@ -102,7 +102,7 @@ module control_unit (
 	
 	always @(posedge Clock, posedge Reset) // finite state machine; if clock or reset rising-edge
 	begin
-		if (Reset == 1’b1) 
+		if (Reset == 1'b1)
 			present_state = reset_state;
 		else 
 			case (present_state)
@@ -185,6 +185,18 @@ module control_unit (
 				load8:
 					present_state = reset_state;
 					
+				//LDI
+				loadi5:
+					present_state = reset_state;
+
+				//MFHI
+				mfhi3:
+					present_state = reset_state;
+					
+				//MFLO
+				mflo3:
+					present_state = reset_state;
+					
 				//ALU IMMEDIATE
 				alui3:
 					present_state = alui4;
@@ -224,15 +236,21 @@ module control_unit (
 	
 	always @(present_state) // do the job for each state
 	begin
+		// Default everything off
+		PCin=0; IRin=0; HIin=0; LOin=0; ZHIin=0; Zin=0; MARin=0; MDRin=0; OUTPORT_In=0; Yin=0;
+		PCout=0; HIout=0; LOout=0; ZHIout=0; Zout=0; INPORT_Out=0; MDRout=0; Cout=0;
+		Gra=0; Grb=0; Grc=0; Rin=0; Rout=0; BAout=0; Read=0; Write=0; IncPC=0;
+		CON_In=0; CON_Out=0; OUTPORT_Out=0;
+		alu_op=13'b0;
 		case (present_state) // assert the required signals in each state
 			reset_state: begin
 				PCin <=0; IRin <=0; HIin <=0; LOin <=0; ZHIin <=0; Zin <=0; MARin <=0; MDRin <=0; OUTPORT_In <=0; Yin <=0;
-				PCout <=0; HIout <=0; LOout <=0; ZHIout <=0; INPORT_Out <=0; MDRout <=0; Cout <=0;
+				PCout <=0; HIout <=0; LOout <=0; Zout <=0; ZHIout <=0; INPORT_Out <=0; MDRout <=0; Cout <=0;
 				Gra <=0; Grb <=0; Grc <=0; Rin <=0; Rout <=0; BAout <=0; Read <=0; Write <=0; IncPC <=0;
 				CON_In <=0; CON_Out <=0; OUTPORT_Out <=0;
 			end
 		
-			//INSTRUCTION FETCH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+			//INSTRUCTION FETCH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			fetch0: begin
 				PCout <= 1; // see if you need to de-assert these signals
 				MARin <= 1;

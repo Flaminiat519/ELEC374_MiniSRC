@@ -23,6 +23,7 @@ module data_path (
 	input wire Write,
     input wire [31:0] MDatain,
     output wire [31:0] BusMuxOut,
+	output wire [31:0] IR_out,
 	
 	//Memory control enables
 	//Conditional Logic Control Enables
@@ -140,5 +141,6 @@ module data_path (
 
 	//create bus?
     assign BusMuxOut = Bus;
+	assign IR_out = IR;
 
 endmodule
