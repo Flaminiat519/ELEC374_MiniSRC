@@ -21,6 +21,21 @@ initial begin
     forever #10 Clock = ~Clock;
 end
 
+initial begin
+	
+	#50
+    Stop = 0;
+	#50
+    Reset = 1;
+
+    #50;
+    Reset = 0;
+
+    #60000;
+
+    $stop;
+
+end
 
 always @(posedge Clock) begin
 
@@ -40,17 +55,7 @@ always @(posedge Clock) begin
 end
 
 
-//halt one??
-//always @(posedge Clock) begin
 
-    //if(dut.dp.IR == 32'hD8000000) begin
-        //$display("HALT instruction detected at time %0t", $time);
-        //$display("completed.");
-       // #50;
-     //   $stop;
-   // end
-
-//end
 
 initial begin
 

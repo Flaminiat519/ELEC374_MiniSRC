@@ -379,7 +379,7 @@ end
 			end
 			
 			load7: begin
-				Read <= 1;
+				//Read <= 1;
 				MDRin <= 1;
 			end
 			load8: begin
