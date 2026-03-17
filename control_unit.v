@@ -256,25 +256,25 @@ case(present_state)
 reset_state: begin end
 
 // FETCH
-fetch0:
-begin
-PCout=1;
-MARin=1;
-IncPC=1;
-Read=1;
-end
+			fetch0:
+			begin
+				PCout=1;
+				MARin=1;
+				IncPC=1;
+				Read=1;
+			end
 
-fetch1:
-begin
-Read=1;
-MDRin=1;
-end
+			fetch1:
+			begin
+				Read=1;
+				MDRin=1;
+			end
 
-fetch2:
-begin
-MDRout=1;
-IRin=1;
-end
+			fetch2:
+			begin
+				MDRout=1;
+				IRin=1;
+			end
 
 		
 			//ADD, AND, OR, SUB, SHR, SHL, SHRA, ROL, ROR
