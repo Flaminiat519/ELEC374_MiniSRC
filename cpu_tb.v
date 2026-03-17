@@ -8,7 +8,7 @@ reg Stop;
 
 wire [31:0] BusMuxOut;
 
-// Instantiate CPU
+
 CPU dut(
     .Clock(Clock),
     .Reset(Reset),
@@ -16,17 +16,11 @@ CPU dut(
     .BusMuxOut(BusMuxOut)
 );
 
-//
-// CLOCK GENERATOR
-//
 initial begin
     Clock = 0;
     forever #10 Clock = ~Clock;
 end
 
-//
-// MAIN TEST
-//
 initial begin
     Stop = 0;
     Reset = 1;
@@ -34,18 +28,12 @@ initial begin
     #50;
     Reset = 0;
 
-    //allow program to run
     #60000;
 
-    $display("Simulation timeout reached.");
     $stop;
 
 end
 
-
-//
-// INSTRUCTION TRACE
-//
 always @(posedge Clock) begin
 
     if(!Reset) begin
@@ -64,24 +52,18 @@ always @(posedge Clock) begin
 end
 
 
-//
-// HALT DETECTOR
-//
+//halt one??
 always @(posedge Clock) begin
 
     if(dut.dp.IR == 32'hD8000000) begin
         $display("HALT instruction detected at time %0t", $time);
-        $display("Program execution completed.");
+        $display("completed.");
         #50;
         $stop;
     end
 
 end
 
-
-//
-// WAVEFORM OUTPUT
-//
 initial begin
 
     $dumpfile("cpu.vcd");
