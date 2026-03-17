@@ -63,59 +63,56 @@ parameter
     fetch0      = 6'd1,
     fetch1      = 6'd2,
     fetch2      = 6'd3,
-    fetch3      = 6'd4,
+   
 
-    alu3        = 6'd5,
-    alu4        = 6'd6,
-    alu5        = 6'd7,
+    alu3        = 6'd4,
+    alu4        = 6'd5,
+    alu5        = 6'd6,
 
-    muldiv3     = 6'd8,
-    muldiv4     = 6'd9,
-    muldiv5     = 6'd10,
-    muldiv6     = 6'd11,
+    muldiv3     = 6'd7,
+    muldiv4     = 6'd8,
+    muldiv5     = 6'd9,
+    muldiv6     = 6'd10,
 
-    negnot3     = 6'd12,
-    negnot4     = 6'd13,
+    negnot3     = 6'd11,
+    negnot4     = 6'd12,
 
-    readwrite3  = 6'd14,
-    readwrite4  = 6'd15,
+    readwrite3  = 6'd13,
+    readwrite4  = 6'd14,
 
-    st5         = 6'd16,
-    st6         = 6'd17,
-    st7         = 6'd18,
-    st8         = 6'd19,
+    st5         = 6'd15,
+    st6         = 6'd16,
+    st7         = 6'd17,
+    st8         = 6'd18,
 
-    load5       = 6'd20,
-    load6       = 6'd21,
-    load7       = 6'd22,
-    load8       = 6'd23,
+    load5       = 6'd19,
+    load6       = 6'd20,
+    load7       = 6'd21,
+    load8       = 6'd22,
 
-    loadi5      = 6'd24,
+    loadi5      = 6'd23,
 
-    alui3       = 6'd25,
-    alui4       = 6'd26,
-    alui5       = 6'd27,
+    alui3       = 6'd24,
+    alui4       = 6'd25,
+    alui5       = 6'd26,
 
-    jr3         = 6'd28,
-    jal3        = 6'd29,
-    jal4        = 6'd30,
+    jr3         = 6'd27,
+    jal3        = 6'd28,
+    jal4        = 6'd29,
 
-    mfhi3       = 6'd31,
-    mflo3       = 6'd32,
+    mfhi3       = 6'd30,
+    mflo3       = 6'd31,
 
-    branch3     = 6'd33,
-    branch4     = 6'd34,
-    branch5     = 6'd35,
-    branch6     = 6'd36,
+    branch3     = 6'd32,
+    branch4     = 6'd33,
+    branch5     = 6'd34,
+    branch6     = 6'd35,
 
-    nop         = 6'd37,
-    halt        = 6'd38;
+    nop         = 6'd36,
+    halt        = 6'd37;
 
 reg [5:0] present_state;
 
-//
-// FSM STATE TRANSITIONS
-//
 always @(posedge Clock or posedge Reset)
 begin
     if (Reset)
@@ -126,10 +123,10 @@ begin
         reset_state: present_state <= fetch0;
         fetch0:      present_state <= fetch1;
         fetch1:      present_state <= fetch2;
-        fetch2:      present_state <= fetch3;
+     
 
         // decode AFTER IR loads
-        fetch3:
+        fetch2:
         begin
             case(IR[31:27])
 
@@ -190,7 +187,7 @@ begin
         negnot3: present_state <= negnot4;
         negnot4: present_state <= reset_state;
 
-        // LOAD STORE
+        //LOAD STORE
         readwrite3: present_state <= readwrite4;
 
         readwrite4:
@@ -279,10 +276,6 @@ MDRout=1;
 IRin=1;
 end
 
-fetch3:
-begin
-// decode only
-end
 		
 			//ADD, AND, OR, SUB, SHR, SHL, SHRA, ROL, ROR
 			alu3: begin
@@ -384,6 +377,7 @@ end
 			load6: begin
 				Read <= 1;
 			end
+			
 			load7: begin
 				Read <= 1;
 				MDRin <= 1;
