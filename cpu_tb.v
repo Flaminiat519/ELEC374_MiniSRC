@@ -36,19 +36,6 @@ initial begin
     $stop;
 end
 
-// cycle-by-cycle trace
-always @(posedge Clock) begin
-    if (!Reset) begin
-        $display(
-            "Time=%0t | PC=%h | IR=%h | BUS=%h | STATE=%0d",
-            $time,
-            dut.dp.PC,
-            dut.dp.IR,
-            BusMuxOut,
-            dut.con.present_state
-        );
-    end
-end
 
 // print register dump after each instruction completes
 reg seen_non_fetch0;
