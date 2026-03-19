@@ -47,9 +47,9 @@ module ALU (
 	//accessing the different module files
 	and_gate and_instance (RA, RB, and_result);
 	or_gate or_instance (RA, RB, or_result);
-	negate neg (RA, neg_result);
+	negate neg (RB, neg_result);
 	CLA_32 add_sub (RA, RB_sub, c_in, add_sub_result, c_out);
-	not_gate not_instance (RA, not_result);
+	not_gate not_instance (RB, not_result);
 	
 	wire [31:0] div_quotient;
 	wire [31:0] div_remainder;

@@ -29,7 +29,7 @@ module data_path (
 	//Conditional Logic Control Enables
 	input wire CON_In,
 	input wire CON_Out,
-	input wire [12:0] alu_op       // TEMP: remove when Phase 3 decoder added
+	input wire [12:0] alu_op
 );
     //internal wires for registers
     wire [31:0] R0, R1, R2, R3, R4, R5, R6, R7;
@@ -59,7 +59,7 @@ module data_path (
 	wire CON;
 	wire [31:0] mem_data_out;
 	wire PC_enable;
-	assign PC_enable = PCin & CON;   // branch gating
+	assign PC_enable = PCin & (~CON_Out | CON);
 
 	//special z registers (HI AND LO)
     register Z_reg (.clear(clear), .clock(clock), .enable(Zin), .BusMuxIn(ALU_Data[31:0]), .BusMuxOut(Z));
@@ -93,8 +93,8 @@ module data_path (
     register IR_reg  (.clear(clear), .clock(clock), .enable(IRin), .BusMuxIn(Bus), .BusMuxOut(IR));
     register MAR_reg (.clear(clear), .clock(clock), .enable(MARin), .BusMuxIn(Bus), .BusMuxOut(MAR));
 	//special register modules
-    pc_reg PC_reg (.D(Bus),.clk(clock),.clr(clear),.increment(IncPC),.enable(PCin),.Q(PC));
-	//pc_reg PC_reg (.D(Bus), .clk(clock), .clr(clear),.increment(IncPC), .enable(PC_enable), .Q(PC));
+    //pc_reg PC_reg (.D(Bus),.clk(clock),.clr(clear),.increment(IncPC),.enable(PCin),.Q(PC));
+	pc_reg PC_reg (.D(Bus), .clk(clock), .clr(clear),.increment(IncPC), .enable(PC_enable), .Q(PC));
     //mdr_reg MDR_reg (.BusMuxIn(Bus),.clk(clock),.clr(clear),.Read(Read),.MDRin(MDRin),.MDAtain(MDatain),.Q(MDR));
 	mdr_reg MDR_reg (
     .BusMuxIn(Bus),

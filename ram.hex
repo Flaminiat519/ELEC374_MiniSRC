@@ -79,9 +79,9 @@ CB000000  // mflo R6             ; R6 = LO = 0xAF
 @027
 8D880005  // ldi R11, 5(R1)      ; R11 = 0 + 5 = 5
 @028
-9D000000  // jal R10             ; R12 = 0x029, PC = R10 = 0xB2
+A5600000  // jal R10             ; R12 = 0x029, PC = R10 = 0xB2
 @029
-D8000000  // halt                ; program halts on return
+9E000000  // halt                ; program halts on return
 @089
 000000A7  // [data] M[0x89] = 0xA7 (initial value)
 @0A3
@@ -93,4 +93,4 @@ D8000000  // halt                ; program halts on return
 @0B4
 0F768000  // sub R14, R14, R13   ; R14 = 0xBB - 0x10 = 0xAB
 @0B5
-A6000000  // jr R12              ; return to 0x029
+9E000000  // jr R12              ; return to 0x029
