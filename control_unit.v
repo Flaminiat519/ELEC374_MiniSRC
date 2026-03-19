@@ -2,49 +2,49 @@
 `timescale 1ns/10ps
 
 //OP code define statements
-`define ADD    5'b00000
-`define SUB    5'b00001
-`define AND    5'b00010
-`define OR     5'b00011
-`define SHR    5'b00100
-`define SHRA   5'b00101
-`define SHL    5'b00110
-`define ROR    5'b00111
-`define ROL    5'b01000
-`define ADDI   5'b01001
-`define ANDI   5'b01010
-`define ORI    5'b01011
-`define DIV    5'b01100
-`define MUL    5'b01101
-`define NEG    5'b01110
-`define NOT    5'b01111
-`define LD     5'b10000
-`define LDI    5'b10001
-`define ST     5'b10010
-`define JR     5'b10011
-`define JAL    5'b10100
+`define ADD 5'b00000
+`define SUB 5'b00001
+`define AND 5'b00010
+`define OR  5'b00011
+`define SHR 5'b00100
+`define SHRA 5'b00101
+`define SHL 5'b00110
+`define ROR 5'b00111
+`define ROL 5'b01000
+`define ADDI 5'b01001
+`define ANDI 5'b01010
+`define ORI 5'b01011
+`define DIV 5'b01100
+`define MUL 5'b01101
+`define NEG 5'b01110
+`define NOT 5'b01111
+`define LD 5'b10000
+`define LDI 5'b10001
+`define ST 5'b10010
+`define JR 5'b10011
+`define JAL 5'b10100
 `define BRANCH 5'b10101
-`define IN     5'b10110
-`define OUT    5'b10111
-`define MFHI   5'b11000
-`define MFLO   5'b11001
-`define NOP    5'b11010
-`define HALT   5'b11011
+`define IN 5'b10110
+`define OUT 5'b10111
+`define MFHI 5'b11000
+`define MFLO 5'b11001
+`define NOP 5'b11010
+`define HALT 5'b11011
 
 //ALU code define statements
-`define AND_OP  13'b0000000000001
-`define OR_OP   13'b0000000000010
-`define NOT_OP  13'b0000000000100
-`define NEG_OP  13'b0000000001000
-`define ADD_OP  13'b0000000010000
-`define SUB_OP  13'b0000000100000
-`define MUL_OP  13'b0000001000000
-`define DIV_OP  13'b0000010000000
-`define SHL_OP  13'b0000100000000
-`define SHR_OP  13'b0001000000000
+`define AND_OP 13'b0000000000001
+`define OR_OP 13'b0000000000010
+`define NOT_OP 13'b0000000000100
+`define NEG_OP 13'b0000000001000
+`define ADD_OP 13'b0000000010000
+`define SUB_OP 13'b0000000100000
+`define MUL_OP 13'b0000001000000
+`define DIV_OP 13'b0000010000000
+`define SHL_OP 13'b0000100000000
+`define SHR_OP 13'b0001000000000
 `define SHRA_OP 13'b0010000000000
-`define ROR_OP  13'b0100000000000
-`define ROL_OP  13'b1000000000000
+`define ROR_OP 13'b0100000000000
+`define ROL_OP 13'b1000000000000
 
 module control_unit (
     output reg PCin, IRin, HIin, LOin, ZHIin, Zin, MARin, MDRin, OUTPORT_In, Yin,
@@ -59,56 +59,56 @@ module control_unit (
 
 parameter
     reset_state = 6'd0,
-    fetch0      = 6'd1,
-    fetch1      = 6'd2,
-    fetch2      = 6'd3,
-    decode      = 6'd38,
+    fetch0 = 6'd1,
+    fetch1 = 6'd2,
+    fetch2 = 6'd3,
+    decode = 6'd38,
 
-    alu3        = 6'd4,
-    alu4        = 6'd5,
-    alu5        = 6'd6,
+    alu3 = 6'd4,
+    alu4 = 6'd5,
+    alu5 = 6'd6,
 
-    muldiv3     = 6'd7,
-    muldiv4     = 6'd8,
-    muldiv5     = 6'd9,
-    muldiv6     = 6'd10,
+    muldiv3 = 6'd7,
+    muldiv4 = 6'd8,
+    muldiv5 = 6'd9,
+    muldiv6 = 6'd10,
 
-    negnot3     = 6'd11,
-    negnot4     = 6'd12,
+    negnot3 = 6'd11,
+    negnot4 = 6'd12,
 
-    readwrite3  = 6'd13,
-    readwrite4  = 6'd14,
+    readwrite3 = 6'd13,
+    readwrite4 = 6'd14,
 
-    st5         = 6'd15,
-    st6         = 6'd16,
-    st7         = 6'd17,
-    st8         = 6'd18,
+    st5 = 6'd15,
+    st6 = 6'd16,
+    st7 = 6'd17,
+    st8 = 6'd18,
 
-    load5       = 6'd19,
-    load6       = 6'd20,
-    load7       = 6'd21,
-    load8       = 6'd22,
+    load5 = 6'd19,
+    load6 = 6'd20,
+    load7 = 6'd21,
+    load8 = 6'd22,
 
-    loadi5      = 6'd23,
+    loadi5 = 6'd23,
 
-    alui3       = 6'd24,
-    alui4       = 6'd25,
-    alui5       = 6'd26,
+    alui3 = 6'd24,
+    alui4 = 6'd25,
+    alui5 = 6'd26,
 
-    jr3         = 6'd27,
-    jal3        = 6'd28,
-    jal4        = 6'd29,
+    jr3 = 6'd27,
+    jal3 = 6'd28,
+    jal4 = 6'd29,
 
-    mfhi3       = 6'd30,
-    mflo3       = 6'd31,
+    mfhi3 = 6'd30,
+    mflo3 = 6'd31,
 
-    branch3     = 6'd32,
-    branch4     = 6'd33,
-    branch5     = 6'd34,
-    branch6     = 6'd35,
+    branch3 = 6'd32,
+    branch4 = 6'd33,
+    branch5 = 6'd34,
+    branch6 = 6'd35,
 
-    nop         = 6'd36,
-    halt        = 6'd37;
+    nop = 6'd36,
+    halt = 6'd37;
 
 reg [5:0] present_state;
 
@@ -121,9 +121,9 @@ always @(posedge Clock or posedge Reset) begin
     else begin
         case (present_state)
             reset_state: present_state <= fetch0;
-            fetch0:      present_state <= fetch1;
-            fetch1:      present_state <= fetch2;
-            fetch2:      present_state <= decode;
+            fetch0: present_state <= fetch1;
+            fetch1: present_state <= fetch2;
+            fetch2: present_state <= decode;
 
             decode: begin
                 case (IR[31:27])
@@ -194,10 +194,10 @@ always @(posedge Clock or posedge Reset) begin
                     present_state <= loadi5;
             end
 
-            load5:  present_state <= load6;
-            load6:  present_state <= load7;
-            load7:  present_state <= load8;
-            load8:  present_state <= reset_state;
+            load5: present_state <= load6;
+            load6: present_state <= load7;
+            load7: present_state <= load8;
+            load8: present_state <= reset_state;
 
             loadi5: present_state <= reset_state;
 
@@ -212,7 +212,7 @@ always @(posedge Clock or posedge Reset) begin
             alui5: present_state <= reset_state;
 
             // Jump
-            jr3:  present_state <= reset_state;
+            jr3: present_state <= reset_state;
             jal3: present_state <= jal4;
             jal4: present_state <= reset_state;
 
@@ -226,7 +226,7 @@ always @(posedge Clock or posedge Reset) begin
             branch5: present_state <= branch6;
             branch6: present_state <= reset_state;
 
-            nop:  present_state <= reset_state;
+            nop: present_state <= reset_state;
             halt: present_state <= halt;
 
             default: present_state <= reset_state;
