@@ -248,6 +248,7 @@ always @(*) begin
     case (present_state)
 
         reset_state: begin
+			
         end
 
         // FETCH
