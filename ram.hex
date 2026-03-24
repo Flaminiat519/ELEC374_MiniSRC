@@ -1,96 +1,96 @@
 @000
-8A800043  // ldi R5, 0x43        ; R5 = 0x43
+8A800043  //ldi R5, 0x43       
 @001
-8AA80006  // ldi R5, 6(R5)       ; R5 = 0x43 + 6 = 0x49
+8AA80006  //ldi R5, 6(R5)
 @002
-82000089  // ld R4, 0x89         ; R4 = M[0x89] = 0xA7
+82000089  //ld R4, 0x89    
 @003
-8A200004  // ldi R4, 4(R4)       ; R4 = 0xA7 + 4 = 0xAB
+8A200004  //ldi R4, 4(R4)     
 @004
-8027FFF8  // ld R0, -8(R4)       ; R0 = M[0xAB - 8] = M[0xA3] = 0x68
+8027FFF8  //ld R0, -8(R4)       
 @005
-89000004  // ldi R2, 4           ; R2 = 4
+89000004  //ldi R2, 4        
 @006
-8A800087  // ldi R5, 0x87        ; R5 = 0x87
+8A800087  //ldi R5, 0x87      
 @007
-AA980003  // brmi R5, 3          ; R5 is positive, NO branch
+AA980003  //brmi R5, 3     
 @008
-8AA80005  // ldi R5, 5(R5)       ; R5 = 0x87 + 5 = 0x8C
+8AA80005  //ldi R5, 5(R5)    
 @009
-80AFFFFD  // ld R1, -3(R5)       ; R1 = M[0x8C - 3] = M[0x89] = 0xA7
+80AFFFFD  //ld R1, -3(R5)       
 @00A
-D0000000  // nop                 ; no operation
+D0000000  //nop                 
 @00B
-A8900002  // brpl R1, 2          ; R1 is positive, branch to 0x00E (target)
+A8900002  //brpl R1, 2         
 @00C
-89A80007  // ldi R3, 7(R5)       ; NOT EXECUTED (skipped by brpl)
+89A80007  //ldi R3, 7(R5)       
 @00D
-8B9FFFFC  // ldi R7, -4(R3)      ; NOT EXECUTED (skipped by brpl)
+8B9FFFFC  //ldi R7, -4(R3)      
 @00E
-03A90000  // add R7, R5, R2      ; R7 = 0x8C + 4 = 0x90        [target]
+03A90000  //add R7, R5, R2    
 @00F
-48880003  // addi R1, R1, 3      ; R1 = 0xA7 + 3 = 0xAA
+48880003  //addi R1, R1, 3     
 @010
-70880000  // neg R1, R1          ; R1 = -0xAA = 0xFFFFFF56
+70880000  //neg R1, R1          
 @011
-78880000  // not R1, R1          ; R1 = ~0xFFFFFF56 = 0xA9
+78880000  //not R1, R1         
 @012
-5088000F  // andi R1, R1, 0xF    ; R1 = 0xA9 & 0xF = 0x9
+5088000F  //andi R1, R1, 0xF    
 @013
-3A010000  // ror R4, R0, R2      ; R4 = ror(0x68, 4) = 0x80000006
+3A010000  //ror R4, R0, R2     
 @014
-58A00005  // ori R1, R4, 5       ; R1 = 0x80000006 | 5 = 0x80000007
+58A00005  //ori R1, R4, 5      
 @015
-2A090000  // shra R4, R1, R2     ; R4 = shra(0x80000007, 4) = 0xF8000000
+2A090000  //shra R4, R1, R2    
 @016
-22A90000  // shr R5, R5, R2      ; R5 = 0x8C >> 4 = 0x8
+22A90000  //shr R5, R5, R2     
 @017
-928000A3  // st 0xA3, R5         ; M[0xA3] = 0x8
+928000A3  //st 0xA3, R5        
 @018
-42810000  // rol R5, R0, R2      ; R5 = rol(0x68, 4) = 0x680
+42810000  //rol R5, R0, R2    
 @019
-1B900000  // or R7, R2, R0       ; R7 = 4 | 0x68 = 0x6C
+1B900000  //or R7, R2, R0      
 @01A
-12280000  // and R4, R5, R0      ; R4 = 0x680 & 0x68 = 0x0
+12280000  //and R4, R5, R0      
 @01B
-93A00089  // st 0x89(R4), R7     ; M[0x89 + 0] = M[0x89] = 0x6C
+93A00089  //st 0x89(R4), R7     
 @01C
-082B8000  // sub R0, R5, R7      ; R0 = 0x680 - 0x6C = 0x614
+082B8000  //sub R0, R5, R7      
 @01D
-32290000  // shl R4, R5, R2      ; R4 = 0x680 << 4 = 0x6800
+32290000  //shl R4, R5, R2      
 @01E
-8B800007  // ldi R7, 7           ; R7 = 7
+8B800007  //ldi R7, 7           
 @01F
-89800019  // ldi R3, 0x19        ; R3 = 0x19
+89800019  //ldi R3, 0x19        
 @020
-69B80000  // mul R3, R7          ; HI:LO = 0x19 * 7 = 0xAF
+69B80000  //mul R3, R7          
 @021
-C0800000  // mfhi R1             ; R1 = HI = 0x0
+C0800000  //mfhi R1            
 @022
-CB000000  // mflo R6             ; R6 = LO = 0xAF
+CB000000  //mflo R6             
 @023
-61B80000  // div R3, R7          ; HI = 0x19 % 7 = 4, LO = 0x19 / 7 = 3
+61B80000  //div R3, R7          
 @024
-8C380002  // ldi R8, 2(R7)       ; R8 = 7 + 2 = 9
+8C380002  //ldi R8, 2(R7)       
 @025
-8C9FFFFC  // ldi R9, -4(R3)      ; R9 = 0x19 - 4 = 0x15
+8C9FFFFC  //ldi R9, -4(R3)      
 @026
-8D300003  // ldi R10, 3(R6)      ; R10 = 0xAF + 3 = 0xB2
+8D300003  //ldi R10, 3(R6)      
 @027
-8D880005  // ldi R11, 5(R1)      ; R11 = 0 + 5 = 5
+8D880005  //ldi R11, 5(R1)      
 @028
-A5600000  // jal R10             ; R12 = 0x029, PC = R10 = 0xB2
+A5600000  //jal R10             
 @029
-9E000000  // halt                ; program halts on return
+9E000000  //halt                
 @089
-000000A7  // [data] M[0x89] = 0xA7 (initial value)
+000000A7  //[data] M[0x89] = 0xA7 (initial value)
 @0A3
-00000068  // [data] M[0xA3] = 0x68 (initial value)
+00000068  //[data] M[0xA3] = 0x68 (initial value)
 @0B2
-07450000  // add R14, R8, R10    ; R14 = 9 + 0xB2 = 0xBB        [subA]
+07450000  //add R14, R8, R10    
 @0B3
-0ECD8000  // sub R13, R9, R11    ; R13 = 0x15 - 5 = 0x10
+0ECD8000  //sub R13, R9, R11   
 @0B4
-0F768000  // sub R14, R14, R13   ; R14 = 0xBB - 0x10 = 0xAB
+0F768000  //sub R14, R14, R13  
 @0B5
-9E000000  // jr R12              ; return to 0x029
+9E000000  //jr R12             

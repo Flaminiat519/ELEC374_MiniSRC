@@ -57,6 +57,7 @@ module control_unit (
     input Clock, Reset, Stop
 );
 
+//state numbers
 parameter
     reset_state = 6'd0,
     fetch0 = 6'd1,
@@ -112,9 +113,7 @@ parameter
 
 reg [5:0] present_state;
 
-//
-// STATE TRANSITIONS
-//
+//state transitions
 always @(posedge Clock or posedge Reset) begin
     if (Reset)
         present_state <= reset_state;
@@ -168,22 +167,22 @@ always @(posedge Clock or posedge Reset) begin
                 endcase
             end
 
-            // ALU
+            //ALU
             alu3: present_state <= alu4;
             alu4: present_state <= alu5;
             alu5: present_state <= reset_state;
 
-            // MUL / DIV
+            //MUL/DIV
             muldiv3: present_state <= muldiv4;
             muldiv4: present_state <= muldiv5;
             muldiv5: present_state <= muldiv6;
             muldiv6: present_state <= reset_state;
 
-            // NEG / NOT
+            //NEG/NOT
             negnot3: present_state <= negnot4;
             negnot4: present_state <= reset_state;
 
-            // LD / LDI / ST
+            //LD/LDI/ST
             readwrite3: present_state <= readwrite4;
             readwrite4: begin
                 if (IR[31:27] == `ST)
@@ -206,21 +205,21 @@ always @(posedge Clock or posedge Reset) begin
             st7: present_state <= st8;
             st8: present_state <= reset_state;
 
-            // ALU immediate
+            //ALU immediate
             alui3: present_state <= alui4;
             alui4: present_state <= alui5;
             alui5: present_state <= reset_state;
 
-            // Jump
+            //Jump
             jr3: present_state <= reset_state;
             jal3: present_state <= jal4;
             jal4: present_state <= reset_state;
 
-            // Move from HI / LO
+            //Move from HI/LO
             mfhi3: present_state <= reset_state;
             mflo3: present_state <= reset_state;
 
-            // Branch
+            //Branch
             branch3: present_state <= branch4;
             branch4: present_state <= branch5;
             branch5: present_state <= branch6;
@@ -234,11 +233,10 @@ always @(posedge Clock or posedge Reset) begin
     end
 end
 
-//
-// CONTROL SIGNALS
-//
+
+//CONTROL SIGNALS
 always @(*) begin
-    // default everything OFF
+    //default everything OFF
     PCin = 0; IRin = 0; HIin = 0; LOin = 0; ZHIin = 0; Zin = 0; MARin = 0; MDRin = 0; OUTPORT_In = 0; Yin = 0;
     PCout = 0; HIout = 0; LOout = 0; ZHIout = 0; Zout = 0; INPORT_Out = 0; MDRout = 0; Cout = 0;
     Gra = 0; Grb = 0; Grc = 0; Rin = 0; Rout = 0; BAout = 0; Read = 0; Write = 0; IncPC = 0;
@@ -250,7 +248,7 @@ always @(*) begin
         reset_state: begin
         end
 
-        // FETCH
+        //FETCH
         fetch0: begin
             PCout = 1;
             MARin = 1;
@@ -271,7 +269,7 @@ always @(*) begin
         decode: begin
         end
 
-        // ADD, AND, OR, SUB, SHR, SHL, SHRA, ROL, ROR
+        //ADD, AND, OR, SUB, SHR, SHL, SHRA, ROL, ROR
         alu3: begin
             Grb = 1;
             Rout = 1;
@@ -309,7 +307,7 @@ always @(*) begin
             Rin = 1;
         end
 
-        // MUL, DIV
+        //MUL, DIV
         muldiv3: begin
             Gra = 1;
             Rout = 1;
@@ -338,7 +336,7 @@ always @(*) begin
             HIin = 1;
         end
 
-        // NEG, NOT
+        //NEG, NOT
         negnot3: begin
             Grb = 1;
             Rout = 1;
@@ -356,7 +354,7 @@ always @(*) begin
             Rin = 1;
         end
 
-        // ST, LDI, LD beginning
+        //ST, LDI, LD beginning
         readwrite3: begin
             Grb = 1;
             BAout = 1;
@@ -369,7 +367,7 @@ always @(*) begin
             Zin = 1;
         end
 
-        // LD
+        //LD
         load5: begin
             Zout = 1;
             MARin = 1;
@@ -390,14 +388,14 @@ always @(*) begin
             Rin = 1;
         end
 
-        // LDI
+        //LDI
         loadi5: begin
             Zout = 1;
             Gra = 1;
             Rin = 1;
         end
 
-        // ST
+        //ST
         st5: begin
             Zout = 1;
             MARin = 1;
@@ -417,7 +415,7 @@ always @(*) begin
             //Read = 1;
         end
 
-        // ALU IMMEDIATE INSTRUCTIONS
+        //ALU IMMEDIATE INSTRUCTIONS
         alui3: begin
             Grb = 1;
             Rout = 1;
@@ -442,7 +440,7 @@ always @(*) begin
             Rin = 1;
         end
 
-        // JUMP
+        //JUMP
         jr3: begin
             Gra = 1;
             Rout = 1;
@@ -461,7 +459,7 @@ always @(*) begin
             PCin = 1;
         end
 
-        // MOVING
+        //MOVING
         mflo3: begin
             Gra = 1;
             Rin = 1;
@@ -474,7 +472,7 @@ always @(*) begin
             HIout = 1;
         end
 
-        // BRANCHING
+        //BRANCHING
         branch3: begin
             Gra = 1;
             Rout = 1;

@@ -1,3 +1,4 @@
+//RAM MODULE
 module ram (
     input clk,
     input read,
