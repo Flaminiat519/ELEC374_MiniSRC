@@ -2,6 +2,9 @@
 
 module CPU(
 	input wire Clock, Reset, Stop,
+	input wire [31:0] Inport,
+	output wire [31:0] Outport,
+	output wire Halted,
 	output wire [31:0] BusMuxOut
 );
 
@@ -23,7 +26,7 @@ module CPU(
         .CON_In(CON_In), .CON_Out(CON_Out), .OUTPORT_Out(OUTPORT_Out),
         .alu_op(alu_op),
         .IR(IR_out),   // IR fed from datapath bus
-        .Clock(Clock), .Reset(Reset), .Stop(Stop)
+        .Clock(Clock), .Reset(Reset), .Stop(Stop), .halted(Halted)
 	);
 	
 	data_path dp(
@@ -39,6 +42,8 @@ module CPU(
         .OUTPORT_In(OUTPORT_In), .INPORT_Out(INPORT_Out), .OUTPORT_Out(OUTPORT_Out),
         .Cout(Cout), .IncPC(IncPC),
         .Read(Read), .Write(Write),
+		.Inport(Inport),
+		.Outport(Outport),
         .MDatain(32'b0),
         .BusMuxOut(BusMuxOut),
         .CON_In(CON_In), .CON_Out(CON_Out),

@@ -22,6 +22,10 @@ module data_path (
     input wire Read,
 	input wire Write,
     input wire [31:0] MDatain,
+	//Make inport and outport external
+	input wire [31:0] Inport, //Switches
+	output wire [31:0] Outport, //Seven Segment display
+	
     output wire [31:0] BusMuxOut,
 	output wire [31:0] IR_out,
 	
@@ -30,6 +34,7 @@ module data_path (
 	input wire CON_In,
 	input wire CON_Out,
 	input wire [12:0] alu_op
+	
 );
     //internal wires for registers
     wire [31:0] R0, R1, R2, R3, R4, R5, R6, R7;
@@ -46,9 +51,6 @@ module data_path (
 	wire [15:0] Rin_signals, Rout_signals;
 	wire [31:0] C;
 	select_and_encode_logic selectandencode (.IR(IR), .Gra(Gra), .Grb(Grb), .Grc(Grc), .Rin(Rin), .Rout(Rout), .BAout(BAout), .C(C), .R_in(Rin_signals), .R_out(Rout_signals));
-	//wires for the input and output ports
-	wire [31:0] INPORT_Data;
-	wire [31:0] OUTPORT_Data;
 
 	
 	//idk
@@ -84,8 +86,9 @@ module data_path (
     register R14_reg (.clear(clear), .clock(clock), .enable(Rin_signals[14]), .BusMuxIn(Bus), .BusMuxOut(R14));
     register R15_reg (.clear(clear), .clock(clock), .enable(Rin_signals[15]), .BusMuxIn(Bus), .BusMuxOut(R15));
 	//general purpose registers for Inport and Outport
-	register INPORT_reg (.clear(clear), .clock(clock), .enable(INPORT_In), .BusMuxIn(MDatain), .BusMuxOut(INPORT));
-	register OUTPORT_reg (.clear(clear), .clock(clock), .enable(OUTPORT_In), .BusMuxIn(Bus), .BusMuxOut(OUTPORT));
+	register INPORT_reg  (.clear(clear), .clock(clock), .enable(1'b1),       .BusMuxIn(Inport), .BusMuxOut(INPORT));
+	register OUTPORT_reg (.clear(clear), .clock(clock), .enable(OUTPORT_In), .BusMuxIn(Bus),    .BusMuxOut(OUTPORT));
+	assign Outport = OUTPORT;
     //special general registers HI/LO get ALU_Data directly
     register HI_reg (.clear(clear), .clock(clock), .enable(HIin), .BusMuxIn(Bus), .BusMuxOut(HI));
 	register LO_reg (.clear(clear), .clock(clock), .enable(LOin), .BusMuxIn(Bus), .BusMuxOut(LO));

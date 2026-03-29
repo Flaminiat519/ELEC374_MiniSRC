@@ -52,6 +52,7 @@ module control_unit (
     output reg Gra, Grb, Grc, Rin, Rout, BAout, Read, Write, IncPC,
     output reg CON_In, CON_Out, OUTPORT_Out,
     output reg [12:0] alu_op,
+	output wire halted,
 
     input [31:0] IR,
     input Clock, Reset, Stop
@@ -112,6 +113,9 @@ parameter
     halt = 6'd37;
 
 reg [5:0] present_state;
+
+//Set halted signal if in halt state
+assign halted = (present_state == halt);
 
 //state transitions
 always @(posedge Clock or posedge Reset) begin
