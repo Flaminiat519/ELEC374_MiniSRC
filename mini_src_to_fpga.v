@@ -18,7 +18,7 @@ module mini_src_to_fpga(
 	assign run = ~halted & ~stop_in; //Running when not halted or stopped
 	
 	//Divide frequency to work with simulation
-	fequencey_divider fd(.CLOCK_50(CLOCK_50), .reset(reset_in), .div_clk(divided_clk));
+	frequency_divider fd(.CLOCK_50(CLOCK_50), .reset(reset_in), .div_clk(divided_clk));
 	//Only need LED 5
 	assign LEDS[9:6] = 4'b0;
 	assign LEDS[4:0] = 5'b0;
