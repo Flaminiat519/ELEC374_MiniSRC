@@ -8,13 +8,19 @@ reg Reset;
 reg Stop;
 
 wire [31:0] BusMuxOut;
+input reg [31:0] Inport;
+reg [31:0] Outport;
+wire Halted;
 
 //initiate datapath
 CPU dut(
     .Clock(Clock),
     .Reset(Reset),
     .Stop(Stop),
-    .BusMuxOut(BusMuxOut)
+    .BusMuxOut(BusMuxOut),
+	.Inport(Inport),
+	.Outport(Outport),
+	.Halted(Halted)
 );
 
 //clock
@@ -34,7 +40,7 @@ initial begin
     #50;
     Reset = 0;
 
-    #60000;
+    #1000000000;
     $stop;
 end
 
