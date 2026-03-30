@@ -112,8 +112,8 @@ parameter
     nop = 6'd36,
     halt = 6'd37,
 
-	input3 = 6'd38,
-	output3 = 6'39;
+	input3 = 6'd39,
+	output3 = 6'd40;
 
 reg [5:0] present_state;
 
@@ -173,7 +173,7 @@ always @(posedge Clock or posedge Reset) begin
 								present_state <= input3;
 
 							`OUT:
-								present_state <= out3;
+								present_state <= output3;
 
                     default:
                         present_state <= fetch0;

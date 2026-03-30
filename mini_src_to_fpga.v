@@ -1,12 +1,12 @@
 `timescale 1ns/10ps
 
-module mini_src_to_fpga{
+module mini_src_to_fpga(
 	input wire CLOCK_50,
 	input wire [1:0] KEY,
 	input wire [7:0] SWITCHES,
 	output wire [9:0] LEDS,
 	output [7:0] HEX0, HEX1
-};
+);
 	
 	wire reset_in, stop_in;
 	wire [31:0] inport, outport;
@@ -21,7 +21,7 @@ module mini_src_to_fpga{
 	
 	//Set up bottons and switches for input
 	push_button buttons(.key0(KEY[0]), .key1(KEY[1]), .reset_in(reset_in), .stop_in(stop_in));
-	switch_input switches(.sw(SWITCHES), .inport(inport));
+	switch_input switches(.sw(SWITCHES), .in_port(inport));
 	
 	//Instantiate CPU
 	CPU cpu(.Clock(CLOCK_50), .Reset(reset_in), .Stop(stop_in), .Inport(inport), .Outport(outport), .Halted(halted), .BusMuxOut(bus));

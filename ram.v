@@ -13,8 +13,8 @@ integer i;
 initial begin
     for (i = 0; i < 512; i = i + 1)
         mem[i] = 32'h0;
-    $readmemh("C:/Users/flami/Documents/ELEC374_MiniSRC/ram.hex", mem); //ram.hex location on Flaminia's computer
-	//$readmemh("C:/ELEC374_Repo/ELEC374_MiniSRC/ram.hex", mem); //ram.hex location on Duncan's computer
+    //$readmemh("C:/Users/flami/Documents/ELEC374_MiniSRC/ram.hex", mem); //ram.hex location on Flaminia's computer
+	$readmemh("C:/ELEC374_Repo/ELEC374_MiniSRC/ram.hex", mem); //ram.hex location on Duncan's computer
 end
 
 always @(posedge clk) begin
