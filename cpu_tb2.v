@@ -8,8 +8,8 @@ reg Reset;
 reg Stop;
 
 wire [31:0] BusMuxOut;
-input reg [31:0] Inport;
-reg [31:0] Outport;
+wire [31:0] Inport;
+wire [31:0] Outport;
 wire Halted;
 
 //initiate datapath
