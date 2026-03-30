@@ -79,18 +79,55 @@ CB000000  //mflo R6
 @027
 8D880005  //ldi R11, 5(R1)      
 @028
-A5600000  //jal R10             
+A5600000  //jal R10  
+
+//new code for phase 4
+//Created with SRC-ASM (https://github.com/davlaf/elec374-assembler)
 @029
-9E000000  //halt                
-@089
-000000A7  //M[0x89] = 0xA7 (initial value)
-@0A3
-00000068  //M[0xA3] = 0x68 (initial value)
-@0B2
-07450000  //add R14, R8, R10    
-@0B3
-0ECD8000  //sub R13, R9, R11   
-@0B4
-0F768000  //sub R14, R14, R13  
-@0B5
-9E000000  //jr R12             
+B3000000 // in R6
+@030
+93000077 // st 0x77, R6 
+@031
+8980002E // ldi R3, 0x2E
+@032
+8A800001 // ldi R5, 1
+@033
+89000028 // ldi R2, 40
+@034
+BB000000 // out R6 
+@035
+8917FFFF // ldi R2, -1(R2)
+@036
+A9000008 // brzr R2, 8
+@037
+83800088 // ld R7, 0x88
+@038
+8BBFFFFF // ldi R7, -1(R7)
+@039
+D0000000 // nop
+@040
+AB8FFFFD // brnz R7, -3
+@041
+23328000 // shr R6, R6, R5
+@042
+AB0FFFF7 // brnz R6, -9 
+@043
+83000077 // ld R6, 0x77
+@044
+A1800000 // jr R3
+@045
+8B000063 // ldi R6, 0x63
+@046
+BB000000 // out R6
+@047
+D8000000 // halt 
+@048
+//ISSUE HELP
+@049
+07450000 // add R14, R8, R10 
+@050
+0ECD8000 // sub R13, R9, R11
+@051
+0F768000 // sub R14, R14, R13
+@052
+A6000000 // jr R12 
