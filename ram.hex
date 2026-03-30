@@ -79,7 +79,7 @@ CB000000  //mflo R6
 @027
 8D880005  //ldi R11, 5(R1)      
 @028
-A5600000  //jal R10  
+A5600000  //jal R10
 
 //new code for phase 4
 //Created with SRC-ASM (https://github.com/davlaf/elec374-assembler)
