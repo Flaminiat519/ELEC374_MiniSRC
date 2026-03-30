@@ -110,9 +110,9 @@ parameter
     branch6 = 6'd35,
 
     nop = 6'd36,
-    halt = 6'd37;
+    halt = 6'd37,
 
-	input3 = 6'd38;
+	input3 = 6'd38,
 	output3 = 6'39;
 
 reg [5:0] present_state;
@@ -169,11 +169,11 @@ always @(posedge Clock or posedge Reset) begin
                     `NOP:
                         present_state <= nop;
 
-					'IN:
-						present_state <= input3;
+							`IN:
+								present_state <= input3;
 
-					'OUT:
-						present_state <= out3;
+							`OUT:
+								present_state <= out3;
 
                     default:
                         present_state <= fetch0;
@@ -238,9 +238,9 @@ always @(posedge Clock or posedge Reset) begin
             branch5: present_state <= branch6;
             branch6: present_state <= reset_state;
 
-			//input and output
-			input3: present_state <= reset_state;
-			output3: present_state <= reset_state:
+				//input and output
+				input3: present_state <= reset_state;
+				output3: present_state <= reset_state;
 
             nop: present_state <= reset_state;
             halt: present_state <= halt;
