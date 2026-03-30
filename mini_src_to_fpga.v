@@ -13,8 +13,12 @@ module mini_src_to_fpga(
 	wire halted;
 	wire run;
 	wire [31:0] bus;
+	wire divided_clk;
 	
 	assign run = ~halted & ~stop_in; //Running when not halted or stopped
+	
+	//Divide frequency to work with simulation
+	fequencey_divider fd(.CLOCK_50(CLOCK_50), .reset(reset_in), .div_clk(divided_clk));
 	//Only need LED 5
 	assign LEDS[9:6] = 4'b0;
 	assign LEDS[4:0] = 5'b0;
@@ -24,7 +28,7 @@ module mini_src_to_fpga(
 	switch_input switches(.sw(SWITCHES), .in_port(inport));
 	
 	//Instantiate CPU
-	CPU cpu(.Clock(CLOCK_50), .Reset(reset_in), .Stop(stop_in), .Inport(inport), .Outport(outport), .Halted(halted), .BusMuxOut(bus));
+	CPU cpu(.Clock(divided_clk), .Reset(reset_in), .Stop(stop_in), .Inport(inport), .Outport(outport), .Halted(halted), .BusMuxOut(bus));
 	
 	//Set up led 5 and hex displays for output
 	led_indicator leds (.run(run), .ledr5(LEDS[5]));
