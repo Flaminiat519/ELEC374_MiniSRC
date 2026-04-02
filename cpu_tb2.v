@@ -8,7 +8,7 @@ reg Reset;
 reg Stop;
 
 wire [31:0] BusMuxOut;
-wire [31:0] Inport;
+reg [31:0] Inport;
 wire [31:0] Outport;
 wire Halted;
 
@@ -23,9 +23,10 @@ CPU dut(
 	.Halted(Halted)
 );
 
-//clock
+//clocks
 initial begin
     Clock = 0;
+	Inport = 32'hE0;
     forever #10 Clock = ~Clock;
 end
 

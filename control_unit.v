@@ -169,11 +169,11 @@ always @(posedge Clock or posedge Reset) begin
                     `NOP:
                         present_state <= nop;
 
-							`IN:
-								present_state <= input3;
+					`IN:
+						present_state <= input3;
 
-							`OUT:
-								present_state <= output3;
+					`OUT:
+						present_state <= output3;
 
                     default:
                         present_state <= fetch0;
