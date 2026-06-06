@@ -1,4 +1,4 @@
-# MiniSRC CPU — ELEC 374 Final Project
+# MiniSRC CPU
 
 A fully functional 32-bit RISC-style CPU designed and implemented in Verilog, the CPU is synthesized and deployed on the **Altera DE0-CV FPGA** development board.
 
