@@ -1,6 +1,5 @@
-//ALU Module for arithmetic operations
-//Define ALU components control variables
-//for the different inputs
+//ALU module — handles arithmetic, logical, and shift operations
+//Operation select codes for ALU_op (one-hot encoded)
 `define AND_ALU 0
 `define OR_ALU 1
 `define NOT_ALU 2
@@ -15,14 +14,13 @@
 `define ROR_ALU 11
 `define ROL_ALU 12
 
-//create the ALU module
 module ALU (
-	//define the input and outputs wires and reg
-	input wire [31:0] RA, RB,
-	input wire [12:0] ALU_op,
-	output reg [63:0] RZ
+	input wire [31:0] RA, RB,   //Source operands
+	input wire [12:0] ALU_op,   //One-hot operation select
+	output reg [63:0] RZ        //64-bit result (upper half used for MUL/DIV)
 );
-	//define wires correponding to different results
+
+	//Result wires for each operation
 	wire [31:0] and_result;
 	wire [31:0] or_result;
 	wire [31:0] not_result;
@@ -31,7 +29,6 @@ module ALU (
 	wire c_in;
 	wire [31:0] add_sub_result;
 	wire [63:0] mul_result;
-	wire [63:0] div_result;
 	wire [31:0] sll_result;
 	wire [31:0] srl_result;
 	wire [31:0] sra_result;
@@ -39,41 +36,37 @@ module ALU (
 	wire [31:0] rol_result;
 	wire [31:0] RB_sub;
 
-	//check if sub is active, if so, make RB negative
+	//For subtraction, invert RB and set carry-in to 1 (two's complement negation)
 	assign RB_sub = ALU_op[`SUB_ALU] ? ~RB : RB;
 	assign c_in = ALU_op[`SUB_ALU];
 
-	//create instances of each operation
-	//accessing the different module files
+	//Operation module instances
 	and_gate and_instance (RA, RB, and_result);
 	or_gate or_instance (RA, RB, or_result);
+	not_gate not_instance (RB, not_result);
 	negate neg (RB, neg_result);
 	CLA_32 add_sub (RA, RB_sub, c_in, add_sub_result, c_out);
-	not_gate not_instance (RB, not_result);
-	
+
 	wire [31:0] div_quotient;
 	wire [31:0] div_remainder;
 
-div div_instance(
-	.dividend(RA),
-    .divisor(RB),
-    .quotient(div_quotient),
-    .remainder(div_remainder)
-);
-	
+	div div_instance (
+		.dividend(RA),
+		.divisor(RB),
+		.quotient(div_quotient),
+		.remainder(div_remainder)
+	);
+
 	mult_32b mul (RA, RB, mul_result);
-	rol rol_instance(RA, RB, rol_result);
-	ror ror_instance(RA, RB, ror_result);
-	sll sll_instance(RA, RB, sll_result);
-	sra sra_instance(RA, RB, sra_result);
-	srl srl_instance(RA, RB, srl_result);
-	
-	//always statement to check which input component
-	//was selected, then sets RZ to the result
-	//of the corresponding operation
+	rol rol_instance (RA, RB, rol_result);
+	ror ror_instance (RA, RB, ror_result);
+	sll sll_instance (RA, RB, sll_result);
+	sra sra_instance (RA, RB, sra_result);
+	srl srl_instance (RA, RB, srl_result);
+
+	//Select the result based on the active operation bit
 	always @(*) begin
 		RZ = 64'b0;
-
 		if (ALU_op[`AND_ALU]) begin
 			RZ[31:0] = and_result;
 		end
@@ -94,9 +87,9 @@ div div_instance(
 			RZ = mul_result;
 		end
 		else if (ALU_op[`DIV_ALU]) begin
-			RZ[31:0] = div_quotient; //For ZLO
-			RZ[63:32] = div_remainder; //For ZHI
-    	end
+			RZ[31:0] = div_quotient;   // Lower word → ZLO
+			RZ[63:32] = div_remainder; // Upper word → ZHI
+		end
 		else if (ALU_op[`SLL_ALU]) begin
 			RZ[31:0] = sll_result;
 			RZ[63:32] = 32'b0;
@@ -118,5 +111,5 @@ div div_instance(
 			RZ[63:32] = 32'b0;
 		end
 	end
-	
+
 endmodule
