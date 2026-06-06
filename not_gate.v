@@ -1,9 +1,7 @@
-//NOT operation module
+//32-bit bitwise NOT gate
 module not_gate(
-    //start wires
-    input [31:0] x,
-    output [31:0] z
+	input [31:0] x,
+	output [31:0] z
 );
-//NOT operation
-assign z = ~x; 
+	assign z = ~x;
 endmodule
