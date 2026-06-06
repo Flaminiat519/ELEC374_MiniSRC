@@ -1,14 +1,14 @@
-//Rotate left module
+//32-bit rotate left
 module rol (
-	//wire inputs
-	input wire [31:0] a,b,
+	input wire [31:0] a, b,
 	output wire [31:0] z
 );
-	//rotate left operation
 	reg [31:0] temp;
-	always @ (*)
-		begin
-			temp = ((a << b) | (a >> (32 - b)));
-		end
+
+	always @(*) begin
+		//Rotate a left by b positions
+		temp = (a << b) | (a >> (32 - b));
+	end
+
 	assign z = temp;
 endmodule
