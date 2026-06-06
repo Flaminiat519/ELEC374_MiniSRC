@@ -1,9 +1,7 @@
-//Shift right arithmetic module
+//32-bit arithmetic shift right — preserves the sign bit
 module sra (
-	//wire initialize
 	input wire [31:0] a, b,
 	output wire [31:0] z
 );
-	//sra operation
 	assign z = $signed(a) >>> b;
 endmodule
