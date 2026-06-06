@@ -1,4 +1,5 @@
 -- Created with SRC-ASM (https://github.com/davlaf/elec374-assembler)
+
 WIDTH=32;
 DEPTH=512;
  
