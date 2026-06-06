@@ -1,6 +1,6 @@
 # MiniSRC CPU — ELEC 374 Final Project
 
-A fully functional 32-bit RISC-style CPU designed and implemented in Verilog, built as the final project for ELEC 374 (Digital Systems Design) at Queen's University. The CPU is synthesized and deployed on the **Altera DE0-CV FPGA** development board.
+A fully functional 32-bit RISC-style CPU designed and implemented in Verilog, the CPU is synthesized and deployed on the **Altera DE0-CV FPGA** development board.
 
 ---
 
