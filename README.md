@@ -122,4 +122,6 @@ All internal data transfer happens over a shared 32-bit bus. Each register drive
 
 ---
 
-## Project Structure
+## Authors
+
+Developed by **Flaminia**, **Duncan**, and **Victoria**
