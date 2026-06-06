@@ -1,6 +1,6 @@
+//Top-level CPU module — connects the control unit and datapath
 `timescale 1ns/10ps
 
-//Top-level CPU module — connects the control unit and datapath
 module CPU(
 	input wire Clock, Reset, Stop,
 	input wire [31:0] Inport,
