@@ -1,50 +1,41 @@
-//32 Bit multiplication operation module
+//32-bit Booth's algorithm multiplier — produces a 64-bit result
 module mult_32b #(parameter n = 32)(
-		 input [n-1:0] m,q,
-		 output reg [2*n-1:0] result
-	);
-	//create q prime as a valid wire to be used
-	//concatinate q and 0 to make q prime
-	//ensures that 0 is one bit, not 32 bits
-	wire [n:0] qp = {q,1'b0};
+	input [n-1:0] m, q,
+	output reg [2*n-1:0] result
+);
+	//Append a 0 bit below Q to form Q' for Booth's recoding
+	wire [n:0] qp = {q, 1'b0};
 
-	//this is to store the partial products
-	//first parameter is bits of q + m
-	//second is bits of q
+	//Partial products array — one per bit of Q, each 64 bits wide
 	reg [2*n-1:0] pp [n-1:0];
 
-	//declare integer variable for for-loop
 	integer i, j;
-	//create for loop to itereate through qp
-	//and assign booth's!
 
-	//Loop to compute booth's and the
-	//relevant partial products
+	//Compute Booth-encoded partial products
 	always @(*) begin
-		 for (i=0; i<n; i=i+1) begin
-			  if (!qp[i]) begin
-					if (!qp[i+1])
-						 pp[i] = {2*n{1'b0}};
-					else
-						 pp[i] = -{{n{m[n-1]}}, m};
-			  end
-			  else begin
-					if (qp[i+1])
-						 pp[i] = {2*n{1'b0}};
-					else
-						 pp[i] = {{n{m[n-1]}}, m};
-			  end
-			  pp[i] = pp[i] << i;
-		 end
+		for (i = 0; i < n; i = i + 1) begin
+			if (!qp[i]) begin
+				if (!qp[i+1])
+					pp[i] = {2*n{1'b0}};        // 00 — add 0
+				else
+					pp[i] = -{{n{m[n-1]}}, m};  // 01 — subtract M
+			end
+			else begin
+				if (qp[i+1])
+					pp[i] = {2*n{1'b0}};        // 11 — add 0
+				else
+					pp[i] = {{n{m[n-1]}}, m};   // 10 — add M
+			end
+			//Shift partial product into position
+			pp[i] = pp[i] << i;
+		end
 	end
 
-	//adding all of the partial products together to
-	//get the final sum
+	//Sum all partial products to get the final result
 	always @(*) begin
-		 result = {2*n{1'b0}};
-		 for (j=0; j < n; j=j+1) begin
-			  result = result + pp[j];
-		 end
+		result = {2*n{1'b0}};
+		for (j = 0; j < n; j = j + 1) begin
+			result = result + pp[j];
+		end
 	end
-
 endmodule
